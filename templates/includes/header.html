@@ -1,19 +1,50 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'home' %}">Johans Digital Forge</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Logo / Namn -->
+    <a class="navbar-brand" href="{% if 'en' in request.path %}/en/{% else %}/{% endif %}">
+      Johans Digital Forge
+    </a>
+
+    <!-- Mobilknapp -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+      aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- Meny -->
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
-        </li>
-        <!-- Fler länkar här senare -->
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
-        </li>
+        {% if 'en' in request.path %}
+          <li class="nav-item">
+            <a class="nav-link" href="/en/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/en/#services">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/en/#contact">Contact</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="/">Hem</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/#services">Tjänster</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/#contact">Kontakt</a>
+          </li>
+        {% endif %}
       </ul>
+
+      <!-- Språkväxlare -->
+      <div class="ms-3 text-end">
+        {% if 'en' in request.path %}
+          <a href="/" class="text-light text-decoration-none">🇸🇪 Svenska</a>
+        {% else %}
+          <a href="/en/" class="text-light text-decoration-none">🇬🇧 English</a>
+        {% endif %}
+      </div>
     </div>
   </div>
 </nav>

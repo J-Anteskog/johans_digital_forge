@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home | Johans Digital Forge{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero bg-dark text-light text-center py-5">
+  <div class="container">
+    <h1 class="display-3 fw-bold mb-3">Tailored websites for small businesses</h1>
+    <p class="lead">Modern, mobile-friendly, and affordable web solutions – delivered remotely.</p>
+    <a href="#services" class="btn btn-outline-light btn-lg mt-4 shadow">See what I offer</a>
+  </div>
+</section>
+
+<!-- Services -->
+<section id="services" class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="mb-5 fw-semibold">Services</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <i class="fas fa-laptop-code fa-3x text-primary mb-3"></i>
+        <h4 class="fw-bold">Websites</h4>
+        <p>Responsive, modern, and easy-to-manage websites tailored to your business.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="fas fa-shopping-cart fa-3x text-primary mb-3"></i>
+        <h4 class="fw-bold">E-commerce</h4>
+        <p>Online stores with payment solutions, product management, and secure checkout.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+        <h4 class="fw-bold">Booking & Blogs</h4>
+        <p>Systems for appointments, news feeds, or blogs to engage your visitors.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="py-5 bg-white text-center">
+  <div class="container" style="max-width: 800px;">
+    <h2 class="mb-4 fw-semibold">Who am I?</h2>
+    <p class="lead">
+      I'm Johan Anteskog – a passionate web developer helping small businesses succeed online.
+      I create modern, mobile-ready websites that are both beautiful and functional – always with a focus on user experience and client needs.
+    </p>
+    <p>
+      I handle everything from design and layout to advanced features like booking systems, e-commerce, blogs, and interactive animations. Using tools like Django, Bootstrap, and JavaScript, I deliver sustainable and customized web solutions.
+    </p>
+    <p>
+      As a client, you’ll get more than just a website – you’ll get a dedicated partner who listens, communicates clearly, and delivers as promised. Whether you're just starting or want to upgrade your current site, I’m here to help your business grow digitally.
+    </p>
+  </div>
+</section>
+
+<!-- Portfolio -->
+<section class="bg-light py-5 text-center">
+  <div class="container">
+    <h2 class="mb-4 fw-semibold">Recent work</h2>
+    <p class="mb-3">Here's one of my latest projects:</p>
+    <a href="https://unknown-possibilities-846f26e3e4d7.herokuapp.com/" target="_blank" class="btn btn-outline-dark btn-lg shadow-sm">
+      <i class="fas fa-link me-2"></i> Unknown Possibilities
+    </a>
+  </div>
+</section>
+
+<!-- Contact CTA -->
+<section class="py-5 bg-dark text-light text-center">
+  <div class="container" style="max-width: 700px;">
+    <h2 class="fw-bold mb-3">Ready to take your business online?</h2>
+    <p class="lead mb-4">Reach out for a free quote or to schedule an intro call.</p>
+
+    <form method="post" action="#" class="text-start">
+      <div class="mb-3">
+        <label for="name" class="form-label">Your Name</label>
+        <input type="text" class="form-control" id="name" placeholder="Full name" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Your Email</label>
+        <input type="email" class="form-control" id="email" placeholder="you@example.com" required>
+      </div>
+      <div class="mb-3">
+        <label for="message" class="form-label">Your Message</label>
+        <textarea class="form-control" id="message" rows="4" placeholder="How can I help you?" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Send Message</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
