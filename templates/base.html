@@ -1,10 +1,32 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
+    {% block meta %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Johans Digital Forge">
+    {% endblock %}
+
     <title>{% block title %}Johans Digital Forge{% endblock %}</title>
+
+    {% block extra_meta %}{% endblock %}
+
+    {% block corecss %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% endblock %}
+
+    {% block extracss %}{% endblock %}
+
+
+
+    {% block extra_js %}{% endblock %}
+
 </head>
+
 <body>
     <header>
         <h1>Johans Digital Forge</h1>
@@ -20,4 +42,8 @@
         <p>&copy; 2025 Johans Digital Forge</p>
     </footer>
 </body>
+
 </html>
+{% block corejs %}
+<script src="{% static 'js/base.js' %}"></script>
+{% endblock %}
