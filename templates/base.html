@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Johans Digital Forge{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Johans Digital Forge</h1>
+    </header>
+
+    <main>
+        {% block content %}
+        <!-- Page content -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Johans Digital Forge</p>
+    </footer>
+</body>
+</html>
