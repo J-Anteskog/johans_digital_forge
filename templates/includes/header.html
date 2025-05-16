@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <!-- Logo / Namn -->
-    <a class="navbar-brand" href="{% if 'en' in request.path %}/en/{% else %}/{% endif %}">
+    <!-- Logo -->
+    <a class="navbar-brand" href="{% if request.path|slice:":3" == "/en" %}/en/{% else %}/{% endif %}">
       Johans Digital Forge
     </a>
 
@@ -14,32 +14,20 @@
     <!-- Meny -->
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        {% if 'en' in request.path %}
-          <li class="nav-item">
-            <a class="nav-link" href="/en/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/en/#services">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/en/#contact">Contact</a>
-          </li>
+        {% if request.path|slice:":3" == "/en" %}
+          <li class="nav-item"><a class="nav-link" href="/en/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/en/#services">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="/en/#contact">Contact</a></li>
         {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="/">Hem</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/#services">Tjänster</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/#contact">Kontakt</a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="/">Hem</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#services">Tjänster</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#contact">Kontakt</a></li>
         {% endif %}
       </ul>
 
       <!-- Språkväxlare -->
       <div class="ms-3 text-end">
-        {% if 'en' in request.path %}
+        {% if request.path|slice:":3" == "/en" %}
           <a href="/" class="text-light text-decoration-none">🇸🇪 Svenska</a>
         {% else %}
           <a href="/en/" class="text-light text-decoration-none">🇬🇧 English</a>
@@ -48,3 +36,4 @@
     </div>
   </div>
 </nav>
+ 
