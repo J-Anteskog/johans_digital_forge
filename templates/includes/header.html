@@ -1,9 +1,12 @@
+{% load static %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <!-- Logo -->
-    <a class="navbar-brand" href="{% if request.path|slice:":3" == "/en" %}/en/{% else %}/{% endif %}">
-      Johans Digital Forge
-    </a>
+<a class="navbar-brand d-flex align-items-center gap-2" href="{% if request.path|slice:":3" == "/en" %}/en/{% else %}/{% endif %}">
+  <img src="{% static 'images/jdf-logo.png' %}" alt="Johans Digital Forge logo" height="56" style="filter: drop-shadow(0 0 4px #00bfff);">
+  <span class="fw-bold">Johans Digital Forge</span>
+</a>
+
 
     <!-- Mobilknapp -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"

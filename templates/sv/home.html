@@ -6,13 +6,25 @@
 {% block content %}
 
 <!-- Hero Section -->
-<section class="hero bg-dark text-light text-center py-5">
+<section class="hero bg-dark text-light py-5">
   <div class="container">
-    <h1 class="display-3 fw-bold mb-3">Skräddarsydda hemsidor för småföretag, privatpersoner och föreningar</h1>
-    <p class="lead">Responsiva och visuellt tilltalande webblösningar – för småföretag, privatpersoner och lokala föreningar.</p>
-    <a href="#services" class="btn btn-outline-light btn-lg mt-4 shadow">Se vad jag erbjuder</a>
+    <div class="row align-items-center text-center text-lg-start">
+      <!-- Logotypen till vänster -->
+      <div class="col-lg-4 mb-4 mb-lg-0 d-flex justify-content-center">
+<img src="{% static 'images/jdf-logo.png' %}" alt="Johans Digital Forge logo"
+     style="max-width: 100%; height: 260px; filter: drop-shadow(0 0 12px #00bfff);">
+
+      </div>
+      <!-- Texten till höger -->
+      <div class="col-lg-8">
+        <h1 class="display-4 fw-bold">Skräddarsydda hemsidor för småföretag, privatpersoner och föreningar</h1>
+        <p class="lead">Responsiva och visuellt tilltalande webblösningar – byggda för att passa just dina behov.</p>
+        <a href="#services" class="btn btn-outline-light btn-lg mt-3 shadow">Se vad jag erbjuder</a>
+      </div>
+    </div>
   </div>
 </section>
+
 
 <!-- Tjänster -->
 <section id="services" class="py-5 bg-light text-center">
