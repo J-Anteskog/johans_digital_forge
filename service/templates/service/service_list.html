@@ -24,10 +24,11 @@
               {% endif %}
               <h5 class="card-title text-center">{{ service.title_sv }}</h5>
               <p class="card-text text-center">{{ service.description_sv }}</p>
-
               <hr class="bg-light">
               <h5 class="card-title text-center">{{ service.title_en }}</h5>
               <p class="card-text text-center">{{ service.description_en }}</p>
+              <p class="text-info fw-bold mt-2">
+                Från: {{ service.price }} SEK
               <a href="{% url 'home_sv' %}#contact" class="btn btn-outline-info mt-3 text-center d-flex justify-content-center">
               Kontakta mig / Contact me
             </a>
