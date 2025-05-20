@@ -24,4 +24,5 @@ urlpatterns = [
     path('', home_views.home_sv, name='home_sv'),
     path('en/', home_views.home_en, name='home_en'),
     path('service/', include('service.urls')),
+    path('contact/', include('contact.urls')),
 ]

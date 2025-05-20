@@ -88,25 +88,9 @@
   <div class="container" style="max-width: 700px;">
     <h2 class="fw-bold mb-3">Redo att ta din verksamhet online?</h2>
     <p class="lead mb-4">Kontakta mig för en gratis offert eller boka ett första möte.</p>
-
-    <form method="post" action="#" class="text-start">
-      <div class="mb-3">
-        <label for="name" class="form-label">Namn</label>
-        <input type="text" class="form-control" id="name" placeholder="Ditt namn" required>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">E-post</label>
-        <input type="email" class="form-control" id="email" placeholder="din@email.se" required>
-      </div>
-      <div class="mb-3">
-        <label for="message" class="form-label">Meddelande</label>
-        <textarea class="form-control" id="message" rows="4" placeholder="Vad kan jag hjälpa dig med?" required></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">Skicka meddelande</button>
-    </form>
-  </div>
-</section>
-
+        <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg shadow-sm">
+      <i class="fas fa-envelope me-2"></i> Kontakta mig
+    </a>
   </div>
 </section>
 

@@ -92,22 +92,9 @@
   <div class="container" style="max-width: 700px;">
     <h2 class="fw-bold mb-3">Ready to take your business online?</h2>
     <p class="lead mb-4">Contact me for a free quote or to schedule an intro call.</p>
-
-    <form method="post" action="#" class="text-start">
-      <div class="mb-3">
-        <label for="name" class="form-label">Your Name</label>
-        <input type="text" class="form-control" id="name" placeholder="Full name" required>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Your Email</label>
-        <input type="email" class="form-control" id="email" placeholder="you@example.com" required>
-      </div>
-      <div class="mb-3">
-        <label for="message" class="form-label">Your Message</label>
-        <textarea class="form-control" id="message" rows="4" placeholder="How can I help you?" required></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">Send Message</button>
-    </form>
+    <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg shadow-sm">
+      <i class="fas fa-envelope me-2"></i> Get in touch
+    </a>
   </div>
 </section>
 

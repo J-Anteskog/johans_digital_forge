@@ -1,0 +1,38 @@
+.fade-in-section {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #00ffe1, #7af0ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+form .form-control {
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  color: #f0f0f0;
+}
+
+form .form-control:focus {
+  border-color: #00ffe1;
+  box-shadow: 0 0 0 0.2rem rgba(0, 255, 255, 0.25);
+}
+
+.btn-outline-info {
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-info:hover {
+  background-color: #00ffe1;
+  color: #111;
+  border-color: #00ffe1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
