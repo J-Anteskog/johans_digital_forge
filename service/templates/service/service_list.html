@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/service.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="section-header text-center mb-5">
+  <h2 class="display-5 text-gradient">🛠️ Tjänster / Services</h2>
+  <p class="lead text-muted">Vad jag erbjuder – What I offer</p>
+</div>
+
+
+  {% if services %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for service in services %}
+        <div class="col">
+          <div class="card h-100 border-light shadow">
+            <div class="card-body">
+              {% if service.icon %}
+                <div class="text-center mb-3">
+                  <i class="{{ service.icon }} fa-2x"></i>
+                </div>
+              {% endif %}
+              <h5 class="card-title text-center">{{ service.title_sv }}</h5>
+              <p class="card-text text-center">{{ service.description_sv }}</p>
+
+              <hr class="bg-light">
+              <h5 class="card-title text-center">{{ service.title_en }}</h5>
+              <p class="card-text text-center">{{ service.description_en }}</p>
+              <a href="{% url 'home_sv' %}#contact" class="btn btn-outline-info mt-3 text-center d-flex justify-content-center">
+              Kontakta mig / Contact me
+            </a>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center">Inga tjänster tillgängliga just nu. – No services available at this time.</p>
+  {% endif %}
+</div>
+{% endblock %}

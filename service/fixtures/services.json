@@ -1,0 +1,38 @@
+[
+  {
+    "model": "service.service",
+    "pk": 1,
+    "fields": {
+      "title_sv": "Webbutveckling",
+      "title_en": "Web Development",
+      "description_sv": "Responsiv hemsida med moderna tekniker och unikt tema.",
+      "description_en": "Responsive website using modern tech and custom styling.",
+      "icon": "fa-solid fa-code",
+      "is_active": true
+    }
+  },
+  {
+    "model": "service.service",
+    "pk": 2,
+    "fields": {
+      "title_sv": "SEO Genomgång",
+      "title_en": "SEO Review",
+      "description_sv": "Analys och förbättring av sökmotoroptimering för din hemsida.",
+      "description_en": "Review and improve search engine optimization.",
+      "icon": "fa-solid fa-magnifying-glass-chart",
+      "is_active": true
+    }
+  },
+  {
+    "model": "service.service",
+    "pk": 3,
+    "fields": {
+      "title_sv": "Teknisk Support",
+      "title_en": "Tech Support",
+      "description_sv": "Felsökning och hjälp med tekniska problem för webb eller dator.",
+      "description_en": "Help with bugs or technical issues on web or desktop.",
+      "icon": "fa-solid fa-life-ring",
+      "is_active": true
+    }
+  }
+]
