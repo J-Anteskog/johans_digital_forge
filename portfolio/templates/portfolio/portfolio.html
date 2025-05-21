@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/portfolio.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-light fade-in-section">
+  <h2 class="text-center text-gradient mb-5">Portfolio / Projekt</h2>
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for project in projects %}
+      <div class="col">
+        <div class="card h-100 bg-dark text-light border-light shadow-sm">
+          {% if project.image %}
+            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_sv }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ project.title_sv }}</h5>
+            <p class="card-text">{{ project.description_sv }}</p>
+            <hr class="bg-light">
+            <h5 class="card-title">{{ project.title_en }}</h5>
+            <p class="card-text">{{ project.description_en }}</p>
+            <p class="text-muted mt-2"><strong>Tekniker:</strong> {{ project.technologies }}</p>
+            <div class="d-flex gap-2 mt-3">
+              {% if project.github_url %}
+                <a href="{{ project.github_url }}" target="_blank" class="btn btn-outline-info">GitHub</a>
+              {% endif %}
+              {% if project.live_url %}
+                <a href="{{ project.live_url }}" target="_blank" class="btn btn-outline-success">Live</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
