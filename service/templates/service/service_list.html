@@ -11,35 +11,70 @@
 </div>
 
 
-  {% if services %}
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-      {% for service in services %}
-        <div class="col">
-          <div class="card h-100 border-light shadow">
-            <div class="card-body">
-              {% if service.icon %}
-                <div class="text-center mb-3">
-                  <i class="{{ service.icon }} fa-2x"></i>
-                </div>
-              {% endif %}
-              <h5 class="card-title text-center">{{ service.title_sv }}</h5>
-              <p class="card-text text-center">{{ service.description_sv }}</p>
-              <hr class="bg-light">
-              <h5 class="card-title text-center">{{ service.title_en }}</h5>
-              <p class="card-text text-center">{{ service.description_en }}</p>
-              <p class="text-info fw-bold mt-2">
-                Från: {{ service.price }} SEK
-              </p>
-              <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-outline-info mt-3">
-              Kontakta mig / Contact me
-            </a>
+{% if services %}
+<div class="row row-cols-1 row-cols-md-2 g-4">
+  {% for service in services %}
+  <div class="col">
+    <div class="card h-100 border-light shadow">
+      <div class="card-body">
+        {% if service.icon %}
+        <div class="text-center mb-3">
+          <i class="{{ service.icon }} fa-2x"></i>
+        </div>
+        {% endif %}
+        <h5 class="card-title text-center">{{ service.title_sv }}</h5>
+        <p class="card-text text-center">{{ service.description_sv }}</p>
+        <hr class="bg-light">
+        <h5 class="card-title text-center">{{ service.title_en }}</h5>
+        <p class="card-text text-center">{{ service.description_en }}</p>
+        <p class="text-info fw-bold mt-2">
+          Från: {{ service.price }} SEK
+        </p>
+
+        <div class="d-flex justify-content-center gap-2 mt-3">
+          <!-- Contact button -->
+          <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-outline-info">
+            Kontakta mig / Contact me
+          </a>
+
+          <!-- Info button -->
+          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+            data-bs-target="#infoModal{{ service.id }}">
+            Info
+          </button>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1"
+          aria-labelledby="infoModalLabel{{ service.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel{{ service.id }}">
+                  {{ service.title_sv }} – {{ service.title_en }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Visa extra info om det finns, annars huvudbeskrivningen -->
+                <p>{{ service.extra_info_sv|default:service.description_sv|safe }}</p>
+                <p>{{ service.extra_info_en|default:service.description_en|safe }}</p>
+                <p class="fw-bold">Från: {{ service.price }} SEK</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng / Close</button>
+              </div>
             </div>
           </div>
         </div>
-      {% endfor %}
+
+      </div>
     </div>
-  {% else %}
-    <p class="text-center">Inga tjänster tillgängliga just nu. – No services available at this time.</p>
-  {% endif %}
+  </div>
+  {% endfor %}
 </div>
-{% endblock %}
+{% else %}
+<p class="text-center">Inga tjänster tillgängliga just nu. – No services available at this time.</p>
+{% endif %}
+
+{% endblock content %}

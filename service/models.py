@@ -8,6 +8,9 @@ class Service(models.Model):
     icon = models.CharField(max_length=50, blank=True, help_text="Font Awesome-ikon, t.ex. 'fa-solid fa-globe'")
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Pris i SEK")
 
+    extra_info_sv = models.TextField(blank=True, null=True)
+    extra_info_en = models.TextField(blank=True, null=True)
+
     is_active = models.BooleanField(default=True, verbose_name="Synlig")
 
     class Meta:
