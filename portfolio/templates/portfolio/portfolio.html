@@ -15,14 +15,14 @@
           {% if project.image %}
             <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_sv }}">
           {% endif %}
-          <div class="card-body">
+          <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ project.title_sv }}</h5>
             <p class="card-text">{{ project.description_sv }}</p>
             <hr class="bg-light">
             <h5 class="card-title">{{ project.title_en }}</h5>
             <p class="card-text">{{ project.description_en }}</p>
-            <p class="text-muted mt-2"><strong>Tekniker:</strong> {{ project.technologies }}</p>
-            <div class="d-flex gap-2 mt-3">
+            <p class="mt-2"><strong>Tekniker:</strong> {{ project.technologies }}</p>
+            <div class="d-flex justify-content-start gap-2 mt-auto">
               {% if project.github_url %}
                 <a href="{{ project.github_url }}" target="_blank" class="btn btn-outline-info">GitHub</a>
               {% endif %}
