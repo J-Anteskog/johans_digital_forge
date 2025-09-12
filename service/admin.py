@@ -3,7 +3,9 @@ from .models import Service
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('title_sv', 'title_en', 'is_active')
+    list_display = ('title_sv', 'title_en', 'is_active', 'price', 'order')
+    list_editable = ('order',)
+    ordering = ('order', 'title_sv')
     list_filter = ('is_active',)
     search_fields = ('title_sv', 'title_en')
 
