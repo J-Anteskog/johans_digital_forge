@@ -22,10 +22,11 @@ from service import views as service_views
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', home_views.home_sv, name='home_sv'),
-    path('en/', home_views.home_en, name='home_en'),
+    path("admin/", include("custom_admin.urls")),  # ditt nya admin
+    path("accounts/", include("allauth.urls")),    # inloggning
+    path("", include("home.urls")),                # din front-end
     path('service/', include('service.urls')),
     path('contact/', include('contact.urls')),
     path('portfolio/', include('portfolio.urls')),
+    path('dashboard/', include('custom_admin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

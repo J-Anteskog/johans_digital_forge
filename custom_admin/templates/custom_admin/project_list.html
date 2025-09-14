@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+  <h1 class="mb-4">📂 Alla projekt</h1>
+
+  <a href="#" class="btn btn-success mb-3">➕ Lägg till nytt projekt</a>
+
+  {% if projects %}
+    <div class="row g-4">
+      {% for project in projects %}
+      <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+          {% if project.image %}
+            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ project.title }}</h5>
+            <p class="text-muted">{{ project.description|truncatechars:100 }}</p>
+            <div class="d-flex justify-content-between">
+              <a href="#" class="btn btn-sm btn-warning">✏️ Redigera</a>
+              <a href="#" class="btn btn-sm btn-danger">🗑 Ta bort</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">Inga projekt har lagts till ännu.</div>
+  {% endif %}
+
+  <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-light mt-3">⬅ Tillbaka till Dashboard</a>
+</div>
+{% endblock %}

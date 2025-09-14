@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'admin_dashboard' %}">⚒️ Admin</a>
+    <ul class="navbar-nav flex-row">
+      <li class="nav-item"><a class="nav-link" href="{% url 'admin_services' %}">Tjänster</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'admin_projects' %}">Projekt</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Logga ut</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container py-5">
+    <h1 class="mb-4">⚙️ Admin – Johans Digital Forge</h1>
+
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Tjänster</h5>
+                    <p class="display-6">{{ services_count }}</p>
+                    <a href="{% url 'admin_services' %}" class="btn btn-primary">Hantera</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Projekt</h5>
+                    <p class="display-6">{{ projects_count }}</p>
+                    <a href="{% url 'admin_projects' %}" class="btn btn-primary">Hantera</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
