@@ -30,15 +30,12 @@
 
     {% block extracss %}{% endblock %}
 
-
-
     {% block extra_js %}{% endblock %}
 
 </head>
 
 <body>
     {% include 'includes/header.html' %}
-
 
     <main>
         {% block content %}
@@ -47,11 +44,49 @@
     </main>
 
 {% include 'includes/footer.html' %}
+
+<!-- Cookie Banner -->
+<div id="cookie-banner" class="cookie-banner bg-dark text-white p-3 fixed-bottom d-flex justify-content-between align-items-center hidden">
+  <div>
+    🍪 Vi använder cookies för att förbättra din upplevelse på sidan. 
+    <a href="{% url 'privacy_policy_sv' %}" class="text-warning">Integritetspolicy</a>
+    <a href="{% url 'privacy_policy_en' %}" class="text-warning">Privacy Policy</a>
+  </div>
+  <button id="accept-cookies" class="btn btn-warning">Acceptera</button>
+</div>
+
+<style>
+  .cookie-banner {
+    z-index: 1050;
+  }
+  .cookie-banner.hidden {
+    display: none !important;
+  }
+</style>
+
 {% block corejs %}
 <script src="{% static 'js/base.js' %}"></script>
 <!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const banner = document.getElementById("cookie-banner");
+    const acceptBtn = document.getElementById("accept-cookies");
+
+    // Visa banner om cookies inte accepterats
+    if (!localStorage.getItem("cookiesAccepted")) {
+      banner.classList.remove("hidden");
+    }
+
+    // Klick på acceptera
+    acceptBtn.addEventListener("click", function () {
+      localStorage.setItem("cookiesAccepted", "true");
+      banner.classList.add("hidden");
+    });
+  });
+</script>
+
 {% endblock %}    
 </body>
-
 </html>
