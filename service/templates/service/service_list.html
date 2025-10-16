@@ -31,8 +31,9 @@
           Från: {{ service.price }} SEK
         </p>
 
-        <div class="d-flex justify-content-between gap-2 mt-auto">
+        <div class="d-flex justify-content-center gap-2 mt-auto">
           <!-- Contact button -->
+             <a href="{% url 'quote_request' %}" class="btn btn-outline-success">Offertförfrågan / Request a quote</a>
           <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-outline-info">
             Kontakta mig / Contact me
           </a>
