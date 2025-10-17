@@ -1,13 +1,20 @@
 from django import forms
+from django import forms
+from .forms_base import BaseForm
 
-class ContactForm(forms.Form):
+
+class ContactForm(BaseForm):
     subject = forms.CharField(label="Ämne / Subject", max_length=100, required=True)
-    name = forms.CharField(label="Namn / Name", max_length=100, required=True,)
+    name = forms.CharField(label="Namn / Name", max_length=100, required=True)
     email = forms.EmailField(label="E-post / Email", required=True)
-    message = forms.CharField(label="Meddelande / Message", widget=forms.Textarea, required=True)
+    message = forms.CharField(
+        label="Meddelande / Message",
+        widget=forms.Textarea,
+        required=True
+    )
 
 
-class QuoteForm(forms.Form):
+class QuoteForm(BaseForm):
     name = forms.CharField(label="Namn / Name", max_length=100)
     email = forms.EmailField(label="E-post / Email")
     phone = forms.CharField(label="Telefonnummer / Phone", required=False)
@@ -20,7 +27,13 @@ class QuoteForm(forms.Form):
         ('webshop-package-16k', 'Webshop-paket / E-commerce (från 16000 SEK)'),
         ('unsure', 'Osäker / Not sure - vill diskutera / want to discuss'),
     ]
-    package = forms.ChoiceField(label="Vilket paket är du intresserad av? / Which package interests you?", choices=PACKAGE_CHOICES, widget=forms.RadioSelect)
+    package = forms.ChoiceField(
+        label="Vilket paket är du intresserad av? / Which package interests you?",
+        choices=PACKAGE_CHOICES,
+        widget=forms.RadioSelect
+    )
+
+  
 
     HAS_WEBSITE_CHOICES = [
         ('no', "Nej, vi saknar hemsida idag / No, we don't have a website"),
