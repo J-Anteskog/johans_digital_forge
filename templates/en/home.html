@@ -69,23 +69,48 @@
       </div>
     </div>
   </div>
-                  <a href="{% url 'service_list' %}" class="btn btn-outline-info mt-3 text-center">
+                  <a href="{% url 'service_list' %}" class="btn btn-info mt-3 text-center">
                Go to Services
             </a>
 </section>
 
 
 
-<!-- Portfolio -->
+<!-- Portfolio on homepage (English) -->
 <section class="bg-light py-5 text-center">
   <div class="container">
-    <h2 class="mb-4 fw-semibold">Recent work</h2>
-    <p class="mb-3">Here’s one of my latest projects:</p>
-<a href="{% url 'portfolio' %}" class="btn btn-outline-info mb-4">
-    See my projects
-  </a>
+    <h2 class="mb-4 fw-semibold">My Previous Projects</h2>
+    <div class="row g-4">
+      
+      {% for project in projects %}
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          {% if project.image %}
+            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_en }}">
+          {% else %}
+            <img src="{% static 'images/portfolio/default.png' %}" class="card-img-top" alt="Default Image">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ project.title_en }}</h5>
+            <p>{{ project.description_en|truncatewords:20 }}</p>
+            <div class="mt-auto">
+            {% if project.live_url %}
+              <a href="{{ project.live_url }}" target="_blank" class="btn btn-outline-success">Live</a>
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+
+    <a href="{% url 'portfolio' %}" class="btn btn-info mt-4">
+      See all projects
+    </a>
   </div>
 </section>
+
 
 <!-- Contact -->
 <section id="contact" class="py-5 bg-dark text-light text-center">
