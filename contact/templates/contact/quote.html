@@ -19,6 +19,7 @@
   </div>
   <div class="row justify-content-center">
     <div class="col-md-8">
+      <p>* = Obligatoriskt fält / Required field</p>
       <form method="post" novalidate>
         {% csrf_token %}
         {{ form|crispy }}
