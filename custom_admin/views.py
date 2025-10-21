@@ -19,23 +19,51 @@ def dashboard(request):
         "projects_count": projects_count,
     })
 
+@method_decorator(login_required, name="dispatch")
 class ServiceListView(ListView):
     model = Service
     template_name = "custom_admin/service_list.html"
     context_object_name = "services"
 
+@method_decorator(login_required, name="dispatch")
 class ServiceCreateView(CreateView):
     model = Service
-    fields = ["title_sv", "title_en", "description_sv", "description_en", "price"]
+    # Lägg till extra_info-fälten så du kan redigera modalens innehåll här
+    fields = [
+        "title_sv",
+        "title_en",
+        "description_sv",
+        "description_en",
+        "extra_info_sv",
+        "extra_info_en",
+        "price",
+        "icon",
+        "is_active",
+        "order",
+    ]
     template_name = "custom_admin/service_form.html"
     success_url = reverse_lazy("admin_services")
 
+@method_decorator(login_required, name="dispatch")
 class ServiceUpdateView(UpdateView):
     model = Service
-    fields = ["title_sv", "title_en", "description_sv", "description_en", "price"]
+    # Samma fält som i createview
+    fields = [
+        "title_sv",
+        "title_en",
+        "description_sv",
+        "description_en",
+        "extra_info_sv",
+        "extra_info_en",
+        "price",
+        "icon",
+        "is_active",
+        "order",
+    ]
     template_name = "custom_admin/service_form.html"
     success_url = reverse_lazy("admin_services")
 
+@method_decorator(login_required, name="dispatch")
 class ServiceDeleteView(DeleteView):
     model = Service
     template_name = "custom_admin/service_confirm_delete.html"
