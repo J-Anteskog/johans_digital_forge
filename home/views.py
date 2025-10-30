@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from portfolio.models import Project
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+
 
 def create_admin_user():
     if not User.objects.filter(username="admin").exists():
@@ -23,3 +25,10 @@ def privacy_policy_sv(request):
 
 def privacy_policy_en(request):
     return render(request, "en/privacy_policy.html")
+
+def create_admin_view(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser("admin", "admin@example.com", "Admin123!")
+        return HttpResponse("✅ Superuser skapad: admin / Admin123!")
+    else:
+        return HttpResponse("⚠️ Admin finns redan.")
