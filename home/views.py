@@ -7,7 +7,7 @@ def create_admin_user():
         User.objects.create_superuser("admin", "admin@example.com", "Admin123!")
         print("✅ Superuser created: admin / Admin123!")
 
-create_admin_user()
+
 
 
 def home_sv(request):
