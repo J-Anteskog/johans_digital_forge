@@ -12,4 +12,4 @@ sqlparse==0.5.3
 tzdata==2025.2
 whitenoise==6.11.0
 dj-database-url==2.2.0
-psycopg[binary,pool]==3.2.1
+psycopg[binary,pool]==3.2.12
