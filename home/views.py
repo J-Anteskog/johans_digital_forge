@@ -1,5 +1,13 @@
 from django.shortcuts import render
 from portfolio.models import Project
+from django.contrib.auth.models import User
+
+def create_admin_user():
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser("admin", "admin@example.com", "Admin123!")
+        print("✅ Superuser created: admin / Admin123!")
+
+create_admin_user()
 
 
 def home_sv(request):
