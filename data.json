@@ -1,0 +1,222 @@
+[
+{
+  "model": "service.service",
+  "pk": 1,
+  "fields": {
+    "title_sv": "Webbutveckling",
+    "title_en": "Web Development",
+    "description_sv": "Responsiv hemsida med moderna tekniker och unikt tema.",
+    "description_en": "Responsive website using modern tech and custom styling.",
+    "icon": "fa-solid fa-code",
+    "price": "4000.00",
+    "order": 0,
+    "extra_info_sv": "<b>Webbutveckling – Prislista (ca):</b>\r\n<ul>\r\n<strong>1. Enkel Hemsida</strong>\r\n<li>Från: 4,000 kr</li>\r\n<li>Beskrivning: En grundläggande landningssida eller informationssida med 1–5 undersidor.</li>\r\n<li>Inkluderar: Mobilanpassad design, kontaktformulär, grundläggande SEO.</li>\r\n<strong>2. Företagssida</strong>\r\n<li>Från: 8,000 kr</li>\r\n<li>Beskrivning: En professionell företagshemsida med 5–15 undersidor.</li>\r\n<li>Inkluderar: Anpassad design, SEO-optimering, koppling till sociala medier, bloggfunktion.</li>\r\n<strong>3. Avancerad Hemsida</strong>\r\n<li>Från: 15,000 kr</li>\r\n<li>Beskrivning: En skräddarsydd hemsida med 15–30 undersidor och avancerade funktioner.</li>\r\n<li>Inkluderar: Unik design, avancerad SEO, integrationer med externa system, utbildning i hantering av hemsidan.</li>\r\n<strong>4. Webbutik (E-handel)</strong>\r\n<li>Från: 16,000 kr</li>\r\n<li>En komplett e-handelslösning.</li>\r\n<li>Produktkatalog, betalningslösningar, lagerhantering, avancerad SEO, integrationer, utbildning.</li>\r\n</ul>",
+    "extra_info_en": "<b>Web Development – Price List (approx):</b>\r\n<ul><strong>1. Simple Website</strong><li>From: 4,000 SEK</li><li>Description: A basic landing page or informational page with 1–5 subpages.</li><li>Includes: Mobile-friendly design, contact form, basic SEO.</li><strong>2. Business Page</strong><li>From: 8,000 SEK</li><li>Description: A professional business website with 5–15 subpages.</li><li>Includes: Customized design, SEO optimization, connection to social media, blog function.</li><strong>3. Advanced Website</strong><li>From: 15,000 SEK</li><li>Description: A tailored website with 15–30 subpages and advanced features.</li><li>Includes: Unique design, advanced SEO, integrations with external systems, training in website management.</li><strong>4. Online Store (E-commerce)</strong><li>From: 15,000 SEK</li><li>A complete e-commerce solution.</li><li>Product catalog, payment solutions, inventory management, advanced SEO, integrations, training.</li></ul>",
+    "is_active": false
+  }
+},
+{
+  "model": "service.service",
+  "pk": 3,
+  "fields": {
+    "title_sv": "Teknisk Support",
+    "title_en": "Tech Support",
+    "description_sv": "Felsökning och hjälp med tekniska problem för webb eller dator. (timtaxa kan tillkomma beroende på komplexitet).",
+    "description_en": "Help with bugs or technical issues on web or desktop. (an hourly rate may apply depending on the complexity)",
+    "icon": "fa-solid fa-life-ring",
+    "price": "1000.00",
+    "order": 5,
+    "extra_info_sv": "<b>Felsökning / Bugfix – Prislista (ca):</b>\r\n<ul>\r\n  <li><b>Enkel felsökning:</b> Små buggar, layoutproblem eller enstaka funktioner – från 1 000 SEK</li>\r\n  <li><b>Medelkomplex felsökning:</b> Flera buggar, integrationer eller prestandaproblem – från 3 000 SEK</li>\r\n  <li><b>Avancerad felsökning:</b> Större problem, säkerhetsincidenter eller backend-fel – från 7 000 SEK</li>\r\n</ul>\r\n\r\n<b>Supportpaket & underhåll:</b>\r\n<ul>\r\n  <li><b>Fri support efter leverans:</b>\r\n    <ul>\r\n      <li>Startpaket & Företagspaket: 1 månads fri support</li>\r\n      <li>Premiumpaket & Webshoppaket: 2 månaders fri support</li>\r\n    </ul>\r\n  </li>\r\n  <li><b>Enkel support (ad-hoc):</b> Mindre uppdateringar och snabb rådgivning – 1 000 SEK (engångsjobb)</li>\r\n  <li><b>Medel support (ad-hoc):</b> Omfattande ändringar eller flera sidor – 3 000 SEK (engångsjobb)</li>\r\n  <li><b>Avancerad support (ad-hoc):</b> Komplexa åtgärder eller prioriterad felsökning – 7 000 SEK (engångsjobb)</li>\r\n  <li><b>Löpande support & underhåll:</b> 200 SEK / tim – inkluderar säkerhetsuppdateringar, backupkontroller och mindre ändringar</li>\r\n</ul>\r\n\r\n<p><em>Notera:</em> Alla priser är cirka-priser. För större eller tidskrävande uppdrag lämnas alltid en skriftlig offert. Ytterligare arbete utöver angivet innehåll debiteras enligt timpris.</p>",
+    "extra_info_en": "<b>Troubleshooting / Bug Fix – Price List (approx.):</b>\r\n<ul>\r\n<li><b>Simple troubleshooting:</b> Small bugs, layout issues, or individual functions – from 1,000 SEK</li>\r\n<li><b>Moderately complex troubleshooting:</b> Multiple bugs, integrations, or performance issues – from 3,000 SEK</li><li><b>Advanced troubleshooting:</b> Major problems, security incidents, or backend errors – from 7,000 SEK</li>\r\n</ul>\r\n<b>Support Packages & Maintenance:</b>\r\n<ul>\r\n<li><b>Free post-delivery support:</b>\r\n<ul>\r\n<li>Starter Package & Business Package: 1 month of free support</li>\r\n<li>Premium Package & E-commerce Package: 2 months of free support</li>\r\n</ul>\r\n</li>\r\n<li><b>Simple support (ad-hoc):</b> Minor updates and quick advice – 1,000 SEK (one-time job)</li>\r\n<li><b>Moderate support (ad-hoc):</b> Extensive changes or multiple pages – 3,000 SEK (one-time job)</li>\r\n<li><b>Advanced support (ad-hoc):</b> Complex actions or prioritized troubleshooting – 7,000 SEK (one-time job)</li>\r\n<li><b>Ongoing support & maintenance:</b> 200 SEK / hour – includes security updatesupdates, backup checks, and minor changes</li>\r\n </ul>\r\n <p><em>Note:</em> All prices are approximate. For larger or time-consuming tasks, a written quote is always provided. Additional work beyond the specified content is charged at an hourly rate.</p>",
+    "is_active": true
+  }
+},
+{
+  "model": "service.service",
+  "pk": 4,
+  "fields": {
+    "title_sv": "Tilläggstjänster",
+    "title_en": "Additional services",
+    "description_sv": "Tilläggstjänster",
+    "description_en": "Additional services",
+    "icon": "fa-solid fa-plus",
+    "price": "1000.00",
+    "order": 6,
+    "extra_info_sv": "<b>Tilläggstjänster:</b>\r\n<ul>\r\n  <li><b>SEO-optimering:</b> från 3 500 SEK – förbättra synligheten på Google och öka trafiken.</li>\r\n  <li><b>Flerspråkigt stöd:</b> från 3 000 SEK – gör din sida tillgänglig på flera språk.</li>\r\n  <li><b>Bokningsintegration:</b> 2 500–3 500 SEK – integrera bokningssystem eller kalender.</li>\r\n  <li><b>Koppling till sociala medier:</b> 1 000–1 500 SEK – integrera flöden eller delningsfunktioner.</li>\r\n  <li><b>Löpande support & underhåll:</b> 200 SEK / tim – inkluderar säkerhetsuppdateringar, backupkontroller och mindre ändringar.</li>\r\n</ul>\r\n\r\n<p><em>Notera:</em> Alla priser är cirka-priser. För större eller tidskrävande uppdrag lämnas alltid en skriftlig offert. Ytterligare arbete utöver angivet innehåll debiteras enligt timpris.</p>",
+    "extra_info_en": "<b>Additional Services:</b>\r\n<ul>\r\n<li><b>SEO Optimization:</b> from 3,500 SEK – improve visibility on Google and increase traffic.</li>\r\n<li><b>Multilingual Support:</b> from 3,000 SEK – make your site available in multiple languages.</li>\r\n<li><b>Booking Integration:</b> 2,500–3,500 SEK – integrate booking systems or calendars.</li>\r\n<li><b>Social Media Connection:</b> 1,000–1,500 SEK – integrate feeds or sharing features.</li>\r\n<li><b>Ongoing Support & Maintenance:</b> 200 SEK / hr – includes security updates, backup checks, and minor changes.</li>\r\n</ul>\r\n<p><em>Note:</em> All prices are approximate. For larger or time-consuming projects, a written quote is always provided. Additional work beyond the specified content is billed at the hourly rate.</p>",
+    "is_active": true
+  }
+},
+{
+  "model": "service.service",
+  "pk": 5,
+  "fields": {
+    "title_sv": "Design & UI-hjälp",
+    "title_en": "Design & UI help",
+    "description_sv": "Hjälp med layout/struktur",
+    "description_en": "Help with layout/structure",
+    "icon": "fa-solid fa-paintbrush",
+    "price": "300.00",
+    "order": 7,
+    "extra_info_sv": "<b>Design & UI-hjälp – Prislista (ca):</b>\r\n<ul>\r\n  <li><strong>Webbdesign Från:</strong> 300 kr/timme</li>\r\n  <li><strong>Design & UI-hjälp:</strong> 600 kr/timme</li>\r\n</ul>",
+    "extra_info_en": "<b>Design & UI help – Price list (approx.):</b>\r\n<ul>\r\n<li><strong>Web design From:</strong> 300 SEK/hour</li>\r\n<li><strong>Design & UI help:</strong> 600 SEK/hour</li>\r\n</ul>",
+    "is_active": true
+  }
+},
+{
+  "model": "service.service",
+  "pk": 6,
+  "fields": {
+    "title_sv": "Konsultation (samtal)",
+    "title_en": "Consultation (call)",
+    "description_sv": "30–60 min online rådgivning",
+    "description_en": "30–60 min online consultation",
+    "icon": "fa-solid fa-user-secret",
+    "price": "400.00",
+    "order": 8,
+    "extra_info_sv": "<ul> \r\n<li>Boka en personlig konsultation på 30–60 minuter där vi går igenom just dina behov – allt från webbutveckling och design till digitala lösningar som effektiviserar din vardag eller stärker ditt företag.</li> \r\n<li>Tillsammans hittar vi praktiska och hållbara vägar framåt, oavsett om det gäller tekniska frågor, designval eller digital strategi.</li>\r\n <li><strong>Pris:</strong> 400 kr per påbörjad timme. En liten investering för att ta ditt projekt till nästa nivå.</li> \r\n</ul>",
+    "extra_info_en": "<ul>\r\n <li>Book a personal consultation of 30–60 minutes where we review your specific needs – everything from web development and design to digital solutions that streamline your daily life or strengthen your business.</li>\r\n <li>Together, we find practical and sustainable ways forward, whether it concerns technical issues, design choices, or digital strategy.</li>\r\n <li><strong>Price:</strong> 400 SEK per started hour. A small investment to take your project to the next level.</li>\r\n </ul>",
+    "is_active": true
+  }
+},
+{
+  "model": "service.service",
+  "pk": 7,
+  "fields": {
+    "title_sv": "Apputveckling",
+    "title_en": "App Development",
+    "description_sv": "Jag erbjuder utveckling av appar som är skräddarsydda för dina behov och mål. Oavsett om du behöver en enkel lösning eller en avancerad applikation hjälper jag dig hela vägen – från idé till färdig app. Tillsammans skapar vi en digital lösning som verkligen gör skillnad för dig och dina användare.\r\n\r\nPriset bestäms efter dina behov och önskemål – kontakta mig för offert.",
+    "description_en": "I offer the development of apps tailored to your needs and goals. Whether you need a simple solution or a more advanced application, I will help you all the way – from idea to finished app. Together, we create a digital solution that truly makes a difference for you and your users.\r\n\r\nThe price is determined based on your needs and requirements – contact me for a quote.",
+    "icon": "fa-solid fa-mobile-alt",
+    "price": "0.00",
+    "order": 0,
+    "extra_info_sv": "",
+    "extra_info_en": "",
+    "is_active": false
+  }
+},
+{
+  "model": "service.service",
+  "pk": 8,
+  "fields": {
+    "title_sv": "Startpaket",
+    "title_en": "Starter Package",
+    "description_sv": "En enkel och snygg hemsida med 1–3 sidor, mobilanpassad design och kontaktformulär. Perfekt för små projekt eller enmansföretag.",
+    "description_en": "A simple and stylish website with 1–3 pages, mobile-friendly design, and a contact form. Perfect for small projects or solo entrepreneurs.",
+    "icon": "fa-solid fa-desktop",
+    "price": "4000.00",
+    "order": 1,
+    "extra_info_sv": "<b>Startpaket</b>\r\nFrån 4,000 kr\r\n<ul>\r\n<li>1–3 sidor (t.ex. startsida, om oss, kontakt).</li>\r\n<li>Mobilanpassad design.</li>\r\n<li>Kontaktformulär.</li>\r\n<li>Grundläggande SEO.</li>\r\n<li>Priset är ungefärligt och kan variera beroende på funktioner och omfattning. Slutpriset fastställs efter behovsanalys.</li>\r\n<li>1 månads enkel support. (Information om support hittar du under Teknisk support)</li>\r\n</ul>\r\n<u> Passar dig som vill ha en enkel, smidig hemsida för att synas online.</u>",
+    "extra_info_en": "<b>Starter Package</b>\r\nFrom: 4,000 SEK\r\n<ul>\r\n<li>1–3 pages (e.g. homepage, about us, contact).</li>\r\n<li>Mobile-friendly design.</li>\r\n<li>Contact form.</li>\r\n<li>Basic SEO.</li>\r\n<li>Prices are approximate and may vary depending on functions and scope. The final price is set after a needs assessment.</li>\r\n<li>1 month of basic support. (Information about support can be found under Technical Support)</li>\r\n</ul>\r\n<u>Ideal if you need a simple, clean website to get online quickly.</u>",
+    "is_active": true
+  }
+},
+{
+  "model": "service.service",
+  "pk": 9,
+  "fields": {
+    "title_sv": "Företagspaket",
+    "title_en": "Business Package",
+    "description_sv": "En professionell företagshemsida med upp till 10 sidor, anpassad design, SEO-optimering och bloggfunktion. Passar företag som vill växa online.",
+    "description_en": "A professional business website with up to 10 pages, custom design, SEO optimization, and a blog feature. Ideal for companies looking to grow online.",
+    "icon": "fa-solid fa-building",
+    "price": "8000.00",
+    "order": 2,
+    "extra_info_sv": "<b>Företagspaket</b>\r\nFrån: 8,000 Kr\r\n<ul>\r\n<li>5–10 sidor (t.ex. startsida, tjänster, blogg, kontakt).</li>\r\n<li>Anpassad design & layout.</li>\r\n<li>SEO-optimering.</li>\r\n<li>Koppling till sociala medier.</li>\r\n<li>Bloggfunktion.</li>\r\n<li> 1 månads fri support. (Information om support hittar du under Teknisk support) </li>\r\n<li>Priset är ungefärligt och kan variera beroende på funktioner och omfattning. Slutpriset fastställs efter behovsanalys.</li>\r\n</ul>\r\n<u>Perfekt för små och medelstora företag som vill växa digitalt.</u>",
+    "extra_info_en": "<b>Business Package</b>\r\nFrom: 8,000 SEK\r\n<ul>\r\n<li>5–10 pages (e.g. homepage, services, blog, contact).</li>\r\n<li>Custom design & layout.</li>\r\n<li>SEO optimization.</li>\r\n<li>Social media integration.</li>\r\n<li>Blog function.</li>\r\n<li> 1 month of free support. (Information about support can be found under Technical Support) </li>\r\n<li>Prices are approximate and may vary depending on functions and scope. The final price is set after a needs assessment.</li>\r\n</ul>\r\n<u>Perfect for small and medium-sized businesses that want to grow online.</u>",
+    "is_active": true
+  }
+},
+{
+  "model": "service.service",
+  "pk": 10,
+  "fields": {
+    "title_sv": "Premium",
+    "title_en": "Premium Package",
+    "description_sv": "En skräddarsydd hemsida med unik design, integrationer (bokning, betalning m.m.), avancerad SEO samt support & utbildning. För företag som vill sticka ut.",
+    "description_en": "A fully customized website with unique design, integrations (booking, payment, etc.), advanced SEO, plus support & training. For businesses that want to stand out.",
+    "icon": "fa-solid fa-rocket",
+    "price": "15000.00",
+    "order": 3,
+    "extra_info_sv": "<b>Premium</b>\r\nFrån: 15,000 Kr\r\n<ul>\r\n<li>Skräddarsydd design och branding.</li>\r\n<li>10–30 sidor beroende på behov.</li>\r\n<li>Avancerad SEO.</li>\r\n<li>Integrationer (bokning, betalningar, externa system).</li>\r\n<li> 2 månaders fri support. (Information om support hittar du under Teknisk support) </li>\r\n<li>Utbildning i hur du hanterar din hemsida.\r\n</li>\r\n<li>Priset är ungefärligt och kan variera beroende på funktioner och omfattning. Slutpriset fastställs efter behovsanalys.</li>\r\n</ul>\r\n<u>För företag som vill sticka ut och bygga en stark digital närvaro.</u>",
+    "extra_info_en": "<b>Premium Package</b>\r\nFrom: 15,000 SEK\r\n<ul>\r\n<li>Fully tailored design and branding.</li>\r\n<li>10–30 pages depending on needs.</li>\r\n<li>Advanced SEO.</li>\r\n<li>Integrations (booking, payments, external systems).</li>\r\n<li> 2 months of free support. (Information about support can be found under Technical Support) </li><li>Training in website management.</li>\r\n<li>Prices are approximate and may vary depending on functions and scope. The final price is set after a needs assessment.</li>\r\n</ul>\r\n<u>For companies that want to stand out and build a strong digital presence.</u>",
+    "is_active": true
+  }
+},
+{
+  "model": "service.service",
+  "pk": 11,
+  "fields": {
+    "title_sv": "Webshop-paket",
+    "title_en": "Webshop Package (E-commerce)",
+    "description_sv": "En komplett e-handelslösning med produktkatalog, betalningslösningar, lagerhantering och SEO för e-handel. Perfekt för dig som vill sälja online.",
+    "description_en": "A complete e-commerce solution with a product catalog, payment solutions (Stripe, Klarna, etc.), inventory management, and SEO for online stores. Perfect for selling your products online.",
+    "icon": "fa-solid fa-cart-shopping",
+    "price": "16000.00",
+    "order": 4,
+    "extra_info_sv": "<b>Webshop-paket</b>\r\nFrån: 15,000 KR\r\n<ul>\r\n<li>Komplett e-handelslösning.</li>\r\n<li>Produktkatalog med obegränsat antal produkter.</li>\r\n<li>Betalningslösningar (Stripe, Klarna m.fl.).</li>\r\n<li>Lagerhantering.</li>\r\n<li>SEO för e-handel.</li>\r\n<li>Utbildning i orderhantering.</li>\r\n<li> 2 månaders fri support. (Information om support hittar du under Teknisk support) </li>\r\n<li>Priset är ungefärligt och kan variera beroende på funktioner och omfattning. Slutpriset fastställs efter behovsanalys.</li>\r\n</ul>\r\n<u>För dig som vill sälja dina produkter eller tjänster direkt online.</u>",
+    "extra_info_en": "<b>Webshop Package (E-commerce)</b>\r\nFrom: 15,000 SEK\r\n<ul>\r\n<li>Complete e-commerce solution.</li>\r\n<li>Product catalog with unlimited products.</li>\r\n<li>Payment solutions (Stripe, Klarna, etc.).</li>\r\n<li>Inventory management.</li>\r\n<li>SEO for e-commerce.</li>\r\n<li>Training in order management.</li>\r\n<li> 2 months of free support. (Information about support can be found under Technical Support) </li>\r\n<li>Prices are approximate and may vary depending on functions and scope. The final price is set after a needs assessment.</li>\r\n</ul>\r\n<u>Ideal for those who want to sell products or services online.</u>",
+    "is_active": true
+  }
+},
+{
+  "model": "portfolio.project",
+  "pk": 1,
+  "fields": {
+    "title_sv": "Mysterious Things",
+    "title_en": "Mysterious Things",
+    "description_sv": "Mysterious Things är en webbplats utformad för att erbjuda djupa insikter i de andliga och mystiska världarna. Den fungerar som en guide för alla som är intresserade av att utforska tarotkort, runor och orakelläsningar. Plattformen har också en dedikerad frågesida för att bemöta användarnas nyfikenheter kring dessa esoteriska metoder.",
+    "description_en": "Mysterious Things is a website designed to offer deep insights into the spiritual and mystical realms. It serves as a guide for anyone interested in exploring Tarot cards, Runes, and Oracle readings. The platform also features a dedicated question page to address users curiosities about these esoteric practices.",
+    "technologies": "HTML,CSS",
+    "github_url": "https://github.com/Johan-4P/Mysterious-Things?tab=readme-ov-file",
+    "live_url": "https://johan-4p.github.io/Mysterious-Things/",
+    "image": "portfolio/mockup-things.png",
+    "is_active": true
+  }
+},
+{
+  "model": "portfolio.project",
+  "pk": 2,
+  "fields": {
+    "title_sv": "Budget Tracker",
+    "title_en": "Budget Tracker",
+    "description_sv": "Budget Tracker är en webbplats där du kan gå till om du vill få koll på din ekonomi. Där kan du lägga in siffror och webbplatsen kommer att beräkna siffrorna åt dig!",
+    "description_en": "Budget Tracker is a website there you can go to if you want to get hold on your economy. There you can insert numbers and the site will calculate the numbers for you!",
+    "technologies": "HTML,CSS,JavaScript",
+    "github_url": "https://github.com/Johan-4P/Budget-Tracker",
+    "live_url": "https://johan-4p.github.io/Budget-Tracker/",
+    "image": "portfolio/mockupbudget.png",
+    "is_active": true
+  }
+},
+{
+  "model": "portfolio.project",
+  "pk": 3,
+  "fields": {
+    "title_sv": "Anteskogs Game Reviews",
+    "title_en": "Anteskogs Game Reviews",
+    "description_sv": "Webbplatsens primära målgrupp kommer att vara folk som älskar spel, det kommer att fungera som en community. Du kan ladda upp, kommentera och redigera allt ditt arbete du lägger in där!",
+    "description_en": "The sites primary audience will be people who love gaming, it will work as a community. You are abel to upload, comment and edit all of your work you put in there!",
+    "technologies": "Django, Python, CSS.",
+    "github_url": "https://github.com/Johan-4P/anteskogs_game_reviews",
+    "live_url": "https://anteskogs-game-reviews-c55343667d70.herokuapp.com/",
+    "image": "portfolio/mockupgame.png",
+    "is_active": true
+  }
+},
+{
+  "model": "portfolio.project",
+  "pk": 4,
+  "fields": {
+    "title_sv": "Unknown Possibilities",
+    "title_en": "Unknown Possibilities",
+    "description_sv": "Unknown Possibilities är en fullstack e-handelswebbplats byggd med Django, Python, JavaScript och Bootstrap 5. Den skapades som mitt fjärde och sista milstolpsprojekt för Code Institutes fullstackkurs i webbutveckling.\r\n\r\nWebbplatsen erbjuder mystiska och andliga produkter som tarotkort, kristallset, runor och orakelläsningar. Den har också en interaktiv \"Daily Card Draw\" och låter användare boka läsningar, hantera sin profil och handla säkert online.",
+    "description_en": "Unknown Possibilities is a full-stack e-commerce website built using Django, Python, JavaScript, and Bootstrap 5. It was created as my fourth and final milestone project for Code Institute's Full Stack Web Development course.\r\n\r\nThe site offers mystical and spiritual products such as Tarot cards, crystal sets, Runes, and Oracle readings. It also features an interactive \"Daily Card Draw\" and allows users to book readings, manage their profile, and shop securely online.",
+    "technologies": "HTML5,CSS3,JavaScript,Python",
+    "github_url": "https://github.com/Johan-4P/Unknown_Possibilities",
+    "live_url": "https://unknown-possibilities-846f26e3e4d7.herokuapp.com/",
+    "image": "portfolio/mockup-up.png",
+    "is_active": true
+  }
+}
+]
