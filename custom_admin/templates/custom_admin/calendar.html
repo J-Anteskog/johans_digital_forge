@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="d-flex" style="min-height: 100vh;">
+  {% include 'custom_admin/_sidebar.html' %}
+
+  <main class="flex-grow-1 bg-light p-4">
+    <div class="container-fluid">
+      <h1 class="mb-4 text-primary">
+        <i class="fas fa-calendar-alt me-2"></i> Projektkalender
+      </h1>
+      <p class="text-muted">Planera dina dagar och veckor. Klicka på en dag eller tidslucka för att lägga till en händelse.</p>
+
+      <!-- Kalender -->
+      <div id="calendar"
+           class="bg-white shadow rounded p-3"
+           style="min-height: 800px;"
+           data-api-url="{% url 'calendar_events_api' %}"></div>
+
+      <!-- 🪟 Modal: Lägg till ny uppgift / händelse -->
+      <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-dark text-light">
+              <h5 class="modal-title">➕ Ny händelse</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="eventTitle" class="form-label">Titel</label>
+                <input type="text" class="form-control" id="eventTitle" required>
+              </div>
+              <div class="mb-3">
+                <label for="eventDescription" class="form-label">Beskrivning</label>
+                <textarea class="form-control" id="eventDescription"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="eventStart" class="form-label">Starttid</label>
+                <input type="datetime-local" class="form-control" id="eventStart" required>
+              </div>
+              <div class="mb-3">
+                <label for="eventEnd" class="form-label">Sluttid</label>
+                <input type="datetime-local" class="form-control" id="eventEnd">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+              <button type="button" id="saveEventBtn" class="btn btn-success">💾 Spara</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+{% block extra_js %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/sv.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const el = document.getElementById('calendar');
+  const apiUrl = el.dataset.apiUrl;
+  const csrftoken = getCookie('csrftoken');
+
+  const calendar = new FullCalendar.Calendar(el, {
+    locale: 'sv',
+    initialView: 'timeGridWeek',
+    height: 'auto',
+    selectable: true,
+    editable: true,
+    nowIndicator: true,
+    dayMaxEvents: true,
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+    },
+
+    events: apiUrl,
+
+    // 🟢 Klick i kalendern öppnar modal
+    select: function(info) {
+      document.getElementById('eventStart').value = info.startStr.slice(0,16);
+      document.getElementById('eventEnd').value = info.endStr ? info.endStr.slice(0,16) : info.startStr.slice(0,16);
+      const modal = new bootstrap.Modal(document.getElementById('addEventModal'));
+      modal.show();
+    },
+
+    // ✏️ Dra eller ändra längd
+    eventDrop: saveMoveResize,
+    eventResize: saveMoveResize,
+
+    // 🔴 Klick för att ta bort
+    eventClick: function(info) {
+      if (confirm(`Ta bort "${info.event.title}"?`)) {
+        fetch(apiUrl, {
+          method: 'DELETE',
+          credentials: 'same-origin',
+          headers: {'Content-Type': 'application/json','X-CSRFToken': csrftoken},
+          body: JSON.stringify({id: info.event.id})
+        }).then(() => calendar.refetchEvents());
+      }
+    }
+  });
+
+  calendar.render();
+
+  // 🟢 Spara-knappen i modalen
+  document.getElementById('saveEventBtn').addEventListener('click', function() {
+    const title = document.getElementById('eventTitle').value;
+    const description = document.getElementById('eventDescription').value;
+    const start = document.getElementById('eventStart').value;
+    const end = document.getElementById('eventEnd').value;
+
+    fetch(apiUrl, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json','X-CSRFToken': csrftoken},
+      body: JSON.stringify({title, description, start, end})
+    })
+    .then(res => res.json())
+    .then(() => {
+      const modal = bootstrap.Modal.getInstance(document.getElementById('addEventModal'));
+      modal.hide();
+      calendar.refetchEvents();
+      // Nollställ formulär
+      document.getElementById('eventTitle').value = '';
+      document.getElementById('eventDescription').value = '';
+    });
+  });
+
+  function saveMoveResize(info) {
+    fetch(apiUrl, {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json','X-CSRFToken': csrftoken},
+      body: JSON.stringify({
+        id: info.event.id,
+        title: info.event.title,
+        start: info.event.start.toISOString(),
+        end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
+      })
+    });
+  }
+
+  // Funktion för att hämta CSRF-token
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -11,5 +11,9 @@ class Project(models.Model):
     image = models.ImageField(upload_to='portfolio/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
+    # 🗓️ Nya fält för kalendern
+    start_date = models.DateField(blank=True, null=True, help_text="Projektets startdatum")
+    end_date = models.DateField(blank=True, null=True, help_text="Projektets slutdatum")
+
     def __str__(self):
         return self.title_sv
