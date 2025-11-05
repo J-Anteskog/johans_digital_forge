@@ -15,7 +15,7 @@ venv
 *.pyo
 *.pyd
 db.sqlite3
-media/
+
 
 # VS Code
 .vscode/
