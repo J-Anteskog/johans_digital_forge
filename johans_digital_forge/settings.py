@@ -25,6 +25,13 @@ DEBUG = env("DEBUG")
 
 # Allowed Hosts
 ALLOWED_HOSTS = env("ALLOWED_HOSTS", default="").split(",")
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "https://www.johans-digital-forge.se",
+        "https://johans-digital-forge.se",
+    ]
+)
 
 # Add Railway domain automatically if available
 railway_host = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
@@ -174,3 +181,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # AUTO FIELD
 # -----------------------------------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -----------------------------------------------------------
+
