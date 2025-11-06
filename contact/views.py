@@ -1,16 +1,14 @@
 from django.shortcuts import redirect, render
 from django.core.mail import send_mail
 from django.conf import settings
-from .forms import ContactForm
-from .forms import QuoteForm
-
-
+from django.shortcuts import render
+from .forms import ContactForm, QuoteForm
 
 
 def contact_view(request):
     subject_text = request.GET.get("subject", "")
     initial_data = {
-        'subject': f"🧾 Jag är intresserad av: {subject_text}" if subject_text else ""
+        "subject": f"🧾 Jag är intresserad av: {subject_text}" if subject_text else ""
     }
 
     form = ContactForm(initial=initial_data)
@@ -18,27 +16,28 @@ def contact_view(request):
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Hämta data från formuläret
-            subject = form.cleaned_data['subject']
-            message = form.cleaned_data['message']
-            sender = form.cleaned_data['email']
+            subject = form.cleaned_data["subject"]
+            message = form.cleaned_data["message"]
+            sender = form.cleaned_data["email"]
 
-            # Skicka e-post
+            # Mejlets innehåll
+            full_message = f"Från: {sender}\n\n{message}"
+
             send_mail(
                 subject,
-                message,
-                sender,  # Från den som skickar
-                [settings.EMAIL_HOST_USER],  # Till din e-postadress
+                full_message,
+                settings.DEFAULT_FROM_EMAIL,  # ← Skickas från din domän (Zoho)
+                [settings.EMAIL_HOST_USER],   # ← Kommer till din Zoho-inkorg
                 fail_silently=False,
             )
 
-            # Visa framgångsmeddelande
-            return render(request, 'contact/contact.html', {
-                'form': ContactForm(),
-                'success': True
+            return render(request, "contact/contact.html", {
+                "form": ContactForm(),
+                "success": True,
             })
 
-    return render(request, 'contact/contact.html', {'form': form})
+    return render(request, "contact/contact.html", {"form": form})
+
 
 def quote_request(request):
     if request.method == "POST":
@@ -60,16 +59,18 @@ def quote_request(request):
                 f"Tilläggstjänster: {', '.join(cleaned.get('additional_services', []))}\n"
                 f"Meddelande: {cleaned.get('message', '')}\n"
             )
+
             send_mail(
                 subject,
                 message,
-                cleaned['email'],
+                settings.DEFAULT_FROM_EMAIL,  # ← Viktigt: samma som Zoho-adress
                 [settings.EMAIL_HOST_USER],
                 fail_silently=False,
             )
+
             return render(request, "contact/quote.html", {"form": QuoteForm(), "success": True})
-        else:
-            return render(request, "contact/quote.html", {"form": form})
+
     else:
         form = QuoteForm()
+
     return render(request, "contact/quote.html", {"form": form})
