@@ -4,7 +4,20 @@ from django.conf import settings
 from django.shortcuts import render
 from .forms import ContactForm, QuoteForm
 import threading
+from django.http import HttpResponse
+import smtplib
 
+def test_email(request):
+    """Testa SMTP-anslutning till Zoho"""
+    try:
+        # Testa anslutning
+        server = smtplib.SMTP_SSL('smtp.zoho.eu', 465, timeout=30)
+        server.login('info@johans-digital-forge.se', '1985Karl111214!!')
+        server.quit()
+        
+        return HttpResponse("✅ SMTP-anslutning lyckades! Railway kan nå Zoho.")
+    except Exception as e:
+        return HttpResponse(f"❌ SMTP-anslutning misslyckades: {str(e)}")
 
 def send_email_async(subject, message, from_email, recipient_list):
     """Skicka e-post i bakgrunden"""
