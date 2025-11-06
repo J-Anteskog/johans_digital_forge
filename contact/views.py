@@ -3,22 +3,25 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .forms import ContactForm, QuoteForm
 import threading
+import resend
+
 
 
 def send_email_async(subject, message, from_email, recipient_list):
-    """Skicka e-post i bakgrunden"""
+    """Skicka e-post via Resend API"""
     try:
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=from_email,
-            recipient_list=recipient_list,
-            fail_silently=False
-        )
-        print(f"✅ E-post skickad: {subject}")
-    except Exception as e:
-        print(f"❌ E-postfel: {e}")
+        resend.api_key = settings.EMAIL_HOST_PASSWORD  # din Resend API-nyckel
 
+        for recipient in recipient_list:
+            resend.Emails.send({
+                "from": f"Johans Digital Forge <{from_email}>",
+                "to": [recipient],
+                "subject": subject,
+                "text": message,
+            })
+        print(f"✅ E-post skickad via Resend API: {subject}")
+    except Exception as e:
+        print(f"❌ E-postfel via Resend API: {e}")
 
 def contact_view(request):
     subject_text = request.GET.get("subject", "")
