@@ -3,6 +3,22 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render
 from .forms import ContactForm, QuoteForm
+import threading
+
+
+def send_email_async(subject, message, from_email, recipient_list):
+    """Skicka e-post i bakgrunden"""
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=recipient_list,
+            fail_silently=False
+        )
+        print(f"✅ E-post skickad: {subject}")
+    except Exception as e:
+        print(f"❌ E-post fel: {e}")
 
 
 def contact_view(request):
@@ -23,13 +39,18 @@ def contact_view(request):
             # Mejlets innehåll
             full_message = f"Från: {sender}\n\n{message}"
 
-            send_mail(
-                subject,
-                full_message,
-                settings.DEFAULT_FROM_EMAIL,  # ← Skickas från din domän (Zoho)
-                [settings.EMAIL_HOST_USER],   # ← Kommer till din Zoho-inkorg
-                fail_silently=False,
+            # Skicka e-post i bakgrunden (blockerar inte användaren)
+            thread = threading.Thread(
+                target=send_email_async,
+                args=(
+                    subject,
+                    full_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.EMAIL_HOST_USER]
+                )
             )
+            thread.daemon = True
+            thread.start()
 
             return render(request, "contact/contact.html", {
                 "form": ContactForm(),
@@ -60,13 +81,18 @@ def quote_request(request):
                 f"Meddelande: {cleaned.get('message', '')}\n"
             )
 
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,  # ← Viktigt: samma som Zoho-adress
-                [settings.EMAIL_HOST_USER],
-                fail_silently=False,
+            # Skicka e-post i bakgrunden
+            thread = threading.Thread(
+                target=send_email_async,
+                args=(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.EMAIL_HOST_USER]
+                )
             )
+            thread.daemon = True
+            thread.start()
 
             return render(request, "contact/quote.html", {"form": QuoteForm(), "success": True})
 
