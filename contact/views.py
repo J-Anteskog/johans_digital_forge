@@ -1,23 +1,9 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.core.mail import send_mail
 from django.conf import settings
-from django.shortcuts import render
 from .forms import ContactForm, QuoteForm
 import threading
-from django.http import HttpResponse
-import smtplib
 
-def test_email(request):
-    """Testa SMTP-anslutning till Zoho"""
-    try:
-        # Testa anslutning
-        server = smtplib.SMTP_SSL('smtp.zoho.eu', 465, timeout=30)
-        server.login('info@johans-digital-forge.se', '1985Karl111214!!')
-        server.quit()
-        
-        return HttpResponse("✅ SMTP-anslutning lyckades! Railway kan nå Zoho.")
-    except Exception as e:
-        return HttpResponse(f"❌ SMTP-anslutning misslyckades: {str(e)}")
 
 def send_email_async(subject, message, from_email, recipient_list):
     """Skicka e-post i bakgrunden"""
@@ -31,7 +17,7 @@ def send_email_async(subject, message, from_email, recipient_list):
         )
         print(f"✅ E-post skickad: {subject}")
     except Exception as e:
-        print(f"❌ E-post fel: {e}")
+        print(f"❌ E-postfel: {e}")
 
 
 def contact_view(request):
@@ -49,21 +35,41 @@ def contact_view(request):
             message = form.cleaned_data["message"]
             sender = form.cleaned_data["email"]
 
-            # Mejlets innehåll
+            # Mejlets innehåll till dig
             full_message = f"Från: {sender}\n\n{message}"
 
-            # Skicka e-post i bakgrunden (blockerar inte användaren)
+            # Skicka mejl till dig (Johan)
             thread = threading.Thread(
                 target=send_email_async,
                 args=(
                     subject,
                     full_message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [settings.EMAIL_HOST_USER]
+                    settings.DEFAULT_FROM_EMAIL,          # ← från info@johans-digital-forge.se
+                    ["info@johans-digital-forge.se"]      # ← till dig själv
                 )
             )
             thread.daemon = True
             thread.start()
+
+            # Skicka bekräftelse till kunden
+            confirm_subject = "Tack för ditt meddelande – Johans Digital Forge"
+            confirm_message = (
+                f"Hej!\n\nTack för att du kontaktade Johans Digital Forge.\n\n"
+                "Vi har tagit emot ditt meddelande och återkommer så snart vi kan.\n\n"
+                "Vänliga hälsningar,\nJohan Anteskog"
+            )
+
+            thread_confirm = threading.Thread(
+                target=send_email_async,
+                args=(
+                    confirm_subject,
+                    confirm_message,
+                    settings.DEFAULT_FROM_EMAIL,          # Samma avsändaradress
+                    [sender],                             # Till kunden
+                )
+            )
+            thread_confirm.daemon = True
+            thread_confirm.start()
 
             return render(request, "contact/contact.html", {
                 "form": ContactForm(),
@@ -94,18 +100,40 @@ def quote_request(request):
                 f"Meddelande: {cleaned.get('message', '')}\n"
             )
 
-            # Skicka e-post i bakgrunden
+            # Skicka mejl till dig
             thread = threading.Thread(
                 target=send_email_async,
                 args=(
                     subject,
                     message,
                     settings.DEFAULT_FROM_EMAIL,
-                    [settings.EMAIL_HOST_USER]
+                    ["info@johans-digital-forge.se"],
+
                 )
             )
             thread.daemon = True
             thread.start()
+
+            # Skicka bekräftelse till kunden
+            confirm_subject = "Tack för din offertförfrågan – Johans Digital Forge"
+            confirm_message = (
+                f"Hej {cleaned['name']},\n\n"
+                "Tack för din offertförfrågan! 🙏\n"
+                "Jag kommer att titta på din förfrågan och återkomma så snart jag kan.\n\n"
+                "Vänliga hälsningar,\nJohan Anteskog"
+            )
+
+            thread_confirm = threading.Thread(
+                target=send_email_async,
+                args=(
+                    confirm_subject,
+                    confirm_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [cleaned['email']],
+                )
+            )
+            thread_confirm.daemon = True
+            thread_confirm.start()
 
             return render(request, "contact/quote.html", {"form": QuoteForm(), "success": True})
 
