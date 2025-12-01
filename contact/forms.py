@@ -76,6 +76,13 @@ class QuoteForm(BaseForm):
         ('multilingual', 'Flerspråkig hemsida / Multilingual site'),
         ('blog', 'Bloggfunktion / Blog feature'),
         ('maintenance', 'Löpande support & underhåll / Ongoing support & maintenance'),
+        ('support-basic', 'Support & Underhål - Bas / Support & Maintenance - Basic'),
+        ('support-plus', 'Support & Underhål - Plus / Support & Maintenance - Plus'),
+        ('support-premium', 'Support & Underhål - Premium / Support & Maintenance - Premium'),
+        ('content-manager-starter', 'Content Manager - Starter'),
+        ('content-manager-standard', 'Content Manager - Standard'),
+        ('content-manager-full', 'Content Manager - Full Service'),
+        ('complete-package', 'Komplett - Content + Support / Complete Package'),
     ]
     additional_services = forms.MultipleChoiceField(
         label="Tilläggstjänster / Additional services (valfritt / optional)",
