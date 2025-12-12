@@ -190,7 +190,7 @@ Ensure you:
 **Johan Anteskog**
 
 - GitHub: [@J-Anteskog](https://github.com/J-Anteskog)
-- Website: [Johan's Digital Forge](https://www.johans-digital-forge.se/) *(Update with your actual URL)*
+- Website: [Johan's Digital Forge](https://www.johans-digital-forge.se/)
 - Email: [info@johans-digital-forge.se]
 
 ## 📄 License
