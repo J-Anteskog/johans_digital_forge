@@ -13,7 +13,7 @@ django-jazzmin==3.0.1
 gunicorn==23.0.0
 idna==3.11
 packaging==25.0
-pillow==11.2.1
+pillow
 psycopg==3.2.12
 psycopg-binary==3.2.12
 requests==2.32.5
