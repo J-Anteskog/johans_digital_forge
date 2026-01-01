@@ -80,7 +80,7 @@ class ProjectListView(ListView):
     model = Project
     template_name = "custom_admin/project_list.html"
     context_object_name = "projects"
-    ordering = ["-id"]
+    ordering = ['order', '-id']
 
 
 @method_decorator(login_required, name="dispatch")
@@ -91,7 +91,7 @@ class ProjectCreateView(CreateView):
         "title_sv", "title_en",
         "description_sv", "description_en",
         "technologies", "github_url", "live_url",
-        "image", "is_active"
+        "image", "is_active", "order"
     ]
     success_url = reverse_lazy("admin_projects")
 
@@ -104,7 +104,7 @@ class ProjectUpdateView(UpdateView):
         "title_sv", "title_en",
         "description_sv", "description_en",
         "technologies", "github_url", "live_url",
-        "image", "is_active"
+        "image", "is_active", "order"
     ]
     success_url = reverse_lazy("admin_projects")
 

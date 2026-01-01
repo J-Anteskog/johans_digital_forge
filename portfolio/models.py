@@ -10,7 +10,11 @@ class Project(models.Model):
     live_url = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to='portfolio/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
-
+    order = models.IntegerField(default=0)  # ← LÄGG TILL DETTA FÄLT
+    
+    class Meta:
+        ordering = ['order', '-id']
+        
     # 🗓️ Nya fält för kalendern
     start_date = models.DateField(blank=True, null=True, help_text="Projektets startdatum")
     end_date = models.DateField(blank=True, null=True, help_text="Projektets slutdatum")
