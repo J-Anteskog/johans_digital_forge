@@ -9,15 +9,46 @@
 <style>
 .service-card {
   transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+  max-width: 280px;  /* Begränsa maxbredd */
+  margin: 0 auto;    /* Centrera korten */
 }
+
 .service-card:hover {
   transform: translateY(-20px) scale(1.03) !important;
   box-shadow: 0 25px 60px rgba(0, 255, 225, 0.5) !important;
   z-index: 100 !important;
 }
+
 .service-card:hover i {
   transform: scale(1.15) rotate(3deg) !important;
   filter: drop-shadow(0 0 25px rgba(0, 255, 225, 1)) !important;
+}
+
+/* Minska padding och text-storlekar */
+.service-card {
+  padding: 1.5rem !important;
+}
+
+.service-card h4 {
+  font-size: 1.2rem !important;
+}
+
+.service-card .lead,
+.service-card p {
+  font-size: 0.85rem !important;
+}
+
+.service-card i.fa-3x {
+  font-size: 2.5rem !important;
+}
+
+.price-tag {
+  font-size: 1.4rem !important;
+}
+
+.btn-lg {
+  font-size: 0.9rem !important;
+  padding: 0.6rem 1rem !important;
 }
 </style>
 
