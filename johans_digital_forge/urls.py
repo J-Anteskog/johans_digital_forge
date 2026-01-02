@@ -31,4 +31,4 @@ urlpatterns = [
     path('contact/', include('contact.urls')),
     path('portfolio/', include('portfolio.urls')),
     path('dashboard/', include('custom_admin.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
