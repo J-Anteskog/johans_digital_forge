@@ -162,8 +162,15 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": env("CLOUDINARY_API_SECRET"),
 }
 
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
+# För Django 4.2+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 # -----------------------------------------------------------
 # EMAIL SETTINGS (Resend)
 # -----------------------------------------------------------
