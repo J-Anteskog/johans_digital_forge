@@ -5,6 +5,23 @@
 {% endblock %}
 
 {% block content %}
+
+<style>
+.service-card {
+  transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+}
+.service-card:hover {
+  transform: translateY(-20px) scale(1.03) !important;
+  box-shadow: 0 25px 60px rgba(0, 255, 225, 0.5) !important;
+  z-index: 100 !important;
+}
+.service-card:hover i {
+  transform: scale(1.15) rotate(3deg) !important;
+  filter: drop-shadow(0 0 25px rgba(0, 255, 225, 1)) !important;
+}
+</style>
+
+<div class="fade-in-section">
 <div class="fade-in-section">
   <div class="container">
     <!-- Section Header -->
