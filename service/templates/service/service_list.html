@@ -5,77 +5,170 @@
 {% endblock %}
 
 {% block content %}
-<div class="section-header text-center mb-5">
-  <h2 class="display-5 text-gradient">🛠️ Tjänster / Services</h2>
-  <p class="lead text-muted">Vad jag erbjuder – What I offer</p>
-</div>
+<div class="fade-in-section">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="section-header text-center">
+      <h2 class="display-4 text-gradient">🛠️ Tjänster / Services</h2>
+      <p class="lead">Vad jag erbjuder – What I offer</p>
+    </div>
 
+    {% if services %}
+    <!-- Services Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+      {% for service in services %}
+      <div class="col">
+        <div class="card service-card h-100">
+          
+          <!-- Populärast Badge (visas om service.is_featured = True) -->
+          {% if service.is_featured %}
+          <div class="badge-popular">
+            <i class="fas fa-star me-1"></i>
+            Populärast
+          </div>
+          {% endif %}
 
-{% if services %}
-<div class="row row-cols-1 row-cols-md-2 g-4">
-  {% for service in services %}
-  <div class="col">
-    <div class="card h-100 border-light shadow">
-      <div class="card-body">
-        {% if service.icon %}
-        <div class="text-center mb-3">
-          <i class="{{ service.icon }} fa-2x"></i>
-        </div>
-        {% endif %}
-        <h5 class="card-title text-center">{{ service.title_sv }}</h5>
-        <p class="card-text text-center">{{ service.description_sv }}</p>
-        <hr class="bg-light">
-        <h5 class="card-title text-center">{{ service.title_en }}</h5>
-        <p class="card-text text-center">{{ service.description_en }}</p>
-        <p class="text-info fw-bold mt-2">
-          Från: {{ service.price }} SEK
-        </p>
+          <div class="card-body d-flex flex-column">
+            
+            <!-- Icon -->
+            {% if service.icon %}
+            <div class="text-center mb-3">
+              <i class="{{ service.icon }} fa-3x"></i>
+            </div>
+            {% endif %}
 
-        <div class="d-flex justify-content-center gap-2 mt-auto">
-          <!-- Contact button -->
-             <a href="{% url 'quote_request' %}" class="btn btn-outline-success">Offertförfrågan / Request a quote</a>
-          <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-outline-info">
-            Kontakta mig / Contact me
-          </a>
+            <!-- Swedish Title & Description -->
+            <h4 class="text-center mb-3">{{ service.title_sv }}</h4>
+            <p class="lead text-center">{{ service.description_sv }}</p>
 
-          <!-- Info button -->
-          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
-            data-bs-target="#infoModal{{ service.id }}">
-            Info
-          </button>
-        </div>
+            <!-- Divider -->
+            <hr class="bg-light my-3">
 
-        <!-- Modal -->
-        <div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1"
-          aria-labelledby="infoModalLabel{{ service.id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="infoModalLabel{{ service.id }}">
-                  {{ service.title_sv }} – {{ service.title_en }}
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- English Title & Description -->
+            <h5 class="text-center text-muted mb-2">{{ service.title_en }}</h5>
+            <p class="text-center small">{{ service.description_en }}</p>
+
+            <!-- Price -->
+            <div class="text-center">
+              <span class="price-tag">Från {{ service.price|floatformat:0 }} SEK</span>
+            </div>
+
+            <!-- CTA Buttons - Förbättrad hierarki -->
+            <div class="mt-auto pt-3">
+              <!-- Primär CTA -->
+              <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
+                 class="btn btn-primary btn-lg w-100 mb-2">
+                <i class="fas fa-paper-plane me-2"></i>
+                Kontakta mig
+              </a>
+              
+              <!-- Sekundära CTAs -->
+              <div class="d-flex gap-2">
+                <a href="{% url 'quote_request' %}?service={{ service.title_sv }}" 
+                   class="btn btn-outline-info flex-fill">
+                  <i class="fas fa-file-invoice me-1"></i>
+                  <span class="d-none d-lg-inline">Offert</span>
+                  <span class="d-lg-none">Offert</span>
+                </a>
+                <button type="button" 
+                        class="btn btn-outline-info flex-fill" 
+                        data-bs-toggle="modal"
+                        data-bs-target="#infoModal{{ service.id }}">
+                  <i class="fas fa-info-circle me-1"></i>
+                  <span class="d-none d-lg-inline">Info</span>
+                  <span class="d-lg-none">Info</span>
+                </button>
               </div>
-              <div class="modal-body">
-                <!-- Visa extra info om det finns, annars huvudbeskrivningen -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal för varje service -->
+      <div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1"
+           aria-labelledby="infoModalLabel{{ service.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+              <h5 class="modal-title text-gradient" id="infoModalLabel{{ service.id }}">
+                <i class="{{ service.icon }} me-2"></i>
+                {{ service.title_sv }}
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Swedish Info -->
+              <div class="mb-4">
+                <h6 class="text-info mb-3">📋 Beskrivning (Svenska)</h6>
                 <p>{{ service.extra_info_sv|default:service.description_sv|safe }}</p>
+              </div>
+              
+              <!-- English Info -->
+              <div class="mb-4">
+                <h6 class="text-info mb-3">📋 Description (English)</h6>
                 <p>{{ service.extra_info_en|default:service.description_en|safe }}</p>
-                <p class="fw-bold">Från: {{ service.price }} SEK</p>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng / Close</button>
+
+              <!-- Price & Details -->
+              <div class="alert alert-info" role="alert">
+                <i class="fas fa-tag me-2"></i>
+                <strong>Pris / Price:</strong> Från {{ service.price|floatformat:0 }} SEK
               </div>
+            </div>
+            <div class="modal-footer border-secondary">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="fas fa-times me-2"></i>
+                Stäng / Close
+              </button>
+              <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary">
+                <i class="fas fa-paper-plane me-2"></i>
+                Kontakta mig / Contact me
+              </a>
             </div>
           </div>
         </div>
-
       </div>
+      {% endfor %}
     </div>
+
+    {% else %}
+    <!-- Tomt state -->
+    <div class="text-center py-5">
+      <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
+      <p class="lead text-muted">Inga tjänster tillgängliga just nu.</p>
+      <p class="text-muted">No services available at this time.</p>
+    </div>
+    {% endif %}
+
   </div>
-  {% endfor %}
 </div>
-{% else %}
-<p class="text-center">Inga tjänster tillgängliga just nu. – No services available at this time.</p>
-{% endif %}
+
+<!-- Extra JS för smooth interactions (valfritt) -->
+{% block extra_js %}
+<script>
+// Lägg till smooth scroll till toppen när modal stängs
+document.addEventListener('DOMContentLoaded', function() {
+  // Förbättra modal animations
+  const modals = document.querySelectorAll('.modal');
+  modals.forEach(modal => {
+    modal.addEventListener('show.bs.modal', function() {
+      this.querySelector('.modal-dialog').style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        this.querySelector('.modal-dialog').style.transform = 'scale(1)';
+      }, 50);
+    });
+  });
+
+  // Lägg till smooth hover på cards
+  const cards = document.querySelectorAll('.service-card');
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+  });
+});
+</script>
+{% endblock %}
 
 {% endblock content %}
