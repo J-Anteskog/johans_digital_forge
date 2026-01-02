@@ -159,14 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 50);
     });
   });
-
-  // Lägg till smooth hover på cards
-  const cards = document.querySelectorAll('.service-card');
-  cards.forEach(card => {
-    card.addEventListener('mouseenter', function() {
-      this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-    });
-  });
 });
 </script>
 {% endblock %}

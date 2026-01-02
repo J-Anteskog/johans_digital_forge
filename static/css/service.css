@@ -27,21 +27,28 @@ body {
 
 /* ========== SERVICE CARDS ========== */
 
-/* Bas card styling med gradient bakgrund - ökad specificitet */
+/* Bas card styling - FORCE override Bootstrap */
 .card.service-card {
   border-radius: 0.75rem !important;
   background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   padding: 2.5rem 2rem !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
   height: 100%;
   position: relative;
+  /* Transition måste vara här utan !important för att fungera */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card.service-card:hover {
-  transform: translateY(-10px) !important;
-  box-shadow: 0 15px 40px rgba(0, 255, 225, 0.35) !important;
-  border-color: rgba(0, 255, 225, 0.6) !important;
+/* HOVER - Med flera selektorer för max kompatibilitet */
+.card.service-card:hover,
+.service-card:hover {
+  transform: translateY(-20px) scale(1.03) !important;
+  box-shadow: 0 25px 60px rgba(0, 255, 225, 0.5),
+              0 0 40px rgba(0, 255, 225, 0.3) !important;
+  border-color: rgba(0, 255, 225, 0.8) !important;
+  z-index: 100 !important;
 }
 
 /* Card ikoner med glow-effekt */
@@ -74,10 +81,10 @@ body {
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
   margin-bottom: 1.5rem;
-  min-height: 80px; /* Håller cards jämna i höjd */
+  min-height: 80px;
 }
 
-/* Engelsk beskrivning - lite mindre framträdande */
+/* Engelsk beskrivning */
 .card.service-card p:not(.lead) {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
@@ -113,7 +120,7 @@ body {
 
 /* ========== KNAPPAR & CTA ========== */
 
-/* Primär knapp - huvudsaklig CTA */
+/* Primär knapp */
 .btn-primary {
   background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%) !important;
   border: none !important;
@@ -131,7 +138,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* Sekundära knappar - outline style */
+/* Sekundära knappar */
 .btn-outline-info {
   border: 2px solid rgba(0, 255, 225, 0.5) !important;
   color: #00ffe1 !important;
@@ -146,7 +153,7 @@ body {
   box-shadow: 0 0 15px rgba(0, 255, 225, 0.3);
 }
 
-/* Knapp container för bättre spacing */
+/* Knapp container */
 .service-card .mt-4 {
   margin-top: 1.5rem !important;
 }
@@ -179,18 +186,14 @@ hr.bg-light {
 }
 
 /* Staggered animation för cards */
-.card.service-card {
-  animation: fadeIn 0.6s ease-out backwards;
-}
-
-.card.service-card:nth-child(1) { animation-delay: 0.1s; }
-.card.service-card:nth-child(2) { animation-delay: 0.2s; }
-.card.service-card:nth-child(3) { animation-delay: 0.3s; }
-.card.service-card:nth-child(4) { animation-delay: 0.4s; }
+.col:nth-child(1) .service-card { animation: fadeIn 0.6s ease-out 0.1s backwards; }
+.col:nth-child(2) .service-card { animation: fadeIn 0.6s ease-out 0.2s backwards; }
+.col:nth-child(3) .service-card { animation: fadeIn 0.6s ease-out 0.3s backwards; }
+.col:nth-child(4) .service-card { animation: fadeIn 0.6s ease-out 0.4s backwards; }
 
 /* ========== RESPONSIV DESIGN ========== */
 
-/* Tablet (768px - 991px) */
+/* Tablet */
 @media (max-width: 991px) {
   .card.service-card {
     padding: 2rem 1.5rem !important;
@@ -205,7 +208,7 @@ hr.bg-light {
   }
 }
 
-/* Mobil (under 768px) */
+/* Mobil */
 @media (max-width: 767px) {
   .fade-in-section {
     padding: 2rem 0;
@@ -247,7 +250,7 @@ hr.bg-light {
   }
 }
 
-/* Extra stor skärm - begränsa max-bredd på container */
+/* Extra stor skärm */
 @media (min-width: 1400px) {
   .container {
     max-width: 1320px;
@@ -264,7 +267,7 @@ hr.bg-light {
 
 /* ========== TILLGÄNGLIGHET ========== */
 
-/* Fokus-states för tangentbordsnavigering */
+/* Fokus-states */
 .card.service-card:focus-within {
   outline: 2px solid #00ffe1;
   outline-offset: 4px;
@@ -274,7 +277,7 @@ hr.bg-light {
   box-shadow: 0 0 0 3px rgba(0, 255, 225, 0.5);
 }
 
-/* Reducera animationer för användare som föredrar det */
+/* Reducera animationer */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
