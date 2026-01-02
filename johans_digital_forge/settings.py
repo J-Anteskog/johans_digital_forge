@@ -157,12 +157,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Använd CompressedStaticFilesStorage istället för Manifest (mindre strikt)
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
-# Cloudinary
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": env("CLOUDINARY_API_KEY"),
-    "API_SECRET": env("CLOUDINARY_API_SECRET"),
-}
+# Cloudinary - Bara om variabler finns
+if env("CLOUDINARY_CLOUD_NAME", default=None):
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
+        "API_KEY": env("CLOUDINARY_API_KEY"),
+        "API_SECRET": env("CLOUDINARY_API_SECRET"),
+    }
+else:
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": "",
+        "API_KEY": "",
+        "API_SECRET": "",
+    }
 
 # För Django 4.2+
 STORAGES = {
