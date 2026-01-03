@@ -5,7 +5,54 @@
 {% endblock %}
 
 {% block content %}
+<style>
+/* Fix text colors on dark background */
+.service-card,
+.service-card * {
+  color: #ffffff !important;
+}
 
+.service-card h4 {
+  color: #00ffe1 !important;
+}
+
+.service-card .lead {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.service-card p {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.service-card .price-tag {
+  color: #00ffe1 !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+.service-card .text-muted {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Hover effects */
+.service-card {
+  transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.service-card:hover {
+  transform: translateY(-20px) scale(1.03) !important;
+  box-shadow: 0 25px 60px rgba(0, 255, 225, 0.5) !important;
+  z-index: 100 !important;
+  border-color: rgba(0, 255, 225, 0.8) !important;
+}
+
+.service-card:hover i {
+  transform: scale(1.15) rotate(3deg) !important;
+  filter: drop-shadow(0 0 25px rgba(0, 255, 225, 1)) !important;
+}
+</style>
 
 <div class="fade-in-section">
 <div class="fade-in-section">
