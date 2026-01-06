@@ -50,8 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'cloudinary_storage',
     'django.contrib.staticfiles',
-    'cloudinary',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
+    'cloudinary',
 
     # Third-party
     'crispy_forms',
