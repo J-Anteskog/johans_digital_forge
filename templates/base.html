@@ -8,7 +8,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Johans Digital Forge">
+    <meta name="description" content="Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://johans-digital-forge.se{{ request.path }}">
+    <meta property="og:title" content="Johan's Digital Forge - Webbutveckling & Design">
+    <meta property="og:description" content="Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.">
+    <meta property="og:image" content="https://johans-digital-forge.se{% static 'images/preview-image.jpg' %}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://johans-digital-forge.se{{ request.path }}">
+    <meta property="twitter:title" content="Johan's Digital Forge - Webbutveckling & Design">
+    <meta property="twitter:description" content="Professionella webbplatser, e-handelslösningar och webbapplikationer.">
+    <meta property="twitter:image" content="https://johans-digital-forge.se{% static 'images/preview-image.jpg' %}">
     {% endblock %}
 
     <title>{% block title %}Johan's Digital Forge{% endblock %}</title>
