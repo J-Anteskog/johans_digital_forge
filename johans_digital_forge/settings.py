@@ -214,3 +214,23 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # -----------------------------------------------------------
+# -----------------------------------------------------------
+# FIXA SITES FÖR SITEMAP (kör vid startup)
+# -----------------------------------------------------------
+def setup_site():
+    """Uppdatera Site-objektet med rätt domän"""
+    try:
+        from django.contrib.sites.models import Site
+        site, created = Site.objects.get_or_create(pk=1)
+        if site.domain != 'johans-digital-forge.se':
+            site.domain = 'johans-digital-forge.se'
+            site.name = 'Johans Digital Forge'
+            site.save()
+            print(f"✅ Site uppdaterat: {site.domain}")
+    except Exception as e:
+        print(f"⚠️ Kunde inte uppdatera Site: {e}")
+
+# Kör setup när Django startar
+import sys
+if 'runserver' in sys.argv or 'gunicorn' in sys.argv[0]:
+    setup_site()
