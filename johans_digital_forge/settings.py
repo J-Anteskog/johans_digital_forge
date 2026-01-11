@@ -156,7 +156,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 #  MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Använd CompressedStaticFilesStorage istället för Manifest (mindre strikt)
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Cloudinary - Bara om variabler finns
 if env("CLOUDINARY_CLOUD_NAME", default=None):
@@ -178,10 +178,9 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
-
 # -----------------------------------------------------------
 # EMAIL SETTINGS (Resend)
 # -----------------------------------------------------------
