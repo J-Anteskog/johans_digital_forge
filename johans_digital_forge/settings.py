@@ -14,7 +14,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, False)
 )
-# Load .env file (locally)
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # -----------------------------------------------------------
@@ -24,7 +23,7 @@ SECRET_KEY = env("SECRET_KEY", default="insecure-key-for-dev")
 DEBUG = env("DEBUG")
 
 # Allowed Hosts
-ALLOWED_HOSTS = env("ALLOWED_HOSTS", default="").split(",")
+ALLOWED_HOSTS = env("ALLOWED_HOSTS", default="johans-digital-forge.se,www.johans-digital-forge.se").split(",")
 CSRF_TRUSTED_ORIGINS = env.list(
     "CSRF_TRUSTED_ORIGINS",
     default=[
@@ -33,26 +32,20 @@ CSRF_TRUSTED_ORIGINS = env.list(
     ]
 )
 
-# Add Railway domain automatically if available
-railway_host = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
-if railway_host and railway_host not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(railway_host)
-
 # -----------------------------------------------------------
 # APPLICATIONS
 # -----------------------------------------------------------
 INSTALLED_APPS = [
-    # Django core
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'cloudinary',
+    'cloudinary_storage',
 
     # Third-party
     'crispy_forms',
@@ -140,16 +133,13 @@ USE_TZ = True
 # -----------------------------------------------------------
 # STATIC & MEDIA FILES
 # -----------------------------------------------------------
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#  MEDIA_URL = '/media/'
-#  MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Använd CompressedStaticFilesStorage istället för Manifest (mindre strikt)
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Cloudinary - Bara om variabler finns
+# Cloudinary - om variabler finns
 if env("CLOUDINARY_CLOUD_NAME", default=None):
     CLOUDINARY_STORAGE = {
         "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
@@ -163,15 +153,15 @@ else:
         "API_SECRET": "",
     }
 
-# För Django 4.2+
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
 # -----------------------------------------------------------
 # EMAIL SETTINGS (Resend)
 # -----------------------------------------------------------
@@ -183,7 +173,6 @@ EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL', default=False)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='resend')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='info@johans-digital-forge.se')
-
 
 # -----------------------------------------------------------
 # AUTH / LOGIN REDIRECTS
@@ -204,8 +193,17 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # -----------------------------------------------------------
+# SSL / HTTPS SETTINGS
 # -----------------------------------------------------------
-# FIXA SITES FÖR SITEMAP (kör vid startup)
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# -----------------------------------------------------------
+# FIXA SITES FÖR SITEMAP
 # -----------------------------------------------------------
 def setup_site():
     """Uppdatera Site-objektet med rätt domän"""
@@ -220,7 +218,6 @@ def setup_site():
     except Exception as e:
         print(f"⚠️ Kunde inte uppdatera Site: {e}")
 
-# Kör setup när Django startar
 import sys
 if 'runserver' in sys.argv or 'gunicorn' in sys.argv[0]:
     setup_site()
