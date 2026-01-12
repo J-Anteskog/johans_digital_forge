@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-import environ
 import dj_database_url
 
 # -----------------------------------------------------------
@@ -9,29 +8,17 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -----------------------------------------------------------
-# ENVIRONMENT VARIABLES
-# -----------------------------------------------------------
-env = environ.Env(
-    DEBUG=(bool, False)
-)
-# Load .env file (locally)
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
-
-# -----------------------------------------------------------
 # SECURITY SETTINGS
 # -----------------------------------------------------------
-SECRET_KEY = env("SECRET_KEY", default="insecure-key-for-dev")
-DEBUG = env("DEBUG")
+SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-key-for-dev")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # Allowed Hosts
-ALLOWED_HOSTS = env("ALLOWED_HOSTS", default="").split(",")
-CSRF_TRUSTED_ORIGINS = env.list(
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+CSRF_TRUSTED_ORIGINS = os.environ.get(
     "CSRF_TRUSTED_ORIGINS",
-    default=[
-        "https://www.johans-digital-forge.se",
-        "https://johans-digital-forge.se",
-    ]
-)
+    "https://www.johans-digital-forge.se,https://johans-digital-forge.se"
+).split(",")
 
 # Add Railway domain automatically if available
 railway_host = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
@@ -111,20 +98,28 @@ TEMPLATES = [
 # -----------------------------------------------------------
 # DATABASE
 # -----------------------------------------------------------
-# Läs DATABASE_URL direkt från environment (Coolify sätter detta)
 database_url = os.environ.get('DATABASE_URL')
 
 if database_url:
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=database_url,
-            conn_max_age=600,
-            ssl_require=False
-        )
-    }
-    print(f"✅ Ansluter till PostgreSQL: {database_url.split('@')[1].split('/')[0]}")
+    try:
+        DATABASES = {
+            "default": dj_database_url.config(
+                default=database_url,
+                conn_max_age=600,
+                ssl_require=False
+            )
+        }
+        print(f"✅ Connected to PostgreSQL database")
+    except Exception as e:
+        print(f"⚠️ Database connection error: {e}")
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
 else:
-    print(f"⚠️ DATABASE_URL saknas, använder SQLite istället.")
+    print(f"⚠️ DATABASE_URL not found, using SQLite")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -156,25 +151,16 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#  MEDIA_URL = '/media/'
-#  MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Använd CompressedStaticFilesStorage istället för Manifest (mindre strikt)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
-# Cloudinary - Bara om variabler finns
-if env("CLOUDINARY_CLOUD_NAME", default=None):
-    CLOUDINARY_STORAGE = {
-        "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
-        "API_KEY": env("CLOUDINARY_API_KEY"),
-        "API_SECRET": env("CLOUDINARY_API_SECRET"),
-    }
-else:
-    CLOUDINARY_STORAGE = {
-        "CLOUD_NAME": "",
-        "API_KEY": "",
-        "API_SECRET": "",
-    }
+# Cloudinary
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME", ""),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY", ""),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET", ""),
+}
 
 # För Django 4.2+
 STORAGES = {
@@ -185,18 +171,18 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
 # -----------------------------------------------------------
 # EMAIL SETTINGS (Resend)
 # -----------------------------------------------------------
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST', default='smtp.resend.com')
-EMAIL_PORT = env.int('EMAIL_PORT', default=587)
-EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
-EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL', default=False)
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='resend')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='info@johans-digital-forge.se')
-
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.resend.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'resend')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@johans-digital-forge.se')
 
 # -----------------------------------------------------------
 # AUTH / LOGIN REDIRECTS
@@ -217,7 +203,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # -----------------------------------------------------------
-# -----------------------------------------------------------
 # FIXA SITES FÖR SITEMAP (kör vid startup)
 # -----------------------------------------------------------
 def setup_site():
@@ -229,9 +214,9 @@ def setup_site():
             site.domain = 'johans-digital-forge.se'
             site.name = 'Johans Digital Forge'
             site.save()
-            print(f"✅ Site uppdaterat: {site.domain}")
+            print(f"✅ Site updated: {site.domain}")
     except Exception as e:
-        print(f"⚠️ Kunde inte uppdatera Site: {e}")
+        print(f"⚠️ Could not update Site: {e}")
 
 # Kör setup när Django startar
 import sys
