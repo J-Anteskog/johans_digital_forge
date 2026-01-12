@@ -111,16 +111,20 @@ TEMPLATES = [
 # -----------------------------------------------------------
 # DATABASE
 # -----------------------------------------------------------
-try:
+# Läs DATABASE_URL direkt från environment (Coolify sätter detta)
+database_url = os.environ.get('DATABASE_URL')
+
+if database_url:
     DATABASES = {
         "default": dj_database_url.config(
-            default=env("DATABASE_URL"),
+            default=database_url,
             conn_max_age=600,
             ssl_require=False
         )
     }
-except Exception as e:
-    print(f"⚠️ DATABASE_URL saknas eller ogiltig ({e}), använder SQLite istället.")
+    print(f"✅ Ansluter till PostgreSQL: {database_url.split('@')[1].split('/')[0]}")
+else:
+    print(f"⚠️ DATABASE_URL saknas, använder SQLite istället.")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
