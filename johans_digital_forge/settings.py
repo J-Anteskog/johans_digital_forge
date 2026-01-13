@@ -1,6 +1,14 @@
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+# -----------------------------------------------------------
+# LOAD ENVIRONMENT VARIABLES
+# -----------------------------------------------------------
+# Load .env file if it exists (for local development)
+# In production (Coolify), environment variables are injected directly
+load_dotenv()
 
 # -----------------------------------------------------------
 # BASE DIRECTORY
