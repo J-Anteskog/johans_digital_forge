@@ -44,7 +44,7 @@
   border-color: rgba(0, 255, 225, 0.4);
 }
 
-/* Image wrapper with overlay */
+/* Image wrapper */
 .card-img-wrapper {
   position: relative;
   overflow: hidden;
@@ -67,13 +67,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 255, 225, 0.9);
+  background: rgba(0,255,225,0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
-
   pointer-events: none; /* Klick går igenom overlay */
 }
 
@@ -91,7 +90,7 @@
 .portfolio-card .card-body {
   padding: 1.5rem;
   position: relative;
-  z-index: 2; /* Gör att knappar ligger över overlay */
+  z-index: 1; /* Säkerställ att card-body ligger över overlay */
 }
 
 .portfolio-card .card-title {

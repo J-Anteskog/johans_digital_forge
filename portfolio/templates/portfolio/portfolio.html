@@ -21,41 +21,28 @@
       <div class="col">
         <div class="card portfolio-card h-100 shadow-sm">
           
-          <!-- Project Image -->
-          {% if project.image %}
+          <!-- Project Image with overlay -->
           <div class="card-img-wrapper">
+            {% if project.image %}
             <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_sv }}">
-            <div class="card-img-overlay">
-              <div class="overlay-content">
-                <i class="fas fa-eye fa-2x"></i>
-              </div>
-            </div>
-          </div>
-          {% else %}
-          <div class="card-img-wrapper">
+            {% else %}
             <img src="{% static 'images/portfolio/default.png' %}" class="card-img-top" alt="Default">
+            {% endif %}
             <div class="card-img-overlay">
               <div class="overlay-content">
                 <i class="fas fa-eye fa-2x"></i>
               </div>
             </div>
           </div>
-          {% endif %}
 
+          <!-- Card body with text & buttons -->
           <div class="card-body d-flex flex-column">
-            
-            <!-- Swedish Title & Description -->
             <h5 class="card-title text-primary fw-bold">{{ project.title_sv }}</h5>
             <p class="card-text text-muted small">{{ project.description_sv }}</p>
-            
-            <!-- Divider -->
             <hr class="my-3">
-            
-            <!-- English Title & Description -->
             <h6 class="text-secondary">{{ project.title_en }}</h6>
             <p class="card-text text-muted small">{{ project.description_en }}</p>
-            
-            <!-- Technologies -->
+
             {% if project.technologies %}
             <div class="mb-3">
               <small class="text-muted">
@@ -64,7 +51,7 @@
               </small>
             </div>
             {% endif %}
-            
+
             <!-- Action Buttons -->
             <div class="d-flex gap-2 mt-auto">
               {% if project.live_url %}
@@ -73,7 +60,6 @@
                 Live
               </a>
               {% endif %}
-              
               {% if project.github_url %}
               <a href="{{ project.github_url }}" target="_blank" class="btn btn-outline-secondary flex-fill">
                 <i class="fab fa-github me-1"></i>
@@ -81,8 +67,8 @@
               </a>
               {% endif %}
             </div>
-
           </div>
+
         </div>
       </div>
       {% empty %}
