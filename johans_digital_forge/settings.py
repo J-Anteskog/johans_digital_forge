@@ -1,20 +1,19 @@
 from pathlib import Path
 import os
 import dj_database_url
-
+from decouple import config
 # -----------------------------------------------------------
 # BASE DIRECTORY
 # -----------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+
 # -----------------------------------------------------------
 # CORE SETTINGS
 # -----------------------------------------------------------
-SECRET_KEY = os.environ.get("SECRET_KEY")
-if not SECRET_KEY:
-    raise RuntimeError("SECRET_KEY is not set")
-
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-temporary-key-for-local')
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # -----------------------------------------------------------
 # ALLOWED HOSTS & CSRF
@@ -121,15 +120,15 @@ TEMPLATES = [
 # -----------------------------------------------------------
 # DATABASE
 # -----------------------------------------------------------
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = config('DATABASE_URL')
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL is not set")
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=DATABASE_URL,
+    'default': dj_database_url.parse(
+        DATABASE_URL,
         conn_max_age=600,
-        ssl_require=False,  # internt nät i Docker
+        ssl_require=False,  # om du kör internt i Docker / lokalt
     )
 }
 

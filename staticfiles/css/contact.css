@@ -1,0 +1,186 @@
+/* Contact page styling - matchar service.css */
+
+/* Fade in animation */
+.fade-in-section {
+  animation: fadeIn 0.8s ease-in-out;
+  padding: 4rem 0;
+}
+
+/* Section header */
+.section-header {
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: #aaa;
+}
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(to right, #00ffe1, #7af0ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Form card styling */
+.card {
+  border-radius: 0.75rem;
+  background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 30px rgba(0, 255, 225, 0.2);
+}
+
+/* Form controls */
+form .form-control,
+form .form-select,
+form textarea {
+  background-color: #2d2d2d;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f0f0f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+form .form-control:focus,
+form .form-select:focus,
+form textarea:focus {
+  background-color: #1e1e1e;
+  border-color: #00ffe1;
+  box-shadow: 0 0 0 0.25rem rgba(0, 255, 225, 0.25);
+  color: #fff;
+}
+
+form .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Labels */
+form label {
+  color: #00ffe1;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Required field indicator */
+form label .asteriskField {
+  color: #ff6b6b;
+}
+
+/* Navigation buttons */
+.btn-outline-info {
+  border: 2px solid rgba(0, 255, 225, 0.5);
+  color: #00ffe1;
+  background: transparent;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-info:hover {
+  background-color: rgba(0, 255, 225, 0.15);
+  border-color: #00ffe1;
+  color: #00ffe1;
+  box-shadow: 0 0 15px rgba(0, 255, 225, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Primary button */
+.btn-primary {
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  border: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #00e5ff 0%, #00aadd 100%);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-primary.active {
+  background: linear-gradient(135deg, #00e5ff 0%, #00aadd 100%);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+}
+
+/* Alert styling */
+.alert-success {
+  background: linear-gradient(135deg, rgba(0, 255, 225, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
+  border: 1px solid rgba(0, 255, 225, 0.3);
+  border-radius: 0.75rem;
+  color: #00ffe1;
+}
+
+.alert-success .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+/* Help text */
+.form-text {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+}
+
+/* Error messages */
+.invalid-feedback {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+}
+
+.is-invalid {
+  border-color: #ff6b6b !important;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Responsive design */
+@media (max-width: 767px) {
+  .fade-in-section {
+    padding: 2rem 0;
+  }
+  
+  .section-header h2 {
+    font-size: 2rem;
+  }
+  
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem !important;
+  }
+}
+
+/* Focus styles for accessibility */
+.btn:focus,
+.form-control:focus {
+  outline: 2px solid #00ffe1;
+  outline-offset: 2px;
+}

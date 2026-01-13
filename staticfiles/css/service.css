@@ -1,0 +1,287 @@
+/* Tjänste-sida styling - anpassad för att matcha base.css */
+body {
+  background: linear-gradient(120deg, #1c1c1c, #2f2f2f);
+  color: #f0f0f0;
+}
+
+/* Sektion med fade */
+.fade-in-section {
+  animation: fadeIn 0.8s ease-in-out;
+  padding: 4rem 0;
+}
+
+/* Section header förbättringar */
+.section-header {
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: #aaa;
+}
+
+/* ========== SERVICE CARDS ========== */
+
+/* Bas card styling - FORCE override Bootstrap */
+.card.service-card {
+  border-radius: 0.75rem !important;
+  background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 2.5rem 2rem !important;
+  height: 100%;
+  position: relative;
+  /* Transition måste vara här utan !important för att fungera */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* HOVER - Med flera selektorer för max kompatibilitet */
+.card.service-card:hover,
+.service-card:hover {
+  transform: translateY(-20px) scale(1.03) !important;
+  box-shadow: 0 25px 60px rgba(0, 255, 225, 0.5),
+              0 0 40px rgba(0, 255, 225, 0.3) !important;
+  border-color: rgba(0, 255, 225, 0.8) !important;
+  z-index: 100 !important;
+}
+
+/* Card ikoner med glow-effekt */
+.card.service-card i.fa-3x {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: #00ffe1;
+  filter: drop-shadow(0 0 12px rgba(0, 255, 225, 0.6));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.card.service-card:hover i.fa-3x {
+  transform: scale(1.15) rotate(3deg);
+  filter: drop-shadow(0 0 25px rgba(0, 255, 225, 1));
+}
+
+/* Card titlar med förbättrad typografi */
+.card.service-card h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #00ffe1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Card beskrivningar */
+.card.service-card .lead {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1.5rem;
+  min-height: 80px;
+}
+
+/* Engelsk beskrivning */
+.card.service-card p:not(.lead) {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+/* Pris styling med glow */
+.price-tag {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #00ffe1;
+  text-shadow: 0 0 15px rgba(0, 255, 225, 0.6);
+  margin: 1.5rem 0;
+  display: block;
+}
+
+/* ========== POPULÄRAST BADGE ========== */
+.badge-popular {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+  color: #000;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+  z-index: 10;
+}
+
+/* ========== KNAPPAR & CTA ========== */
+
+/* Primär knapp */
+.btn-primary {
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%) !important;
+  border: none !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #00e5ff 0%, #00aadd 100%) !important;
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+/* Sekundära knappar */
+.btn-outline-info {
+  border: 2px solid rgba(0, 255, 225, 0.5) !important;
+  color: #00ffe1 !important;
+  background: transparent !important;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-info:hover {
+  background-color: rgba(0, 255, 225, 0.15) !important;
+  border-color: #00ffe1 !important;
+  color: #00ffe1 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 225, 0.3);
+}
+
+/* Knapp container */
+.service-card .mt-4 {
+  margin-top: 1.5rem !important;
+}
+
+/* ========== DIVIDERS ========== */
+hr.bg-light {
+  opacity: 0.2;
+  border-top: 1px solid #555;
+  margin: 1.5rem 0;
+}
+
+/* ========== TEXT UTILITIES ========== */
+.text-gradient {
+  background: linear-gradient(to right, #00ffe1, #7af0ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Staggered animation för cards */
+.col:nth-child(1) .service-card { animation: fadeIn 0.6s ease-out 0.1s backwards; }
+.col:nth-child(2) .service-card { animation: fadeIn 0.6s ease-out 0.2s backwards; }
+.col:nth-child(3) .service-card { animation: fadeIn 0.6s ease-out 0.3s backwards; }
+.col:nth-child(4) .service-card { animation: fadeIn 0.6s ease-out 0.4s backwards; }
+
+/* ========== RESPONSIV DESIGN ========== */
+
+/* Tablet */
+@media (max-width: 991px) {
+  .card.service-card {
+    padding: 2rem 1.5rem !important;
+  }
+  
+  .section-header h2 {
+    font-size: 2rem;
+  }
+  
+  .card.service-card h4 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Mobil */
+@media (max-width: 767px) {
+  .fade-in-section {
+    padding: 2rem 0;
+  }
+  
+  .section-header {
+    margin-bottom: 2rem;
+  }
+  
+  .section-header h2 {
+    font-size: 1.75rem;
+  }
+  
+  .card.service-card {
+    padding: 1.5rem !important;
+    margin-bottom: 1.5rem;
+  }
+  
+  .card.service-card h4 {
+    font-size: 1.2rem;
+  }
+  
+  .card.service-card i.fa-3x {
+    font-size: 2.5rem;
+  }
+  
+  .price-tag {
+    font-size: 1.5rem;
+  }
+  
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .badge-popular {
+    font-size: 0.7rem;
+    padding: 5px 12px;
+  }
+}
+
+/* Extra stor skärm */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+
+/* Desktop padding */
+@media (min-width: 768px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* ========== TILLGÄNGLIGHET ========== */
+
+/* Fokus-states */
+.card.service-card:focus-within {
+  outline: 2px solid #00ffe1;
+  outline-offset: 4px;
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 3px rgba(0, 255, 225, 0.5);
+}
+
+/* Reducera animationer */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
