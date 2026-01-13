@@ -73,6 +73,8 @@
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
+
+  pointer-events: none; /* Klick går igenom overlay */
 }
 
 .portfolio-card:hover .card-img-overlay {
@@ -82,11 +84,14 @@
 .overlay-content {
   color: #000;
   text-align: center;
+  pointer-events: auto; /* Om du vill att ikonen på overlay ska kunna klickas */
 }
 
 /* Card body */
 .portfolio-card .card-body {
   padding: 1.5rem;
+  position: relative;
+  z-index: 2; /* Gör att knappar ligger över overlay */
 }
 
 .portfolio-card .card-title {
