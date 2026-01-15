@@ -216,3 +216,36 @@ a {
 .portfolio-card a:hover {
   text-decoration: none;
 }
+
+/* Säkerställ att alla portfolio-länkar är klickbara */
+.portfolio-card a,
+.card-body a,
+.btn-primary,
+.btn-outline-secondary {
+    position: relative;
+    z-index: 9999;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* Extra säkerhet för card-body innehåll */
+.card-body {
+    position: relative;
+    z-index: 10;
+}
+
+/* Säkerställ att overlay inte blockerar */
+.card-img-overlay {
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Hover-effekt för visuell feedback */
+.portfolio-card a:hover {
+    text-decoration: none;
+    opacity: 0.9;
+}
+
+.btn:hover {
+    text-decoration: none;
+}
