@@ -24,12 +24,49 @@ if not SECRET_KEY:
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-# Allowed Hosts
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS",
-    "https://www.johans-digital-forge.se,https://johans-digital-forge.se"
-).split(",")
+# Allowed Hosts - FIX: Hantera tomma strängar och sätt fallback-värden
+allowed_hosts_env = os.environ.get("ALLOWED_HOSTS", "")
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(",") if host.strip()]
+else:
+    ALLOWED_HOSTS = []
+
+# Lägg till dina domäner om de inte redan finns
+production_hosts = [
+    'www.johans-digital-forge.se',
+    'johans-digital-forge.se',
+    'portal.johans-digital-forge.se'
+]
+
+for host in production_hosts:
+    if host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
+
+# För lokal utveckling
+if DEBUG:
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', '0.0.0.0'])
+
+print(f"✅ ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+
+# CSRF Trusted Origins - FIX: Säkerställ att alla domäner inkluderas
+csrf_origins_env = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+if csrf_origins_env:
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins_env.split(",") if origin.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = []
+
+# Lägg till produktionsdomäner
+production_origins = [
+    'https://www.johans-digital-forge.se',
+    'https://johans-digital-forge.se',
+    'https://portal.johans-digital-forge.se'
+]
+
+for origin in production_origins:
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
+
+print(f"✅ CSRF_TRUSTED_ORIGINS: {CSRF_TRUSTED_ORIGINS}")
 
 # Add Railway domain automatically if available
 railway_host = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
@@ -38,9 +75,15 @@ if railway_host and railway_host not in ALLOWED_HOSTS:
 
 # HTTPS/Proxy Settings for Coolify/Caddy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = not DEBUG  # FIX: Bara i produktion
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
+
+# FIX: Lägg till säkerhetsinställningar för produktion
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
 
 # -----------------------------------------------------------
 # APPLICATIONS
@@ -163,14 +206,14 @@ USE_I18N = True
 USE_TZ = True
 
 # -----------------------------------------------------------
-# STATIC & MEDIA FILES
+# STATIC & MEDIA FILES - FIX: Förenklad konfiguration
 # -----------------------------------------------------------
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Använd CompressedStaticFilesStorage istället för Manifest (mindre strikt)
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# FIX: Ta bort gamla STATICFILES_STORAGE (deprecated i Django 4.2+)
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Cloudinary
 CLOUDINARY_STORAGE = {
@@ -179,7 +222,7 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET", ""),
 }
 
-# För Django 4.2+
+# FIX: Korrekt STORAGES konfiguration för Django 4.2+
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
@@ -188,6 +231,10 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+# FIX: WhiteNoise inställningar för bättre prestanda
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = DEBUG
 
 # -----------------------------------------------------------
 # EMAIL SETTINGS (Resend)
@@ -220,6 +267,23 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # -----------------------------------------------------------
+# SESSION SETTINGS - FIX: För att förbättra CSRF-hantering
+# -----------------------------------------------------------
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = False  # Måste vara False för AJAX att fungera
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# FIX: Lägg till favicon inställningar
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+# -----------------------------------------------------------
 # FIXA SITES FÖR SITEMAP (kör vid startup)
 # -----------------------------------------------------------
 def setup_site():
@@ -235,7 +299,20 @@ def setup_site():
     except Exception as e:
         print(f"⚠️ Could not update Site: {e}")
 
-# Kör setup när Django startar
+# FIX: Säkrare sätt att köra setup
 import sys
-if 'runserver' in sys.argv or 'gunicorn' in sys.argv[0]:
-    setup_site()
+if any(cmd in sys.argv for cmd in ['runserver', 'migrate', 'collectstatic']) or 'gunicorn' in sys.argv[0]:
+    try:
+        setup_site()
+    except Exception as e:
+        print(f"⚠️ Site setup failed: {e}")
+
+# -----------------------------------------------------------
+# DEBUG INFORMATION
+# -----------------------------------------------------------
+if DEBUG:
+    print(f"🐛 DEBUG MODE ENABLED")
+    print(f"📁 BASE_DIR: {BASE_DIR}")
+    print(f"📁 STATIC_ROOT: {STATIC_ROOT}")
+    print(f"🌐 ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+    print(f"🔒 CSRF_TRUSTED_ORIGINS: {CSRF_TRUSTED_ORIGINS}")
