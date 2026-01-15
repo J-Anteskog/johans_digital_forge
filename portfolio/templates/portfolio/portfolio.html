@@ -81,4 +81,65 @@
 
   </div>
 </div>
+
+<!-- PORTFOLIO KLICK-FIX -->
+<style>
+/* Fix för oklickbara portfolio-länkar */
+.portfolio-card a,
+.card-body a,
+.btn-primary,
+.btn-outline-secondary {
+    position: relative !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+}
+
+.card-body {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.card-img-overlay {
+    z-index: 1 !important;
+    pointer-events: none !important;
+}
+
+.portfolio-card a:hover {
+    text-decoration: none !important;
+    opacity: 0.9;
+}
+
+.btn:hover {
+    text-decoration: none !important;
+}
+
+.portfolio-card {
+    position: relative;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Extra säkerhet för portfolio-länkar
+    const portfolioLinks = document.querySelectorAll('.portfolio-card a, .card-body a');
+    
+    portfolioLinks.forEach(function(link) {
+        link.style.position = 'relative';
+        link.style.zIndex = '9999';
+        link.style.pointerEvents = 'auto';
+        link.style.cursor = 'pointer';
+        
+        // Backup click handler om CSS inte fungerar
+        link.addEventListener('click', function(e) {
+            if (this.href && this.href !== window.location.href) {
+                return true; // Låt klicket fortsätta normalt
+            }
+        });
+    });
+    
+    console.log('✅ Portfolio link fix applied to', portfolioLinks.length, 'links');
+});
+</script>
 {% endblock %}
