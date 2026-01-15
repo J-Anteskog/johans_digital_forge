@@ -206,14 +206,14 @@ USE_I18N = True
 USE_TZ = True
 
 # -----------------------------------------------------------
-# STATIC & MEDIA FILES - FIX: Förenklad konfiguration
+# STATIC & MEDIA FILES - FIX: Cloudinary kompatibilitet
 # -----------------------------------------------------------
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# FIX: Ta bort gamla STATICFILES_STORAGE (deprecated i Django 4.2+)
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# FIX: Behåll gamla STATICFILES_STORAGE för Cloudinary kompatibilitet
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Cloudinary
 CLOUDINARY_STORAGE = {
@@ -222,7 +222,7 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET", ""),
 }
 
-# FIX: Korrekt STORAGES konfiguration för Django 4.2+
+# FIX: STORAGES konfiguration för Django 4.2+ MEN med Cloudinary fallback
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
