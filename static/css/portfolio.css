@@ -36,6 +36,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
+  /* FIX: Säkerställ att hela kortet är klickbart */
+  position: relative;
 }
 
 .portfolio-card:hover {
@@ -60,9 +62,9 @@
   transform: scale(1.1);
 }
 
-/* Image overlay */
+/* FIX: Image overlay - ta bort pointer-events konflikten */
 .card-img-overlay {
-  position: relative;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -73,24 +75,25 @@
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
-  pointer-events: none; /* Klick går igenom overlay */
+  /* FIX: Ta bort pointer-events helt - låt normal click-hantering fungera */
 }
 
 .portfolio-card:hover .card-img-overlay {
   opacity: 1;
 }
 
+/* FIX: Overlay content - ta bort pointer-events auto */
 .overlay-content {
   color: #000;
   text-align: center;
-  pointer-events: auto; /* Om du vill att ikonen på overlay ska kunna klickas */
+  /* FIX: Ta bort pointer-events auto som skapar konflikt */
 }
 
 /* Card body */
 .portfolio-card .card-body {
   padding: 1.5rem;
   position: relative;
-  z-index: 1; /* Säkerställ att card-body ligger över overlay */
+  z-index: 2; /* FIX: Öka z-index för att säkerställa att länkar ligger över allt */
 }
 
 .portfolio-card .card-title {
@@ -116,12 +119,15 @@
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-/* Buttons */
+/* FIX: Buttons - säkerställ att de är klickbara */
 .btn-primary {
   background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
   border: none;
   font-weight: 600;
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 3; /* FIX: Ännu högre z-index för knappar */
+  cursor: pointer; /* FIX: Explicit cursor */
 }
 
 .btn-primary:hover {
@@ -135,12 +141,22 @@
   color: rgba(255, 255, 255, 0.9);
   background: transparent;
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 3; /* FIX: Samma z-index som primary buttons */
+  cursor: pointer; /* FIX: Explicit cursor */
 }
 
 .btn-outline-secondary:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.6);
   color: #fff;
+}
+
+/* FIX: Säkerställ att alla länkar är klickbara */
+a {
+  position: relative;
+  z-index: 4; /* FIX: Högsta z-index för alla länkar */
+  cursor: pointer;
 }
 
 /* Animation */
@@ -177,4 +193,26 @@
 /* Empty state */
 .text-center .fa-folder-open {
   opacity: 0.3;
+}
+
+/* FIX: Debug hjälp - ta bort efter test */
+.portfolio-card:hover {
+  /* Lägg till en visuell indikator för hover */
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 255, 225, 0.25);
+  border-color: rgba(0, 255, 225, 0.4);
+}
+
+/* FIX: Säkerställ att click events fungerar */
+.card-body a,
+.portfolio-card a {
+  display: inline-block;
+  position: relative;
+  z-index: 10;
+  text-decoration: none;
+}
+
+.card-body a:hover,
+.portfolio-card a:hover {
+  text-decoration: none;
 }
