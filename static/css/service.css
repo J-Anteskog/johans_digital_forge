@@ -285,3 +285,38 @@ hr.bg-light {
     transition-duration: 0.01ms !important;
   }
 }
+/* ========== GRID LAYOUT FIX - Lägg till längst ner i service.css ========== */
+
+/* Ersätt Bootstrap grid med CSS Grid för tjänstekorten */
+.row.row-cols-1.row-cols-md-2.row-cols-lg-4 {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  margin: 0 !important;
+}
+
+.row.row-cols-1.row-cols-md-2.row-cols-lg-4 > .col {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  flex: none !important;
+}
+
+/* Responsiva breakpoints för grid */
+@media (max-width: 1199px) {
+  .row.row-cols-1.row-cols-md-2.row-cols-lg-4 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .row.row-cols-1.row-cols-md-2.row-cols-lg-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .row.row-cols-1.row-cols-md-2.row-cols-lg-4 {
+    grid-template-columns: 1fr !important;
+  }
+}
