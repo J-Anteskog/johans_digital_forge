@@ -1,49 +1,238 @@
-{% extends "base.html" %}
-{% load static %}
+<!-- custom_admin/templates/custom_admin/service_list.html -->
+{% extends "custom_admin/base.html" %}
+
+{% block title %}Tjänster - Admin{% endblock %}
+
 {% block content %}
-
-<div class="d-flex" style="min-height: 100vh;">
-
-  <!-- SIDOPANEL -->
-  {% include 'custom_admin/_sidebar.html' %}
-  <!-- HUVUDINNEHÅLL -->
-  <main class="flex-grow-1 bg-light p-5">
-    <div class="container-fluid">
-      <h1 class="mb-4">📋 Alla tjänster</h1>
-
-      <a href="{% url 'admin_service_add' %}" class="btn btn-success mb-3">➕ Lägg till ny tjänst</a>
-
-      {% if services %}
-      <table class="table table-dark table-striped table-hover rounded shadow-sm">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Titel (SV)</th>
-            <th>Titel (EN)</th>
-            <th>Pris</th>
-            <th>Hantera</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for service in services %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ service.title_sv }}</td>
-            <td>{{ service.title_en }}</td>
-            <td>{{ service.price }} kr</td>
-            <td>
-              <a href="{% url 'admin_service_edit' service.pk %}" class="btn btn-sm btn-warning">✏️ Redigera</a>
-              <a href="{% url 'admin_service_delete' service.pk %}" class="btn btn-sm btn-danger">🗑 Ta bort</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <div class="alert alert-info">Inga tjänster har lagts till ännu.</div>
-      {% endif %}
+<div class="container-fluid">
+    <!-- Header med statistik -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Tjänster</h2>
+            <p class="text-muted">Hantera alla dina tjänster och priser</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'admin_service_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Lägg till tjänst
+            </a>
+        </div>
     </div>
-  </main>
+
+    <!-- Statistik kort -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>{{ total_services }}</h5>
+                    <p class="mb-0">Totalt tjänster</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5>{{ active_services }}</h5>
+                    <p class="mb-0">Aktiva tjänster</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5>{{ inactive_services }}</h5>
+                    <p class="mb-0">Inaktiva tjänster</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk actions form -->
+    <form method="post" action="{% url 'admin_service_bulk' %}" id="bulkForm">
+        {% csrf_token %}
+        
+        <!-- Bulk actions toolbar -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <select name="action" class="form-select" id="bulkAction">
+                            <option value="">Välj åtgärd...</option>
+                            <option value="activate">Aktivera</option>
+                            <option value="deactivate">Inaktivera</option>
+                            <option value="delete">Radera</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-secondary" id="bulkSubmit" disabled>
+                            Utför åtgärd
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button type="button" class="btn btn-outline-primary" onclick="selectAll()">
+                            Välj alla
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="selectNone()">
+                            Välj inga
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services table -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="30">
+                                    <input type="checkbox" id="selectAllCheck" onchange="toggleAll()">
+                                </th>
+                                <th width="50">Order</th>
+                                <th>Tjänst</th>
+                                <th>Pris</th>
+                                <th width="80">Status</th>
+                                <th width="150">Åtgärder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesTable">
+                            {% for service in services %}
+                            <tr data-service-id="{{ service.id }}" class="{% if not service.is_active %}table-secondary{% endif %}">
+                                <td>
+                                    <input type="checkbox" name="service_ids" value="{{ service.id }}" class="service-checkbox">
+                                </td>
+                                <td>
+                                    <input type="number" value="{{ service.order }}" min="0" max="999" 
+                                           class="form-control form-control-sm order-input" 
+                                           data-service-id="{{ service.id }}" style="width: 60px;">
+                                </td>
+                                <td>
+                                    <strong>{{ service.title_sv }}</strong>
+                                    {% if service.title_en %}
+                                        <br><small class="text-muted">{{ service.title_en }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ service.price }} SEK</span>
+                                </td>
+                                <td>
+                                    {% if service.is_active %}
+                                        <span class="badge bg-success">Aktiv</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inaktiv</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'admin_service_edit' service.pk %}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'admin_service_delete' service.pk %}" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    Inga tjänster hittades.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Föregående</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} av {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Nästa</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 
+<script>
+// Bulk actions JavaScript
+function toggleAll() {
+    const selectAll = document.getElementById('selectAllCheck');
+    const checkboxes = document.querySelectorAll('.service-checkbox');
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    updateBulkButton();
+}
+
+function selectAll() {
+    document.querySelectorAll('.service-checkbox').forEach(cb => cb.checked = true);
+    document.getElementById('selectAllCheck').checked = true;
+    updateBulkButton();
+}
+
+function selectNone() {
+    document.querySelectorAll('.service-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('selectAllCheck').checked = false;
+    updateBulkButton();
+}
+
+function updateBulkButton() {
+    const checked = document.querySelectorAll('.service-checkbox:checked').length > 0;
+    const action = document.getElementById('bulkAction').value;
+    document.getElementById('bulkSubmit').disabled = !(checked && action);
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Bulk action updates
+    document.getElementById('bulkAction').addEventListener('change', updateBulkButton);
+    document.querySelectorAll('.service-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateBulkButton);
+    });
+    
+    // Auto-save order changes
+    document.querySelectorAll('.order-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const serviceId = this.dataset.serviceId;
+            const newOrder = this.value;
+            
+            fetch("{% url 'admin_service_order' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    orders: [{ id: serviceId, order: newOrder }]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Visa kort success-meddelande
+                    this.classList.add('border-success');
+                    setTimeout(() => this.classList.remove('border-success'), 1000);
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}
