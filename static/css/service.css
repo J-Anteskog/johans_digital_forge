@@ -31,42 +31,49 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* ========== SERVICES GRID ========== */
+/* ========== SERVICES GRID - FIXED LAYOUT ========== */
 
 .services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 0 1rem !important;
+}
+
+/* Remove any wrapper that might interfere */
+.service-card-wrapper {
+  display: contents;
 }
 
 /* Force exactly 4 columns on large screens */
 @media (min-width: 1200px) {
   .services-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr) !important;
   }
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
   .services-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
   .services-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 @media (max-width: 767px) {
   .services-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    padding: 0 0.5rem !important;
   }
 }
 
-/* ========== SERVICE CARDS - DARK THEME ========== */
+/* ========== SERVICE CARDS - UNIFORM HEIGHT ========== */
 
 .service-card {
   background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%) !important;
@@ -78,6 +85,21 @@
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
               border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* FORCE UNIFORM HEIGHT */
+  height: 100% !important;
+  min-height: 520px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Ensure card body takes full height */
+.service-card .card-body {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  padding: 0 !important;
+  height: 100% !important;
 }
 
 /* Hover effects */
@@ -256,13 +278,15 @@
   }
 }
 
-/* Staggered card animations */
-.service-card-wrapper:nth-child(1) .service-card { animation: fadeIn 0.6s ease-out 0.1s backwards; }
-.service-card-wrapper:nth-child(2) .service-card { animation: fadeIn 0.6s ease-out 0.2s backwards; }
-.service-card-wrapper:nth-child(3) .service-card { animation: fadeIn 0.6s ease-out 0.3s backwards; }
-.service-card-wrapper:nth-child(4) .service-card { animation: fadeIn 0.6s ease-out 0.4s backwards; }
-.service-card-wrapper:nth-child(5) .service-card { animation: fadeIn 0.6s ease-out 0.5s backwards; }
-.service-card-wrapper:nth-child(6) .service-card { animation: fadeIn 0.6s ease-out 0.6s backwards; }
+/* Staggered card animations - updated for direct grid items */
+.service-card:nth-child(1) { animation: fadeIn 0.6s ease-out 0.1s backwards; }
+.service-card:nth-child(2) { animation: fadeIn 0.6s ease-out 0.2s backwards; }
+.service-card:nth-child(3) { animation: fadeIn 0.6s ease-out 0.3s backwards; }
+.service-card:nth-child(4) { animation: fadeIn 0.6s ease-out 0.4s backwards; }
+.service-card:nth-child(5) { animation: fadeIn 0.6s ease-out 0.5s backwards; }
+.service-card:nth-child(6) { animation: fadeIn 0.6s ease-out 0.6s backwards; }
+.service-card:nth-child(7) { animation: fadeIn 0.6s ease-out 0.7s backwards; }
+.service-card:nth-child(8) { animation: fadeIn 0.6s ease-out 0.8s backwards; }
 
 /* ========== RESPONSIVE DESIGN ========== */
 
