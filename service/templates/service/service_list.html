@@ -6,9 +6,67 @@
 
 {% block content %}
 <style>
-/* RESET - Ta bort alla konflikterade stilar */
-.services-grid * {
+/* MYCKET STARK CSS SPECIFICITY FÖR ATT ÖVERSKRIDA ALLT */
+body .fade-in-section .container-fluid .services-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  width: 100% !important;
   box-sizing: border-box !important;
+}
+
+/* Tvinga alla kort att följa grid */
+body .fade-in-section .container-fluid .services-grid .card.service-card,
+body .fade-in-section .container-fluid .services-grid .service-card,
+body .fade-in-section .container-fluid .services-grid > * {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  float: none !important;
+  position: static !important;
+}
+
+/* Responsiva breakpoints med hög specificity */
+@media (max-width: 1199px) {
+  body .fade-in-section .container-fluid .services-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 991px) {
+  body .fade-in-section .container-fluid .services-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  body .fade-in-section .container-fluid .services-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Reset alla Bootstrap och andra grid system */
+body .fade-in-section .services-grid .col,
+body .fade-in-section .services-grid .col-*,
+body .fade-in-section .services-grid [class*="col-"] {
+  flex: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Ta bort alla Bootstrap row/col stilar */
+body .fade-in-section .services-grid.row,
+body .fade-in-section .services-grid .row {
+  display: grid !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Fix text colors on dark background */
@@ -46,42 +104,7 @@
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* ENKEL OCH FUNGERANDE GRID LAYOUT */
-.services-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
-  gap: 1.5rem !important;
-  max-width: 1400px !important;
-  margin: 0 auto !important;
-  padding: 0 !important;
-}
-
-/* Force exactly 4 columns on desktop */
-@media (min-width: 1200px) {
-  .services-grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-  }
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-  .services-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .services-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Enkel kortlayout */
+/* Kortlayout */
 .service-card {
   background: rgba(42, 42, 42, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -109,6 +132,7 @@
   font-size: 2.5rem !important;
   margin-bottom: 1rem !important;
   color: #00ffe1 !important;
+  text-align: center !important;
 }
 
 /* Text areas */
@@ -200,6 +224,14 @@
   -webkit-box-orient: vertical !important;
   overflow: hidden !important;
 }
+
+/* Debug border för att se grid */
+/* .services-grid {
+  border: 2px solid red !important;
+}
+.services-grid > * {
+  border: 1px solid blue !important;
+} */
 </style>
 
 <div class="fade-in-section">
@@ -211,7 +243,7 @@
     </div>
 
     {% if services %}
-    <!-- Services Grid - ENKEL STRUKTUR -->
+    <!-- Services Grid - TVINGAD GRID LAYOUT -->
     <div class="services-grid">
       {% for service in services %}
         <div class="card service-card">
@@ -341,6 +373,15 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Debug: Kolla att grid fungerar
+  const grid = document.querySelector('.services-grid');
+  if (grid) {
+    console.log('Grid found:', grid);
+    console.log('Grid children:', grid.children.length);
+    console.log('Computed style:', window.getComputedStyle(grid).display);
+    console.log('Grid template columns:', window.getComputedStyle(grid).gridTemplateColumns);
+  }
+  
   // Modal animations
   const modals = document.querySelectorAll('.modal');
   modals.forEach(modal => {
