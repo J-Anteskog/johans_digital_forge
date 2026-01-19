@@ -16,17 +16,17 @@
       </div>
       <!-- Texten till höger -->
       <div class="col-lg-8">
-        <h1 class="display-4 fw-bold mb-4">Skräddarsydda hemsidor för småföretag, privatpersoner och föreningar</h1>
-        <p class="lead mb-4">Responsiva och visuellt tilltalande webblösningar – byggda för att passa just dina behov.
+        <h1 class="display-4 fw-bold mb-4">Kompletta webblösningar för småföretag, privatpersoner och föreningar</h1>
+        <p class="lead mb-4">Från design och utveckling till hosting och underhåll - allt från en leverantör i Fagersta.
         </p>
         <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
           <a href="{% url 'service_list' %}" class="btn btn-primary btn-lg">
             <i class="fas fa-rocket me-2"></i>
-            Se tjänster
+            Se våra paket
           </a>
           <a href="{% url 'contact' %}" class="btn btn-outline-info btn-lg">
-            <i class="fas fa-envelope me-2"></i>
-            Kontakta mig
+            <i class="fas fa-phone me-2"></i>
+            Gratis konsultation
           </a>
         </div>
       </div>
@@ -34,49 +34,53 @@
   </div>
 </section>
 
-<!-- Om mig -->
-<section class="py-5 bg-white">
-  <div class="container" style="max-width: 900px;">
-    <div class="text-center mb-5">
-      <h2 class="display-5 fw-bold mb-3">Vem är jag?</h2>
-      <div class="text-gradient d-inline-block">
-        <i class="fas fa-user-circle fa-3x"></i>
-      </div>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-lg-12">
-        <p class="lead text-center mb-4">
-          Jag heter Johan Anteskog – en engagerad webbutvecklare som hjälper småföretag, privatpersoner och lokala
-          föreningar att lyckas online.
-        </p>
-        <p class="text-muted">
-          Jag skapar moderna, mobilanpassade hemsidor som är både snygga och funktionella – alltid med fokus på
-          användarvänlighet och kundens behov. Jag arbetar med hela processen: från design och struktur till funktioner
-          som bokningssystem, e-handel, blogg och animationer.
-        </p>
-        <p class="text-muted">
-          Med verktyg som Django, Bootstrap och JavaScript levererar jag skräddarsydda lösningar som är
-          tekniskt hållbara och lätta att underhålla.
-        </p>
-
-        <div class="alert alert-info mt-4" role="alert">
-          <i class="fas fa-lightbulb me-2"></i>
-          <strong>Som kund får du inte bara en hemsida</strong> – du får en personlig partner som lyssnar, förklarar
-          tydligt
-          och levererar enligt överenskommelse. Tillsammans kan vi skapa en digital lösning som verkligen gör skillnad.
+<!-- Kort Om oss intro - Enhanced Card Version -->
+<section class="py-4 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-sm hover-lift" style="border-radius: 10px; background: rgba(255,255,255,0.9);">
+          <div class="card-body p-4">
+            <div class="row align-items-center text-center text-lg-start">
+              
+              <!-- Ikon (samma stil som tjänstekorten) -->
+              <div class="col-lg-2 col-md-3 mb-3 mb-lg-0">
+                <i class="fas fa-user-circle fa-4x text-primary" 
+                   style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
+              </div>
+              
+              <!-- Innehåll -->
+              <div class="col-lg-7 col-md-6">
+                <h5 class="fw-bold mb-2" style="color: #2c3e50;">
+                  <span class="text-primary">Johan's Digital Forge</span>
+                </h5>
+                <p class="text-muted mb-0" style="line-height: 1.5;">
+                  hjälper småföretag, privatpersoner och föreningar att lyckas online med skräddarsydda webblösningar.
+                </p>
+              </div>
+              
+              <!-- Knapp (matchar dina andra knappar) -->
+              <div class="col-lg-3 col-md-3 text-center text-lg-end mt-3 mt-lg-0">
+                <a href="/om-oss/" class="btn btn-outline-primary hover-lift">
+                  <i class="fas fa-arrow-right me-2"></i>
+                  Läs mer om oss
+                </a>
+              </div>
+              
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Tjänster -->
-<section id="services" class="py-5 bg-light">
+<!-- Kompletta webblösningar -->
+<section id="services" class="py-5 bg-white">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="display-5 fw-bold mb-3">Tjänster</h2>
-      <p class="lead text-muted">Vad jag kan hjälpa dig med</p>
+      <h2 class="display-5 fw-bold mb-3">Kompletta webblösningar</h2>
+      <p class="lead text-muted">Allt du behöver för en framgångsrik digital närvaro</p>
     </div>
 
     <div class="row g-4">
@@ -85,9 +89,8 @@
           <div class="card-body p-4">
             <i class="fas fa-laptop-code fa-4x text-primary mb-3"
               style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
-            <h4 class="fw-bold mb-3">Hemsidor</h4>
-            <p class="text-muted">Mobilanpassade, moderna och lättskött webbplatser – anpassade efter din verksamhet.
-            </p>
+            <h4 class="fw-bold mb-3">Webbutveckling & Design</h4>
+            <p class="text-muted">Skräddarsydda hemsidor och webbutiker från idé till lansering. Moderna, mobilanpassade och funktionella lösningar.</p>
           </div>
         </div>
       </div>
@@ -95,33 +98,85 @@
       <div class="col-md-4">
         <div class="card h-100 text-center border-0 shadow-sm hover-lift">
           <div class="card-body p-4">
-            <i class="fas fa-shopping-cart fa-4x text-primary mb-3"
+            <i class="fas fa-server fa-4x text-primary mb-3"
               style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
-            <h4 class="fw-bold mb-3">E-handel</h4>
-            <p class="text-muted">Webbshop med betalningslösningar, produkthantering och säker checkout.</p>
+            <h4 class="fw-bold mb-3">Hosting & Domäner</h4>
+            <p class="text-muted">Snabba servrar och säker domänhantering. Vi kombinerar professionell hosting med pålitlig domänregistrering.</p>
           </div>
         </div>
       </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 text-center border-0 shadow-sm hover-lift">
-        <div class="card-body p-4">
-          <i class="fas fa-calendar-check fa-4x text-primary mb-3"
-            style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
-          <h4 class="fw-bold mb-3">Helhetslösningar</h4>
-          <p class="text-muted">Från domän till deployment - jag hanterar hela kedjan så du kan fokusera på din
-            verksamhet.</p>
+      <div class="col-md-4">
+        <div class="card h-100 text-center border-0 shadow-sm hover-lift">
+          <div class="card-body p-4">
+            <i class="fas fa-tools fa-4x text-primary mb-3"
+              style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
+            <h4 class="fw-bold mb-3">Löpande support & underhåll</h4>
+            <p class="text-muted">Teknisk support, innehållsuppdateringar och säkerhetsövervakning. Vi sköter det tekniska.</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="text-center mt-5">
-    <a href="{% url 'service_list' %}" class="btn btn-primary btn-lg">
-      <i class="fas fa-arrow-right me-2"></i>
-      Se alla tjänster
-    </a>
+    <div class="text-center mt-5">
+      <a href="{% url 'service_list' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-arrow-right me-2"></i>
+        Se alla tjänster och priser
+      </a>
+    </div>
   </div>
+</section>
+
+<!-- Professionell infrastruktur och pålitlig service -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-lg">
+          <div class="card-body p-5">
+            <h3 class="text-center fw-bold mb-4">Professionell infrastruktur och pålitlig service</h3>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-server text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Snabb hosting</h5>
+                    <p class="text-muted mb-0">Dedikerade servrar med 99.9% drifttid, optimal prestanda och fullständig kontroll över din webbplats.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-globe text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Säkra domäner</h5>
+                    <p class="text-muted mb-0">Professionell domänhantering med snabb aktivering, pålitlig drift och svensk support.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-shield-alt text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Säkerhet och backup</h5>
+                    <p class="text-muted mb-0">Automatisk backup, SSL-certifikat och kontinuerlig säkerhetsövervakning ingår alltid.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-handshake text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Lokal service</h5>
+                    <p class="text-muted mb-0">Personlig support från Fagersta med snabb respons och möjlighet till fysiska möten.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -175,13 +230,13 @@
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-8 text-center text-lg-start">
-        <h2 class="display-5 fw-bold mb-3">Redo att ta din verksamhet online?</h2>
-        <p class="lead mb-4 mb-lg-0">Kontakta mig för en gratis offert eller boka ett första möte.</p>
+        <h2 class="display-5 fw-bold mb-3">Redo för en komplett digital lösning?</h2>
+        <p class="lead mb-4 mb-lg-0">Vi sköter allt från hemsida till hosting - du fokuserar på ditt företag.</p>
       </div>
       <div class="col-lg-4 text-center text-lg-end">
         <a href="{% url 'contact' %}" class="btn btn-primary btn-lg shadow-lg">
-          <i class="fas fa-envelope me-2"></i>
-          Kontakta mig.
+          <i class="fas fa-phone me-2"></i>
+          Boka gratis konsultation
         </a>
       </div>
     </div>

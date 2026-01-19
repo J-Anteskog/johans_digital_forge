@@ -9,23 +9,24 @@
 <section class="hero bg-dark text-light py-5">
   <div class="container">
     <div class="row align-items-center text-center text-lg-start">
-      <!-- Logo to the left -->
+      <!-- Logo on the left -->
       <div class="col-lg-4 mb-4 mb-lg-0 d-flex justify-content-center">
-        <img src="{% static 'images/JDFbild-ny.png' %}" alt="Johans Digital Forge logo" class="hero-logo"
+        <img src="{% static 'images/JDFbild-ny.png' %}" alt="Johan's Digital Forge logo" class="hero-logo"
           style="max-width: 100%; height: 260px; filter: drop-shadow(0 0 12px #00bfff);">
       </div>
-      <!-- Text to the right -->
+      <!-- Text on the right -->
       <div class="col-lg-8">
-        <h1 class="display-4 fw-bold mb-4">Custom websites for small businesses, individuals and organizations</h1>
-        <p class="lead mb-4">Responsive and visually appealing web solutions – tailored to your unique needs.</p>
+        <h1 class="display-4 fw-bold mb-4">Complete web solutions for small businesses, individuals and organizations</h1>
+        <p class="lead mb-4">From design and development to hosting and maintenance - everything from one provider.
+        </p>
         <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
           <a href="{% url 'service_list' %}" class="btn btn-primary btn-lg">
             <i class="fas fa-rocket me-2"></i>
-            View Services
+            See our packages
           </a>
           <a href="{% url 'contact' %}" class="btn btn-outline-info btn-lg">
-            <i class="fas fa-envelope me-2"></i>
-            Get in Touch
+            <i class="fas fa-phone me-2"></i>
+            Free consultation
           </a>
         </div>
       </div>
@@ -33,50 +34,53 @@
   </div>
 </section>
 
-<!-- About -->
-<section class="py-5 bg-white">
-  <div class="container" style="max-width: 900px;">
-    <div class="text-center mb-5">
-      <h2 class="display-5 fw-bold mb-3">Who am I?</h2>
-      <div class="text-gradient d-inline-block">
-        <i class="fas fa-user-circle fa-3x"></i>
-      </div>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-lg-12">
-        <p class="lead text-center mb-4">
-          My name is Johan Anteskog – a dedicated web developer helping small businesses, individuals, and local
-          organizations establish a strong online presence.
-        </p>
-        <p class="text-muted">
-          I create modern, responsive websites that are both stylish and user-friendly – always tailored to your goals.
-          I handle the entire process: from design and structure to features like booking systems, e-commerce, blogs,
-          and
-          animations.
-        </p>
-        <p class="text-muted">
-          Using tools like Django, Bootstrap, and JavaScript, I deliver custom-built solutions that are
-          maintainable and scalable.
-        </p>
-
-        <div class="alert alert-info mt-4" role="alert">
-          <i class="fas fa-lightbulb me-2"></i>
-          <strong>As my client, you get more than a website</strong> – you get a committed partner who listens,
-          communicates clearly, and delivers on time. Together, we can create a digital solution that truly makes a
-          difference.
+<!-- Brief About Us intro - Enhanced Card Version -->
+<section class="py-4 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-sm hover-lift" style="border-radius: 10px; background: rgba(255,255,255,0.9);">
+          <div class="card-body p-4">
+            <div class="row align-items-center text-center text-lg-start">
+              
+              <!-- Icon (same style as service cards) -->
+              <div class="col-lg-2 col-md-3 mb-3 mb-lg-0">
+                <i class="fas fa-user-circle fa-4x text-primary" 
+                   style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
+              </div>
+              
+              <!-- Content -->
+              <div class="col-lg-7 col-md-6">
+                <h5 class="fw-bold mb-2" style="color: #2c3e50;">
+                  <span class="text-primary">Johan's Digital Forge</span>
+                </h5>
+                <p class="text-muted mb-0" style="line-height: 1.5;">
+                  helps small businesses, individuals, and associations succeed online with custom web solutions.
+                </p>
+              </div>
+              
+              <!-- Button (matches your other buttons) -->
+              <div class="col-lg-3 col-md-3 text-center text-lg-end mt-3 mt-lg-0">
+                <a href="/en/about-us/" class="btn btn-outline-primary hover-lift">
+                  <i class="fas fa-arrow-right me-2"></i>
+                  Learn more about us
+                </a>
+              </div>
+              
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Services -->
-<section id="services" class="py-5 bg-light">
+<!-- Complete web solutions -->
+<section id="services" class="py-5 bg-white">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="display-5 fw-bold mb-3">Services</h2>
-      <p class="lead text-muted">What I can help you with</p>
+      <h2 class="display-5 fw-bold mb-3">Complete web solutions</h2>
+      <p class="lead text-muted">Everything you need for a successful digital presence</p>
     </div>
 
     <div class="row g-4">
@@ -85,8 +89,8 @@
           <div class="card-body p-4">
             <i class="fas fa-laptop-code fa-4x text-primary mb-3"
               style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
-            <h4 class="fw-bold mb-3">Websites</h4>
-            <p class="text-muted">Modern, mobile-friendly, and easy-to-manage websites tailored to your needs.</p>
+            <h4 class="fw-bold mb-3">Web Development & Design</h4>
+            <p class="text-muted">Custom websites and web stores from concept to launch. Modern, mobile-responsive, and functional solutions.</p>
           </div>
         </div>
       </div>
@@ -94,41 +98,93 @@
       <div class="col-md-4">
         <div class="card h-100 text-center border-0 shadow-sm hover-lift">
           <div class="card-body p-4">
-            <i class="fas fa-shopping-cart fa-4x text-primary mb-3"
+            <i class="fas fa-server fa-4x text-primary mb-3"
               style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
-            <h4 class="fw-bold mb-3">E-commerce</h4>
-            <p class="text-muted">Online shops with secure payment solutions and product management features.</p>
+            <h4 class="fw-bold mb-3">Hosting & Domains</h4>
+            <p class="text-muted">Fast servers and secure domain management. We combine professional hosting with reliable domain registration.</p>
           </div>
         </div>
       </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 text-center border-0 shadow-sm hover-lift">
-        <div class="card-body p-4">
-          <i class="fas fa-calendar-check fa-4x text-primary mb-3"
-            style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
-          <h4 class="fw-bold mb-3">Complete Solutions</h4>
-          <p class="text-muted">From domain to deployment - I handle the entire chain so you can focus on your business.
-          </p>
+      <div class="col-md-4">
+        <div class="card h-100 text-center border-0 shadow-sm hover-lift">
+          <div class="card-body p-4">
+            <i class="fas fa-tools fa-4x text-primary mb-3"
+              style="filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));"></i>
+            <h4 class="fw-bold mb-3">Ongoing Support & Maintenance</h4>
+            <p class="text-muted">Technical support, content updates, and security monitoring. We handle the technical side.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <a href="{% url 'service_list' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-arrow-right me-2"></i>
+        See all services and prices
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Professional infrastructure and reliable service -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-lg">
+          <div class="card-body p-5">
+            <h3 class="text-center fw-bold mb-4">Professional infrastructure and reliable service</h3>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-server text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Fast hosting</h5>
+                    <p class="text-muted mb-0">Dedicated servers with 99.9% uptime, optimal performance and full control over your website.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-globe text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Secure domains</h5>
+                    <p class="text-muted mb-0">Professional domain management with fast activation, reliable operation and Swedish support.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-shield-alt text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Security and backup</h5>
+                    <p class="text-muted mb-0">Automatic backup, SSL certificates and continuous security monitoring always included.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-handshake text-success fa-2x me-3 mt-1"></i>
+                  <div>
+                    <h5 class="fw-bold mb-2">Local service</h5>
+                    <p class="text-muted mb-0">Personal support from Fagersta with quick response and possibility for in-person meetings.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="text-center mt-5">
-    <a href="{% url 'service_list' %}" class="btn btn-primary btn-lg">
-      <i class="fas fa-arrow-right me-2"></i>
-      View All Services
-    </a>
-  </div>
-  </div>
 </section>
 
-<!-- Portfolio -->
+<!-- Portfolio on homepage -->
 <section class="py-5 bg-white">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="display-5 fw-bold mb-3">My Previous Projects</h2>
+      <h2 class="display-5 fw-bold mb-3">My previous projects</h2>
       <p class="lead text-muted">See what I've created for other clients</p>
     </div>
 
@@ -150,7 +206,7 @@
               {% if project.live_url %}
               <a href="{{ project.live_url }}" target="_blank" class="btn btn-outline-primary">
                 <i class="fas fa-external-link-alt me-2"></i>
-                Visit Site
+                Visit site
               </a>
               {% endif %}
             </div>
@@ -163,7 +219,7 @@
     <div class="text-center mt-5">
       <a href="{% url 'portfolio' %}" class="btn btn-outline-primary btn-lg">
         <i class="fas fa-folder-open me-2"></i>
-        See All Projects
+        See all projects
       </a>
     </div>
   </div>
@@ -174,13 +230,13 @@
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-8 text-center text-lg-start">
-        <h2 class="display-5 fw-bold mb-3">Ready to take your business online?</h2>
-        <p class="lead mb-4 mb-lg-0">Contact me for a free quote or to schedule an intro call.</p>
+        <h2 class="display-5 fw-bold mb-3">Ready for a complete digital solution?</h2>
+        <p class="lead mb-4 mb-lg-0">We handle everything from website to hosting - you focus on your business.</p>
       </div>
       <div class="col-lg-4 text-center text-lg-end">
         <a href="{% url 'contact' %}" class="btn btn-primary btn-lg shadow-lg">
-          <i class="fas fa-envelope me-2"></i>
-          Get in Touch
+          <i class="fas fa-phone me-2"></i>
+          Book free consultation
         </a>
       </div>
     </div>

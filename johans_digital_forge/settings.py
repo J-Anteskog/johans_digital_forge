@@ -112,6 +112,7 @@ INSTALLED_APPS = [
     'contact',
     'portfolio',
     'custom_admin',
+    'about',
 ]
 
 SITE_ID = 1

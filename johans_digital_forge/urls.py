@@ -6,6 +6,7 @@ from django.conf import settings
 from django.urls import path, include
 from home import views as home_views
 from service import views as service_views
+from about.views import about_us_en
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
@@ -26,4 +27,6 @@ urlpatterns = [
     path('dashboard/', include('custom_admin.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, 
          name='django.contrib.sitemaps.views.sitemap'),
+    path('about/', include('about.urls')),
+    path('en/about-us/', about_us_en, name='about_us_en'),
 ]

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us | Johan's Digital Forge{% endblock %}
+
+{% block meta_description %}Get to know Johan Anteskog and Johan's Digital Forge - your partner for web development in Fagersta, Sweden.{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero bg-dark text-light py-5">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="display-4 fw-bold mb-4">About Us</h1>
+      <p class="lead">Get to know the team behind Johan's Digital Forge</p>
+    </div>
+  </div>
+</section>
+
+<!-- About Johan with personal photo -->
+<section class="py-5 bg-white">
+  <div class="container" style="max-width: 900px;">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Who am I?</h2>
+    </div>
+
+    <div class="row g-4 align-items-center">
+      <!-- Personal photo -->
+      <div class="col-lg-4 text-center mb-4 mb-lg-0">
+        <div class="position-relative d-inline-block">
+          <!-- Main photo - replace with your actual photo -->
+          <img src="{% static 'images/johan-profile.jpg' %}" 
+               alt="Johan Anteskog - Founder of Johan's Digital Forge" 
+               class="img-fluid rounded-circle shadow-lg"
+               style="width: 250px; height: 250px; object-fit: cover; 
+                      border: 4px solid #fff; 
+                      box-shadow: 0 0 20px rgba(0,0,0,0.1) !important;">
+          
+          <!-- Decorative ring with animation -->
+          <div class="position-absolute top-50 start-50 translate-middle" 
+               style="width: 270px; height: 270px; 
+                      border: 2px solid rgba(102, 126, 234, 0.3); 
+                      border-radius: 50%; 
+                      z-index: -1;
+                      animation: pulse-ring 3s ease-in-out infinite;">
+          </div>
+        </div>
+        
+        <!-- Contact info card under photo -->
+        <div class="card border-0 shadow-sm mt-4">
+          <div class="card-body p-3">
+            <h6 class="fw-bold text-primary mb-2">
+              <i class="fas fa-map-marker-alt me-2"></i>
+              Based in Fagersta
+            </h6>
+            <p class="text-muted small mb-0">
+              Local service and personal meetings
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text content -->
+      <div class="col-lg-8">
+        <p class="lead mb-4">
+          My name is Johan Anteskog – a dedicated web developer who helps small businesses, individuals, and local
+          associations succeed online.
+        </p>
+        <p class="mb-4">
+          I create modern, mobile-responsive websites that are both beautiful and functional – always with a focus on
+          user experience and customer needs. I work with the entire process: from design and structure to features
+          like booking systems, e-commerce, blogs, and animations.
+        </p>
+        <p class="mb-4">
+          Using tools like Django, Bootstrap, and JavaScript, I deliver custom solutions that are
+          technically sustainable and easy to maintain.
+        </p>
+
+        <div class="alert alert-info" role="alert">
+          <i class="fas fa-lightbulb me-2"></i>
+          <strong>As a customer, you don't just get a website</strong> – you get a personal partner who listens, explains
+          clearly,
+          and delivers according to agreement. Together we can create a digital solution that really makes a difference.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Our philosophy -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Our philosophy</h2>
+      <p class="lead text-muted">How we work to create successful web solutions</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 text-center border-0 shadow-sm">
+          <div class="card-body p-4">
+            <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+            <h4 class="fw-bold mb-3">Personal service</h4>
+            <p class="text-muted">We believe in close customer relationships and clear communication throughout the entire process.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 text-center border-0 shadow-sm">
+          <div class="card-body p-4">
+            <i class="fas fa-cog fa-3x text-primary mb-3"></i>
+            <h4 class="fw-bold mb-3">Technical quality</h4>
+            <p class="text-muted">Modern technologies, secure code, and sustainable solutions that grow with your business.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 text-center border-0 shadow-sm">
+          <div class="card-body p-4">
+            <i class="fas fa-rocket fa-3x text-primary mb-3"></i>
+            <h4 class="fw-bold mb-3">Complete solutions</h4>
+            <p class="text-muted">From domain to deployment - we handle everything so you can focus on your business.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Technical expertise -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Technical expertise</h2>
+      <p class="lead text-muted">The tools and technologies we use</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="row g-3">
+          <div class="col-md-4 text-center">
+            <div class="p-3">
+              <i class="fab fa-python fa-3x text-primary mb-2"></i>
+              <h6 class="fw-bold">Django & Python</h6>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="p-3">
+              <i class="fab fa-js-square fa-3x text-warning mb-2"></i>
+              <h6 class="fw-bold">JavaScript & Bootstrap</h6>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="p-3">
+              <i class="fab fa-html5 fa-3x text-danger mb-2"></i>
+              <h6 class="fw-bold">HTML5 & CSS3</h6>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="p-3">
+              <i class="fas fa-database fa-3x text-info mb-2"></i>
+              <h6 class="fw-bold">PostgreSQL</h6>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="p-3">
+              <i class="fab fa-git-alt fa-3x text-dark mb-2"></i>
+              <h6 class="fw-bold">Git & GitHub</h6>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="p-3">
+              <i class="fas fa-cloud fa-3x text-primary mb-2"></i>
+              <h6 class="fw-bold">Cloudinary & CDN</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Partners -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Our partners</h2>
+      <p class="lead text-muted">We collaborate with leading Swedish companies for the best possible service</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 text-center">
+            <i class="fas fa-server fa-3x text-primary mb-3"></i>
+            <h4 class="fw-bold mb-3">Loopia</h4>
+            <p class="text-muted">
+              Sweden's largest web hosting provider with over 20 years of experience. 
+              Gives us and our customers access to secure hosting, automatic backup, and Swedish support around the clock.
+            </p>
+            <div class="mt-3">
+              <span class="badge bg-success me-2">99.9% uptime</span>
+              <span class="badge bg-success me-2">Swedish data centers</span>
+              <span class="badge bg-success">24/7 support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact CTA -->
+<section class="py-5 bg-dark text-light">
+  <div class="container">
+    <div class="text-center">
+      <h2 class="display-5 fw-bold mb-3">Ready to collaborate?</h2>
+      <p class="lead mb-4">Contact us for a free consultation and let us discuss your project.</p>
+      <div class="d-flex gap-3 justify-content-center">
+        <a href="{% url 'contact' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-phone me-2"></i>
+          Contact us
+        </a>
+        <a href="{% url 'service_list' %}" class="btn btn-outline-info btn-lg">
+          <i class="fas fa-list me-2"></i>
+          See services
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+@keyframes pulse-ring {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1); 
+    opacity: 0.3;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.05); 
+    opacity: 0.1;
+  }
+}
+</style>
+
+{% endblock %}
