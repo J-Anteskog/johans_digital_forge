@@ -15,9 +15,9 @@
 
     {% if services %}
     <!-- Services Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center">
+    <div class="services-grid">
       {% for service in services %}
-      <div class="col">
+      <div class="service-card-wrapper">
         <div class="card service-card h-100">
           
           <!-- Populärast Badge -->
@@ -33,23 +33,23 @@
             <!-- Icon -->
             {% if service.icon %}
             <div class="text-center mb-3">
-              <i class="{{ service.icon }} fa-3x"></i>
+              <i class="{{ service.icon }} fa-3x service-icon"></i>
             </div>
             {% endif %}
 
             <!-- Swedish Title & Description -->
-            <h4 class="text-center mb-3">{{ service.title_sv }}</h4>
-            <p class="lead text-center">{{ service.description_sv }}</p>
+            <h4 class="text-center mb-3 service-title">{{ service.title_sv }}</h4>
+            <p class="lead text-center service-description">{{ service.description_sv }}</p>
 
             <!-- Divider -->
-            <hr class="bg-light my-3">
+            <hr class="service-divider my-3">
 
             <!-- English Title & Description -->
-            <h5 class="text-center text-muted mb-2">{{ service.title_en }}</h5>
-            <p class="text-center small">{{ service.description_en }}</p>
+            <h5 class="text-center service-subtitle mb-2">{{ service.title_en }}</h5>
+            <p class="text-center small service-text">{{ service.description_en }}</p>
 
             <!-- Price -->
-            <div class="text-center">
+            <div class="text-center mb-4">
               <span class="price-tag">Från {{ service.price|floatformat:0 }} SEK</span>
             </div>
 
@@ -57,26 +57,23 @@
             <div class="mt-auto pt-3">
               <!-- Primär CTA -->
               <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
-                 class="btn btn-primary btn-lg w-100 mb-2">
+                 class="btn btn-primary btn-lg w-100 mb-2 service-btn-primary">
                 <i class="fas fa-paper-plane me-2"></i>
                 Kontakta mig
               </a>
               
               <!-- Sekundära CTAs -->
               <div class="d-flex gap-2">
-                <a href="{% url 'quote_request' %}?service={{ service.title_sv }}" 
-                   class="btn btn-outline-info flex-fill">
+                <a href="/contact/" class="btn btn-outline-info flex-fill service-btn-secondary">
                   <i class="fas fa-file-invoice me-1"></i>
-                  <span class="d-none d-lg-inline">Offert</span>
-                  <span class="d-lg-none">Offert</span>
+                  Offert
                 </a>
                 <button type="button" 
-                        class="btn btn-outline-info flex-fill" 
+                        class="btn btn-outline-info flex-fill service-btn-secondary" 
                         data-bs-toggle="modal"
                         data-bs-target="#infoModal{{ service.id }}">
                   <i class="fas fa-info-circle me-1"></i>
-                  <span class="d-none d-lg-inline">Info</span>
-                  <span class="d-lg-none">Info</span>
+                  Info
                 </button>
               </div>
             </div>
@@ -86,42 +83,42 @@
       </div>
 
       <!-- Modal för varje service -->
-      <div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1"
+      <div class="modal fade service-modal" id="infoModal{{ service.id }}" tabindex="-1"
            aria-labelledby="infoModalLabel{{ service.id }}" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content bg-dark text-light">
-            <div class="modal-header border-secondary">
+          <div class="modal-content service-modal-content">
+            <div class="modal-header service-modal-header">
               <h5 class="modal-title text-gradient" id="infoModalLabel{{ service.id }}">
                 <i class="{{ service.icon }} me-2"></i>
                 {{ service.title_sv }}
               </h5>
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body service-modal-body">
               <!-- Swedish Info -->
               <div class="mb-4">
                 <h6 class="text-info mb-3">📋 Beskrivning (Svenska)</h6>
-                <p>{{ service.extra_info_sv|default:service.description_sv|safe }}</p>
+                <p class="modal-text">{{ service.extra_info_sv|default:service.description_sv|safe }}</p>
               </div>
               
               <!-- English Info -->
               <div class="mb-4">
                 <h6 class="text-info mb-3">📋 Description (English)</h6>
-                <p>{{ service.extra_info_en|default:service.description_en|safe }}</p>
+                <p class="modal-text">{{ service.extra_info_en|default:service.description_en|safe }}</p>
               </div>
 
               <!-- Price & Details -->
-              <div class="alert alert-info" role="alert">
+              <div class="alert alert-info service-alert" role="alert">
                 <i class="fas fa-tag me-2"></i>
                 <strong>Pris / Price:</strong> Från {{ service.price|floatformat:0 }} SEK
               </div>
             </div>
-            <div class="modal-footer border-secondary">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <div class="modal-footer service-modal-footer">
+              <button type="button" class="btn btn-secondary service-btn-close" data-bs-dismiss="modal">
                 <i class="fas fa-times me-2"></i>
                 Stäng / Close
               </button>
-              <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary">
+              <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary service-btn-primary">
                 <i class="fas fa-paper-plane me-2"></i>
                 Kontakta mig / Contact me
               </a>
@@ -133,7 +130,7 @@
     </div>
 
     {% else %}
-    <!-- Tomt state -->
+    <!-- Empty State -->
     <div class="text-center py-5">
       <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
       <p class="lead text-muted">Inga tjänster tillgängliga just nu.</p>
@@ -144,12 +141,11 @@
   </div>
 </div>
 
-<!-- Extra JS för smooth interactions -->
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Förbättra modal animations
-  const modals = document.querySelectorAll('.modal');
+  // Modal animations
+  const modals = document.querySelectorAll('.service-modal');
   modals.forEach(modal => {
     modal.addEventListener('show.bs.modal', function() {
       this.querySelector('.modal-dialog').style.transform = 'scale(0.95)';
