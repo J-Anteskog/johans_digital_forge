@@ -6,6 +6,11 @@
 
 {% block content %}
 <style>
+/* RESET - Ta bort alla konflikterade stilar */
+.services-grid * {
+  box-sizing: border-box !important;
+}
+
 /* Fix text colors on dark background */
 .service-card,
 .service-card * {
@@ -41,181 +46,164 @@
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Korrigerad kortlayout för grid */
-.service-card {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 1.5rem 1.25rem !important;
-  transition: transform 0.4s ease, box-shadow 0.4s ease !important;
-  min-height: 480px !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* Card body layout */
-.service-card .card-body {
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 !important;
-  padding: 0 !important;
-}
-
-/* Mindre ikoner */
-.service-card i.fa-3x {
-  font-size: 2.2rem !important;
-  margin-bottom: 1rem !important;
-}
-
-/* Justerad text med bättre line-height */
-.service-card h4 {
-  line-height: 1.3 !important;
-  margin-bottom: 0.75rem !important;
-}
-
-.service-card .lead {
-  line-height: 1.4 !important;
-  margin-bottom: 1rem !important;
-  min-height: 60px !important;
-  display: flex !important;
-  align-items: center !important;
-  text-align: center !important;
-}
-
-.service-card h5 {
-  margin-bottom: 0.5rem !important;
-}
-
-.service-card .english-description {
-  min-height: 80px !important;
-  margin-bottom: 1rem !important;
-  display: flex !important;
-  align-items: center !important;
-  text-align: center !important;
-}
-
-/* Price area */
-.service-card .price-area {
-  margin: 1rem 0 !important;
-  text-align: center !important;
-}
-
-/* Button area - alltid i botten */
-.service-card .button-area {
-  margin-top: auto !important;
-  padding-top: 1rem !important;
-}
-
-/* Mindre knappar */
-.service-card .btn-lg {
-  font-size: 0.85rem !important;
-  padding: 0.6rem 1rem !important;
-}
-
-.service-card .btn-outline-info {
-  font-size: 0.8rem !important;
-  padding: 0.45rem 0.75rem !important;
-}
-
-/* HR styling */
-.service-card hr {
-  margin: 0.75rem 0 !important;
-  opacity: 0.3 !important;
-}
-
-/* Hover effects */
-.service-card:hover {
-  transform: translateY(-15px) scale(1.02) !important;
-  box-shadow: 0 20px 50px rgba(0, 255, 225, 0.4) !important;
-  border-color: rgba(0, 255, 225, 0.8) !important;
-  z-index: 100 !important;
-}
-
-.service-card:hover i {
-  transform: scale(1.12) rotate(3deg) !important;
-  filter: drop-shadow(0 0 20px rgba(0, 255, 225, 1)) !important;
-}
-
-/* KORRIGERAD Grid för exakt 4 kort per rad - alla kort */
+/* ENKEL OCH FUNGERANDE GRID LAYOUT */
 .services-grid {
   display: grid !important;
-  grid-template-columns: repeat(4, minmax(280px, 1fr)) !important;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
   gap: 1.5rem !important;
   max-width: 1400px !important;
   margin: 0 auto !important;
-  width: 100% !important;
+  padding: 0 !important;
 }
 
-.services-grid .service-card,
-.services-grid .card.service-card {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-}
-
-/* Responsiv layout för CSS Grid - justerad för många kort */
-@media (max-width: 1399px) {
+/* Force exactly 4 columns on desktop */
+@media (min-width: 1200px) {
   .services-grid {
-    grid-template-columns: repeat(4, minmax(250px, 1fr)) !important;
+    grid-template-columns: repeat(4, 1fr) !important;
   }
 }
 
-@media (max-width: 1199px) {
+@media (min-width: 992px) and (max-width: 1199px) {
   .services-grid {
-    grid-template-columns: repeat(3, minmax(280px, 1fr)) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
-@media (max-width: 991px) {
+@media (min-width: 768px) and (max-width: 991px) {
   .services-grid {
-    grid-template-columns: repeat(2, minmax(280px, 1fr)) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 @media (max-width: 767px) {
   .services-grid {
     grid-template-columns: 1fr !important;
-    gap: 1rem !important;
-  }
-  
-  .service-card {
-    max-width: 350px !important;
-    margin: 0 auto !important;
   }
 }
 
-/* Text truncation utan varningar */
-.text-clamp-3 {
+/* Enkel kortlayout */
+.service-card {
+  background: rgba(42, 42, 42, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  transition: all 0.4s ease !important;
+  min-height: 450px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
   overflow: hidden !important;
+}
+
+/* Card body */
+.service-card .card-body {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Icon styling */
+.service-card i.fa-3x {
+  font-size: 2.5rem !important;
+  margin-bottom: 1rem !important;
+  color: #00ffe1 !important;
+}
+
+/* Text areas */
+.service-card h4 {
+  margin-bottom: 1rem !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+}
+
+.service-card .lead {
+  margin-bottom: 1rem !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  flex-grow: 0 !important;
+}
+
+.service-card hr {
+  margin: 1rem 0 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.service-card h5 {
+  text-align: center !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.service-card .small {
+  text-align: center !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.3 !important;
+}
+
+/* Price area */
+.service-card .price-area {
+  text-align: center !important;
+  margin: 1rem 0 !important;
+}
+
+/* Button area - alltid längst ner */
+.service-card .button-area {
+  margin-top: auto !important;
+  padding-top: 1rem !important;
+}
+
+/* Button styling */
+.service-card .btn {
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.service-card .btn-primary {
+  background: linear-gradient(135deg, #00ffe1, #0080ff) !important;
+  border: none !important;
+  color: #000 !important;
+}
+
+.service-card .btn-outline-info {
+  border: 1px solid #00ffe1 !important;
+  color: #00ffe1 !important;
+}
+
+.service-card .btn-lg {
+  padding: 0.75rem 1.5rem !important;
+  font-size: 0.9rem !important;
+}
+
+.service-card .btn-outline-info {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.8rem !important;
+}
+
+/* Hover effects */
+.service-card:hover {
+  transform: translateY(-10px) !important;
+  box-shadow: 0 15px 35px rgba(0, 255, 225, 0.3) !important;
+  border-color: rgba(0, 255, 225, 0.5) !important;
+}
+
+.service-card:hover i {
+  transform: scale(1.1) !important;
+  filter: drop-shadow(0 0 15px rgba(0, 255, 225, 0.8)) !important;
+}
+
+/* Text clamp för beskrivningar */
+.text-clamp-3 {
   display: -webkit-box !important;
   -webkit-line-clamp: 3 !important;
   -webkit-box-orient: vertical !important;
-  line-height: 1.4 !important;
-}
-
-/* Fallback för browsers utan line-clamp support */
-@supports not (-webkit-line-clamp: 3) {
-  .text-clamp-3 {
-    display: block !important;
-    max-height: 4.2em !important;
-    line-height: 1.4em !important;
-    overflow: hidden !important;
-    position: relative !important;
-  }
-  
-  .text-clamp-3::after {
-    content: '...' !important;
-    position: absolute !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    background: linear-gradient(to right, transparent, #1a1a1a 70%) !important;
-    padding-left: 1rem !important;
-  }
+  overflow: hidden !important;
 }
 </style>
 
 <div class="fade-in-section">
-  <div class="container">
+  <div class="container-fluid">
     <!-- Section Header -->
     <div class="section-header text-center mb-5">
       <h2 class="display-4 text-gradient">🛠️ Tjänster / Services</h2>
@@ -223,7 +211,7 @@
     </div>
 
     {% if services %}
-    <!-- Services Grid -->
+    <!-- Services Grid - ENKEL STRUKTUR -->
     <div class="services-grid">
       {% for service in services %}
         <div class="card service-card">
@@ -246,17 +234,15 @@
             {% endif %}
 
             <!-- Swedish Title & Description -->
-            <h4 class="text-center">{{ service.title_sv }}</h4>
-            <p class="lead text-center text-clamp-3">{{ service.description_sv }}</p>
+            <h4>{{ service.title_sv }}</h4>
+            <p class="lead text-clamp-3">{{ service.description_sv }}</p>
 
             <!-- Divider -->
-            <hr class="bg-light">
+            <hr>
 
             <!-- English Title & Description -->
-            <h5 class="text-center text-muted">{{ service.title_en }}</h5>
-            <div class="english-description">
-              <p class="text-center small text-clamp-3">{{ service.description_en }}</p>
-            </div>
+            <h5 class="text-muted">{{ service.title_en }}</h5>
+            <p class="small text-clamp-3">{{ service.description_en }}</p>
 
             <!-- Price -->
             <div class="price-area">
@@ -351,11 +337,11 @@
   </div>
 </div>
 
-<!-- Extra JS för smooth interactions -->
+<!-- Extra JS -->
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Förbättra modal animations
+  // Modal animations
   const modals = document.querySelectorAll('.modal');
   modals.forEach(modal => {
     modal.addEventListener('show.bs.modal', function() {
