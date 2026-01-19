@@ -41,11 +41,11 @@
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Korrigerad kortlayout */
+/* Korrigerad kortlayout för grid */
 .service-card {
   width: 100% !important;
-  max-width: 320px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  margin: 0 !important;
   padding: 1.5rem 1.25rem !important;
   transition: transform 0.4s ease, box-shadow 0.4s ease !important;
   min-height: 480px !important;
@@ -136,29 +136,39 @@
   filter: drop-shadow(0 0 20px rgba(0, 255, 225, 1)) !important;
 }
 
-/* KORRIGERAD Grid för exakt 4 kort per rad */
+/* KORRIGERAD Grid för exakt 4 kort per rad - alla kort */
 .services-grid {
   display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
+  grid-template-columns: repeat(4, minmax(280px, 1fr)) !important;
   gap: 1.5rem !important;
   max-width: 1400px !important;
   margin: 0 auto !important;
-}
-
-.services-grid .service-card {
   width: 100% !important;
 }
 
-/* Responsiv layout för CSS Grid */
+.services-grid .service-card,
+.services-grid .card.service-card {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* Responsiv layout för CSS Grid - justerad för många kort */
+@media (max-width: 1399px) {
+  .services-grid {
+    grid-template-columns: repeat(4, minmax(250px, 1fr)) !important;
+  }
+}
+
 @media (max-width: 1199px) {
   .services-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(3, minmax(280px, 1fr)) !important;
   }
 }
 
 @media (max-width: 991px) {
   .services-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, minmax(280px, 1fr)) !important;
   }
 }
 
