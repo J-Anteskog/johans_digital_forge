@@ -5,248 +5,20 @@
 {% endblock %}
 
 {% block content %}
-<style>
-/* MYCKET STARK CSS SPECIFICITY FÖR ATT ÖVERSKRIDA ALLT */
-body .fade-in-section .container-fluid .services-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
-  gap: 1.5rem !important;
-  max-width: 1400px !important;
-  margin: 0 auto !important;
-  padding: 0 !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* Tvinga alla kort att följa grid */
-body .fade-in-section .container-fluid .services-grid .card.service-card,
-body .fade-in-section .container-fluid .services-grid .service-card,
-body .fade-in-section .container-fluid .services-grid > * {
-  display: flex !important;
-  flex-direction: column !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  float: none !important;
-  position: static !important;
-}
-
-/* Responsiva breakpoints med hög specificity */
-@media (max-width: 1199px) {
-  body .fade-in-section .container-fluid .services-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-
-@media (max-width: 991px) {
-  body .fade-in-section .container-fluid .services-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-@media (max-width: 767px) {
-  body .fade-in-section .container-fluid .services-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Reset alla Bootstrap och andra grid system */
-body .fade-in-section .services-grid .col,
-body .fade-in-section .services-grid .col-*,
-body .fade-in-section .services-grid [class*="col-"] {
-  flex: none !important;
-  width: 100% !important;
-  max-width: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* Ta bort alla Bootstrap row/col stilar */
-body .fade-in-section .services-grid.row,
-body .fade-in-section .services-grid .row {
-  display: grid !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* Fix text colors on dark background */
-.service-card,
-.service-card * {
-  color: #ffffff !important;
-}
-
-.service-card h4 {
-  color: #00ffe1 !important;
-  font-size: 1.1rem !important;
-}
-
-.service-card .lead {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-size: 0.85rem !important;
-}
-
-.service-card p {
-  color: rgba(255, 255, 255, 0.8) !important;
-  font-size: 0.8rem !important;
-}
-
-.service-card h5 {
-  font-size: 0.95rem !important;
-}
-
-.service-card .price-tag {
-  color: #00ffe1 !important;
-  font-size: 1.3rem !important;
-  font-weight: 700 !important;
-}
-
-.service-card .text-muted {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* Kortlayout */
-.service-card {
-  background: rgba(42, 42, 42, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 12px !important;
-  padding: 1.5rem !important;
-  transition: all 0.4s ease !important;
-  min-height: 450px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  position: relative !important;
-  overflow: hidden !important;
-}
-
-/* Card body */
-.service-card .card-body {
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* Icon styling */
-.service-card i.fa-3x {
-  font-size: 2.5rem !important;
-  margin-bottom: 1rem !important;
-  color: #00ffe1 !important;
-  text-align: center !important;
-}
-
-/* Text areas */
-.service-card h4 {
-  margin-bottom: 1rem !important;
-  line-height: 1.3 !important;
-  text-align: center !important;
-}
-
-.service-card .lead {
-  margin-bottom: 1rem !important;
-  line-height: 1.4 !important;
-  text-align: center !important;
-  flex-grow: 0 !important;
-}
-
-.service-card hr {
-  margin: 1rem 0 !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-.service-card h5 {
-  text-align: center !important;
-  margin-bottom: 0.5rem !important;
-}
-
-.service-card .small {
-  text-align: center !important;
-  margin-bottom: 1rem !important;
-  line-height: 1.3 !important;
-}
-
-/* Price area */
-.service-card .price-area {
-  text-align: center !important;
-  margin: 1rem 0 !important;
-}
-
-/* Button area - alltid längst ner */
-.service-card .button-area {
-  margin-top: auto !important;
-  padding-top: 1rem !important;
-}
-
-/* Button styling */
-.service-card .btn {
-  border-radius: 6px !important;
-  font-weight: 600 !important;
-  transition: all 0.3s ease !important;
-}
-
-.service-card .btn-primary {
-  background: linear-gradient(135deg, #00ffe1, #0080ff) !important;
-  border: none !important;
-  color: #000 !important;
-}
-
-.service-card .btn-outline-info {
-  border: 1px solid #00ffe1 !important;
-  color: #00ffe1 !important;
-}
-
-.service-card .btn-lg {
-  padding: 0.75rem 1.5rem !important;
-  font-size: 0.9rem !important;
-}
-
-.service-card .btn-outline-info {
-  padding: 0.5rem 1rem !important;
-  font-size: 0.8rem !important;
-}
-
-/* Hover effects */
-.service-card:hover {
-  transform: translateY(-10px) !important;
-  box-shadow: 0 15px 35px rgba(0, 255, 225, 0.3) !important;
-  border-color: rgba(0, 255, 225, 0.5) !important;
-}
-
-.service-card:hover i {
-  transform: scale(1.1) !important;
-  filter: drop-shadow(0 0 15px rgba(0, 255, 225, 0.8)) !important;
-}
-
-/* Text clamp för beskrivningar */
-.text-clamp-3 {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 3 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-}
-
-/* Debug border för att se grid */
-/* .services-grid {
-  border: 2px solid red !important;
-}
-.services-grid > * {
-  border: 1px solid blue !important;
-} */
-</style>
-
 <div class="fade-in-section">
-  <div class="container-fluid">
+  <div class="container">
     <!-- Section Header -->
-    <div class="section-header text-center mb-5">
+    <div class="section-header text-center">
       <h2 class="display-4 text-gradient">🛠️ Tjänster / Services</h2>
       <p class="lead">Vad jag erbjuder – What I offer</p>
     </div>
 
     {% if services %}
-    <!-- Services Grid - TVINGAD GRID LAYOUT -->
-    <div class="services-grid">
+    <!-- Services Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center">
       {% for service in services %}
-        <div class="card service-card">
+      <div class="col">
+        <div class="card service-card h-100">
           
           <!-- Populärast Badge -->
           {% if service.is_featured %}
@@ -256,7 +28,7 @@ body .fade-in-section .services-grid .row {
           </div>
           {% endif %}
 
-          <div class="card-body">
+          <div class="card-body d-flex flex-column">
             
             <!-- Icon -->
             {% if service.icon %}
@@ -266,23 +38,23 @@ body .fade-in-section .services-grid .row {
             {% endif %}
 
             <!-- Swedish Title & Description -->
-            <h4>{{ service.title_sv }}</h4>
-            <p class="lead text-clamp-3">{{ service.description_sv }}</p>
+            <h4 class="text-center mb-3">{{ service.title_sv }}</h4>
+            <p class="lead text-center">{{ service.description_sv }}</p>
 
             <!-- Divider -->
-            <hr>
+            <hr class="bg-light my-3">
 
             <!-- English Title & Description -->
-            <h5 class="text-muted">{{ service.title_en }}</h5>
-            <p class="small text-clamp-3">{{ service.description_en }}</p>
+            <h5 class="text-center text-muted mb-2">{{ service.title_en }}</h5>
+            <p class="text-center small">{{ service.description_en }}</p>
 
             <!-- Price -->
-            <div class="price-area">
+            <div class="text-center">
               <span class="price-tag">Från {{ service.price|floatformat:0 }} SEK</span>
             </div>
 
             <!-- CTA Buttons -->
-            <div class="button-area">
+            <div class="mt-auto pt-3">
               <!-- Primär CTA -->
               <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
                  class="btn btn-primary btn-lg w-100 mb-2">
@@ -295,65 +67,68 @@ body .fade-in-section .services-grid .row {
                 <a href="{% url 'quote_request' %}?service={{ service.title_sv }}" 
                    class="btn btn-outline-info flex-fill">
                   <i class="fas fa-file-invoice me-1"></i>
-                  Offert
+                  <span class="d-none d-lg-inline">Offert</span>
+                  <span class="d-lg-none">Offert</span>
                 </a>
                 <button type="button" 
                         class="btn btn-outline-info flex-fill" 
                         data-bs-toggle="modal"
                         data-bs-target="#infoModal{{ service.id }}">
                   <i class="fas fa-info-circle me-1"></i>
-                  Info
+                  <span class="d-none d-lg-inline">Info</span>
+                  <span class="d-lg-none">Info</span>
                 </button>
               </div>
             </div>
 
           </div>
         </div>
+      </div>
 
-        <!-- Modal för varje service -->
-        <div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1"
-             aria-labelledby="infoModalLabel{{ service.id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-dark text-light">
-              <div class="modal-header border-secondary">
-                <h5 class="modal-title text-gradient" id="infoModalLabel{{ service.id }}">
-                  <i class="{{ service.icon }} me-2"></i>
-                  {{ service.title_sv }}
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      <!-- Modal för varje service -->
+      <div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1"
+           aria-labelledby="infoModalLabel{{ service.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+              <h5 class="modal-title text-gradient" id="infoModalLabel{{ service.id }}">
+                <i class="{{ service.icon }} me-2"></i>
+                {{ service.title_sv }}
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Swedish Info -->
+              <div class="mb-4">
+                <h6 class="text-info mb-3">📋 Beskrivning (Svenska)</h6>
+                <p>{{ service.extra_info_sv|default:service.description_sv|safe }}</p>
               </div>
-              <div class="modal-body">
-                <!-- Swedish Info -->
-                <div class="mb-4">
-                  <h6 class="text-info mb-3">📋 Beskrivning (Svenska)</h6>
-                  <p>{{ service.extra_info_sv|default:service.description_sv|safe }}</p>
-                </div>
-                
-                <!-- English Info -->
-                <div class="mb-4">
-                  <h6 class="text-info mb-3">📋 Description (English)</h6>
-                  <p>{{ service.extra_info_en|default:service.description_en|safe }}</p>
-                </div>
+              
+              <!-- English Info -->
+              <div class="mb-4">
+                <h6 class="text-info mb-3">📋 Description (English)</h6>
+                <p>{{ service.extra_info_en|default:service.description_en|safe }}</p>
+              </div>
 
-                <!-- Price & Details -->
-                <div class="alert alert-info" role="alert">
-                  <i class="fas fa-tag me-2"></i>
-                  <strong>Pris / Price:</strong> Från {{ service.price|floatformat:0 }} SEK
-                </div>
+              <!-- Price & Details -->
+              <div class="alert alert-info" role="alert">
+                <i class="fas fa-tag me-2"></i>
+                <strong>Pris / Price:</strong> Från {{ service.price|floatformat:0 }} SEK
               </div>
-              <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                  <i class="fas fa-times me-2"></i>
-                  Stäng / Close
-                </button>
-                <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary">
-                  <i class="fas fa-paper-plane me-2"></i>
-                  Kontakta mig / Contact me
-                </a>
-              </div>
+            </div>
+            <div class="modal-footer border-secondary">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="fas fa-times me-2"></i>
+                Stäng / Close
+              </button>
+              <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary">
+                <i class="fas fa-paper-plane me-2"></i>
+                Kontakta mig / Contact me
+              </a>
             </div>
           </div>
         </div>
+      </div>
       {% endfor %}
     </div>
 
@@ -369,20 +144,11 @@ body .fade-in-section .services-grid .row {
   </div>
 </div>
 
-<!-- Extra JS -->
+<!-- Extra JS för smooth interactions -->
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Debug: Kolla att grid fungerar
-  const grid = document.querySelector('.services-grid');
-  if (grid) {
-    console.log('Grid found:', grid);
-    console.log('Grid children:', grid.children.length);
-    console.log('Computed style:', window.getComputedStyle(grid).display);
-    console.log('Grid template columns:', window.getComputedStyle(grid).gridTemplateColumns);
-  }
-  
-  // Modal animations
+  // Förbättra modal animations
   const modals = document.querySelectorAll('.modal');
   modals.forEach(modal => {
     modal.addEventListener('show.bs.modal', function() {
