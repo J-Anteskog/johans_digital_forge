@@ -6,273 +6,397 @@
 
 {% block content %}
 <style>
-/* Enhetlig kortstorlek och layout */
-.service-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(0, 255, 225, 0.2);
-    border-radius: 15px;
-    padding: 2rem;
-    height: 100%; /* Gör alla kort samma höjd */
-    transition: all 0.3s ease;
-    color: white;
-    display: flex;
-    flex-direction: column;
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(0, 255, 225, 0.6);
-    box-shadow: 0 10px 30px rgba(0, 255, 225, 0.2);
+/* Fix text colors on dark background */
+.service-card,
+.service-card * {
+  color: #ffffff !important;
 }
 
 .service-card h4 {
-    color: #00ffe1;
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
+  color: #00ffe1 !important;
+  font-size: 1.1rem !important;
+}
+
+.service-card .lead {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.85rem !important;
+}
+
+.service-card p {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 0.8rem !important;
+}
+
+.service-card h5 {
+  font-size: 0.95rem !important;
 }
 
 .service-card .price-tag {
-    color: #00ffe1;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: auto 0 1rem 0;
+  color: #00ffe1 !important;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
 }
 
-.service-card .btn {
-    margin-top: auto; /* Trycker knappen till botten */
+.service-card .text-muted {
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Kategori-sektioner */
-.category-section {
-    margin-bottom: 4rem;
+/* VIKTIG FIX: Gör alla kort exakt samma höjd */
+.service-card {
+  max-width: 280px !important;
+  margin: 0 auto !important;
+  padding: 1.5rem 1.25rem !important;
+  transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
-.category-title {
-    text-align: center;
-    margin-bottom: 3rem;
-    color: #00ffe1;
-    font-size: 2rem;
-    font-weight: bold;
+/* Gör card-body flexibel */
+.service-card .card-body {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  padding: 0 !important;
 }
 
-/* Gör alla rader samma höjd */
-.row-equal-height {
-    display: flex;
-    flex-wrap: wrap;
+/* Fixa innehållsområden med specifika höjder */
+.service-card .icon-area {
+  height: 80px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-.row-equal-height > [class*='col-'] {
-    display: flex;
-    margin-bottom: 2rem;
+.service-card .title-area {
+  height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.service-card .description-area {
+  height: 80px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.service-card .english-area {
+  height: 100px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.service-card .price-area {
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.service-card .button-area {
+  margin-top: auto !important;
+  padding-top: 1rem !important;
+}
+
+/* Mindre ikoner */
+.service-card i.fa-3x {
+  font-size: 2.2rem !important;
+  margin-bottom: 0 !important;
+}
+
+/* Mindre knappar */
+.service-card .btn-lg {
+  font-size: 0.85rem !important;
+  padding: 0.6rem 1rem !important;
+}
+
+.service-card .btn-outline-info {
+  font-size: 0.8rem !important;
+  padding: 0.45rem 0.75rem !important;
+}
+
+/* Justera HR */
+.service-card hr {
+  margin: 0.75rem 0 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hover effects */
+.service-card:hover {
+  transform: translateY(-15px) scale(1.02) !important;
+  box-shadow: 0 20px 50px rgba(0, 255, 225, 0.4) !important;
+  border-color: rgba(0, 255, 225, 0.8) !important;
+  z-index: 100 !important;
+}
+
+.service-card:hover i {
+  transform: scale(1.12) rotate(3deg) !important;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 225, 1)) !important;
+}
+
+/* Grid spacing med CSS Grid */
+.services-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 1.5rem !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+}
+
+/* Responsivt för Grid */
+@media (min-width: 992px) {
+  .services-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .services-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* FÖRBÄTTRAD text truncation utan line-clamp varningar */
+.text-ellipsis {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.text-ellipsis-multiline {
+  overflow: hidden !important;
+  position: relative !important;
+  max-height: 4.8em !important; /* Ungefär 3 rader text */
+  line-height: 1.6em !important;
+}
+
+.text-ellipsis-multiline::after {
+  content: '...' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  background: linear-gradient(to right, transparent, #1a1a1a 50%) !important;
+  padding-left: 1rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Endast använd webkit-line-clamp för WebKit browsers */
+@supports (-webkit-line-clamp: 3) {
+  .text-ellipsis-multiline {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    max-height: none !important;
+  }
+  
+  .text-ellipsis-multiline::after {
+    display: none !important;
+  }
+}
+
+/* Specialfall för description areas */
+.service-card .description-area p,
+.service-card .english-area p {
+  margin: 0 !important;
 }
 </style>
 
-<div class="container py-5">
-    <!-- Header -->
-    <div class="text-center mb-5">
-        <h2 class="display-4" style="background: linear-gradient(135deg, #00d4ff 0%, #667eea 100%); 
-                                     -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            🛠️ Tjänster / Services
-        </h2>
-        <p class="lead text-light">Vad jag erbjuder – What I offer</p>
+<div class="fade-in-section">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="section-header text-center">
+      <h2 class="display-4 text-gradient">🛠️ Tjänster / Services</h2>
+      <p class="lead">Vad jag erbjuder – What I offer</p>
     </div>
 
-    <!-- Hemsidor & Webbutveckling -->
-    <div class="category-section">
-        <h3 class="category-title">
-            <i class="fas fa-laptop-code me-2"></i>
-            Hemsidor & Webbutveckling
-        </h3>
-        <div class="row row-equal-height g-4">
-            {% for service in services %}
-                {% if 'paket' in service.title_sv or 'Premium' in service.title_sv or 'Webshop' in service.title_sv %}
-                <div class="col-lg-3 col-md-6">
-                    <div class="service-card">
-                        <!-- Icon -->
-                        {% if service.icon %}
-                        <div class="text-center mb-3">
-                            <i class="{{ service.icon }} fa-3x" style="color: #00ffe1;"></i>
-                        </div>
-                        {% endif %}
+    {% if services %}
+    <!-- Services Grid -->
+    <div class="services-grid">
+      {% for service in services %}
+        <div class="card service-card">
+          
+          <!-- Populärast Badge -->
+          {% if service.is_featured %}
+          <div class="badge-popular">
+            <i class="fas fa-star me-1"></i>
+            Populärast
+          </div>
+          {% endif %}
 
-                        <h4>{{ service.title_sv }}</h4>
-                        <p class="text-light mb-3">{{ service.title_en }}</p>
-                        
-                        <div class="price-tag text-center">
-                            Från {{ service.price|floatformat:0 }} SEK
-                        </div>
-
-                        <div class="d-flex gap-2 mt-3">
-                            <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
-                               class="btn btn-primary flex-fill">
-                                Kontakta mig
-                            </a>
-                            <button class="btn btn-outline-info" 
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                Info
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Hosting & Domäner -->
-    <div class="category-section">
-        <h3 class="category-title">
-            <i class="fas fa-server me-2"></i>
-            Hosting & Domäner
-        </h3>
-        <div class="row row-equal-height g-4">
-            {% for service in services %}
-                {% if 'Hosting' in service.title_sv %}
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-server fa-3x" style="color: #00ffe1;"></i>
-                        </div>
-
-                        <h4>{{ service.title_sv }}</h4>
-                        <p class="text-light mb-3">{{ service.title_en }}</p>
-                        
-                        <div class="price-tag text-center">
-                            {{ service.price|floatformat:0 }} SEK/mån
-                        </div>
-
-                        <div class="d-flex gap-2 mt-3">
-                            <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
-                               class="btn btn-primary flex-fill">
-                                Kontakta mig
-                            </a>
-                            <button class="btn btn-outline-info" 
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                Info
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Support & Underhåll -->
-    <div class="category-section">
-        <h3 class="category-title">
-            <i class="fas fa-tools me-2"></i>
-            Support & Underhåll
-        </h3>
-        <div class="row row-equal-height g-4">
-            {% for service in services %}
-                {% if 'Support' in service.title_sv or 'Content' in service.title_sv or 'Teknisk' in service.title_sv %}
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-headset fa-3x" style="color: #00ffe1;"></i>
-                        </div>
-
-                        <h4>{{ service.title_sv }}</h4>
-                        <p class="text-light mb-3">{{ service.title_en }}</p>
-                        
-                        <div class="price-tag text-center">
-                            Från {{ service.price|floatformat:0 }} SEK
-                        </div>
-
-                        <div class="d-flex gap-2 mt-3">
-                            <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
-                               class="btn btn-primary flex-fill">
-                                Kontakta mig
-                            </a>
-                            <button class="btn btn-outline-info" 
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                Info
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Övriga Tjänster -->
-    <div class="category-section">
-        <h3 class="category-title">
-            <i class="fas fa-plus-circle me-2"></i>
-            Övriga Tjänster
-        </h3>
-        <div class="row row-equal-height g-4">
-            {% for service in services %}
-                {% if 'Konsultation' in service.title_sv or 'Design' in service.title_sv or 'Tillägg' in service.title_sv %}
-                <div class="col-lg-3 col-md-6">
-                    <div class="service-card">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-cog fa-3x" style="color: #00ffe1;"></i>
-                        </div>
-
-                        <h4>{{ service.title_sv }}</h4>
-                        <p class="text-light mb-3">{{ service.title_en }}</p>
-                        
-                        <div class="price-tag text-center">
-                            Från {{ service.price|floatformat:0 }} SEK
-                        </div>
-
-                        <div class="d-flex gap-2 mt-3">
-                            <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
-                               class="btn btn-primary flex-fill">
-                                Kontakta mig
-                            </a>
-                            <button class="btn btn-outline-info" 
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                Info
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-
-</div>
-
-<!-- Modals (samma som innan) -->
-{% for service in services %}
-<div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-dark text-light">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title" style="color: #00ffe1;">
-                    {{ service.title_sv }}
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <div class="card-body">
+            
+            <!-- Icon Area -->
+            {% if service.icon %}
+            <div class="icon-area">
+              <i class="{{ service.icon }} fa-3x"></i>
             </div>
-            <div class="modal-body">
-                <h6 class="text-info mb-3">📋 Beskrivning</h6>
-                <div class="mb-4">{{ service.extra_info_sv|default:service.description_sv|safe }}</div>
-                
-                <div class="alert alert-info">
-                    <strong>Pris:</strong> Från {{ service.price|floatformat:0 }} SEK
-                    {% if 'Hosting' in service.title_sv or 'Support' in service.title_sv or 'Content' in service.title_sv %}
-                        {% if 'mån' not in service.price %}/mån{% endif %}
-                    {% endif %}
-                </div>
+            {% endif %}
+
+            <!-- Title Area -->
+            <div class="title-area">
+              <h4 class="text-center mb-0">{{ service.title_sv }}</h4>
             </div>
-            <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary">
-                    Kontakta mig
+
+            <!-- Description Area -->
+            <div class="description-area">
+              <p class="lead text-center mb-0 text-ellipsis-multiline">{{ service.description_sv }}</p>
+            </div>
+
+            <!-- Divider -->
+            <hr class="bg-light">
+
+            <!-- English Area -->
+            <div class="english-area">
+              <h5 class="text-center text-muted mb-2 text-ellipsis">{{ service.title_en }}</h5>
+              <p class="text-center small mb-0 text-ellipsis-multiline">{{ service.description_en }}</p>
+            </div>
+
+            <!-- Price Area -->
+            <div class="price-area">
+              <span class="price-tag">Från {{ service.price|floatformat:0 }} SEK</span>
+            </div>
+
+            <!-- Button Area -->
+            <div class="button-area">
+              <!-- Primär CTA -->
+              <a href="{% url 'contact' %}?subject={{ service.title_sv }}" 
+                 class="btn btn-primary btn-lg w-100 mb-2">
+                <i class="fas fa-paper-plane me-2"></i>
+                Kontakta mig
+              </a>
+              
+              <!-- Sekundära CTAs -->
+              <div class="d-flex gap-2">
+                <a href="{% url 'quote_request' %}?service={{ service.title_sv }}" 
+                   class="btn btn-outline-info flex-fill">
+                  <i class="fas fa-file-invoice me-1"></i>
+                  Offert
                 </a>
+                <button type="button" 
+                        class="btn btn-outline-info flex-fill" 
+                        data-bs-toggle="modal"
+                        data-bs-target="#infoModal{{ service.id }}">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Info
+                </button>
+              </div>
             </div>
+
+          </div>
         </div>
+
+        <!-- Modal för varje service -->
+        <div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1"
+             aria-labelledby="infoModalLabel{{ service.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header border-secondary">
+                <h5 class="modal-title text-gradient" id="infoModalLabel{{ service.id }}">
+                  <i class="{{ service.icon }} me-2"></i>
+                  {{ service.title_sv }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Swedish Info -->
+                <div class="mb-4">
+                  <h6 class="text-info mb-3">📋 Beskrivning (Svenska)</h6>
+                  <p>{{ service.extra_info_sv|default:service.description_sv|safe }}</p>
+                </div>
+                
+                <!-- English Info -->
+                <div class="mb-4">
+                  <h6 class="text-info mb-3">📋 Description (English)</h6>
+                  <p>{{ service.extra_info_en|default:service.description_en|safe }}</p>
+                </div>
+
+                <!-- Price & Details -->
+                <div class="alert alert-info" role="alert">
+                  <i class="fas fa-tag me-2"></i>
+                  <strong>Pris / Price:</strong> Från {{ service.price|floatformat:0 }} SEK
+                </div>
+              </div>
+              <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  <i class="fas fa-times me-2"></i>
+                  Stäng / Close
+                </button>
+                <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary">
+                  <i class="fas fa-paper-plane me-2"></i>
+                  Kontakta mig / Contact me
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
+
+    {% else %}
+    <!-- Tomt state -->
+    <div class="text-center py-5">
+      <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
+      <p class="lead text-muted">Inga tjänster tillgängliga just nu.</p>
+      <p class="text-muted">No services available at this time.</p>
+    </div>
+    {% endif %}
+
+  </div>
 </div>
-{% endfor %}
+
+<!-- Extra JS för smooth interactions -->
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Förbättra modal animations
+  const modals = document.querySelectorAll('.modal');
+  modals.forEach(modal => {
+    modal.addEventListener('show.bs.modal', function() {
+      this.querySelector('.modal-dialog').style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        this.querySelector('.modal-dialog').style.transform = 'scale(1)';
+      }, 50);
+    });
+  });
+
+  // Fallback för äldre browsers som inte stödjer line-clamp
+  function handleTextTruncation() {
+    const multilineElements = document.querySelectorAll('.text-ellipsis-multiline');
+    multilineElements.forEach(element => {
+      // Kontrollera om CSS line-clamp fungerar
+      const supportsLineClamp = CSS.supports('-webkit-line-clamp', '3');
+      
+      if (!supportsLineClamp) {
+        // Manuell text truncation för äldre browsers
+        const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+        const maxHeight = lineHeight * 3; // 3 rader
+        
+        if (element.scrollHeight > maxHeight) {
+          let text = element.textContent;
+          while (element.scrollHeight > maxHeight && text.length > 0) {
+            text = text.slice(0, -1);
+            element.textContent = text + '...';
+          }
+        }
+      }
+    });
+  }
+
+  // Kör text truncation efter att sidan laddats
+  handleTextTruncation();
+});
+</script>
+{% endblock %}
 
 {% endblock content %}
