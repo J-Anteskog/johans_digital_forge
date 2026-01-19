@@ -136,41 +136,41 @@
   filter: drop-shadow(0 0 20px rgba(0, 255, 225, 1)) !important;
 }
 
-/* KORRIGERAD Bootstrap Grid istället för CSS Grid */
+/* KORRIGERAD Grid för exakt 4 kort per rad */
 .services-grid {
-  display: flex !important;
-  flex-wrap: wrap !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
   gap: 1.5rem !important;
-  justify-content: center !important;
   max-width: 1400px !important;
   margin: 0 auto !important;
 }
 
 .services-grid .service-card {
-  flex: 0 1 calc(25% - 1.125rem) !important; /* 4 kolumner på desktop */
+  width: 100% !important;
 }
 
-/* Responsiv layout */
+/* Responsiv layout för CSS Grid */
 @media (max-width: 1199px) {
-  .services-grid .service-card {
-    flex: 0 1 calc(33.333% - 1rem) !important; /* 3 kolumner på tablet */
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
 @media (max-width: 991px) {
-  .services-grid .service-card {
-    flex: 0 1 calc(50% - 0.75rem) !important; /* 2 kolumner på små tablets */
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 @media (max-width: 767px) {
-  .services-grid .service-card {
-    flex: 0 1 100% !important; /* 1 kolumn på mobil */
-    max-width: 350px !important;
+  .services-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
   }
   
-  .services-grid {
-    gap: 1rem !important;
+  .service-card {
+    max-width: 350px !important;
+    margin: 0 auto !important;
   }
 }
 
