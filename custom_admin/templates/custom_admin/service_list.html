@@ -9,7 +9,7 @@
     <div class="row mb-4">
         <div class="col-md-8">
             <h2>Tjänster</h2>
-            <p class="text-muted">Hantera alla dina tjänster och priser</p>
+            <p>Hantera alla dina tjänster och priser</p>
         </div>
         <div class="col-md-4 text-end">
             <a href="{% url 'admin_service_add' %}" class="btn btn-primary">
@@ -110,7 +110,7 @@
                                 <td>
                                     <strong>{{ service.title_sv }}</strong>
                                     {% if service.title_en %}
-                                        <br><small class="text-muted">{{ service.title_en }}</small>
+                                        <br><small>{{ service.title_en }}</small>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -136,7 +136,7 @@
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">
+                                <td colspan="6" class="text-center py-4">
                                     Inga tjänster hittades.
                                 </td>
                             </tr>
