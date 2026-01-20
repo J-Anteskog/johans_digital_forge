@@ -78,6 +78,21 @@
     text-overflow: ellipsis;
 }
 
+/* Swedish description */
+.desc-swedish {
+    margin-bottom: 0.8rem;
+    color: #ccc;
+}
+
+/* English description */
+.desc-english {
+    font-style: italic;
+    color: #999;
+    font-size: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.5rem;
+}
+
 /* Price styling */
 .service-price {
     color: #00ffe1;
@@ -222,9 +237,12 @@
             <!-- Subtitle (English version) -->
             <div class="service-subtitle">{{ service.title_en }}</div>
             
-            <!-- Description -->
+            <!-- Description - Both Swedish and English -->
             <div class="service-description">
-                {{ service.description_sv|default:"En professionell lösning anpassad efter dina behov." }}
+                <div class="desc-swedish">{{ service.description_sv|default:"En professionell lösning anpassad efter dina behov." }}</div>
+                {% if service.description_en %}
+                <div class="desc-english">{{ service.description_en }}</div>
+                {% endif %}
             </div>
             
             <!-- Price -->
@@ -273,9 +291,22 @@
                 <h6 class="text-info mb-3">
                     <i class="fas fa-clipboard-list me-2"></i>Detaljerad Beskrivning
                 </h6>
-                <div class="mb-4">
-                    {{ service.extra_info_sv|default:service.description_sv|safe }}
+                
+                <!-- Swedish description -->
+                <div class="mb-3">
+                    <strong style="color: #00ffe1;">Svenska:</strong>
+                    <div class="mt-2">{{ service.extra_info_sv|default:service.description_sv|safe }}</div>
                 </div>
+                
+                <!-- English description -->
+                {% if service.extra_info_en or service.description_en %}
+                <div class="mb-4">
+                    <strong style="color: #00ffe1;">English:</strong>
+                    <div class="mt-2" style="font-style: italic; color: #bbb;">
+                        {{ service.extra_info_en|default:service.description_en|safe }}
+                    </div>
+                </div>
+                {% endif %}
                 
                 <div class="alert" style="background: rgba(0, 255, 225, 0.1); border: 1px solid rgba(0, 255, 225, 0.3); color: #00ffe1;">
                     <strong><i class="fas fa-tag me-2"></i>Pris:</strong> 
