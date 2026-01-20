@@ -143,33 +143,164 @@
     color: #00ffe1;
 }
 
+/* Sidebar Navigation */
+.services-sidebar {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(0, 255, 225, 0.3);
+    border-radius: 0 15px 15px 0;
+    padding: 1.5rem 1rem;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.services-sidebar.collapsed {
+    left: -180px;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 60px;
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    border: none;
+    border-radius: 0 10px 10px 0;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: linear-gradient(135deg, #0099cc 0%, #007399 100%);
+}
+
+.sidebar-title {
+    color: #00ffe1;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-nav a {
+    display: block;
+    color: #ccc;
+    text-decoration: none;
+    padding: 0.7rem 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-nav a:hover {
+    background: rgba(0, 255, 225, 0.1);
+    color: #00ffe1;
+    border-left-color: #00ffe1;
+    padding-left: 1rem;
+}
+
+.sidebar-nav a.active {
+    background: rgba(0, 255, 225, 0.2);
+    color: #00ffe1;
+    border-left-color: #00ffe1;
+}
+
+/* Adjust main content for sidebar */
+.services-content {
+    margin-left: 220px;
+    transition: all 0.3s ease;
+}
+
+.services-content.sidebar-collapsed {
+    margin-left: 20px;
+}
+
+/* Category sections */
+.service-category {
+    margin-bottom: 4rem;
+    padding-top: 2rem;
+}
+
+.category-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #00ffe1;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px solid rgba(0, 255, 225, 0.3);
+    padding-bottom: 1rem;
+}
+
+/* Show all by default */
+.service-category.hidden {
+    display: none;
+}
+
 /* Grid layout - 4 kort per rad */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
-    margin-top: 3rem;
+    margin-top: 2rem;
     justify-items: center;
-    padding: 0 2rem;
+    padding: 0 1rem;
     max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
 }
 
 /* Responsiv design */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
     .services-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
     .services-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .services-sidebar {
+        display: none;
+    }
+    
+    .services-content {
+        margin-left: 0;
+    }
+    
+    .services-content.sidebar-collapsed {
+        margin-left: 0;
+    }
+    
     .services-grid {
         grid-template-columns: 1fr;
     }
@@ -182,97 +313,303 @@
 }
 </style>
 
-<div class="container py-5">
-    <!-- Header -->
-    <div class="text-center mb-5">
-        <h2 class="display-4" style="background: linear-gradient(135deg, #00d4ff 0%, #667eea 100%); 
-                                     -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            🛠️ Tjänster / Services
-        </h2>
-        <p class="lead text-light">Vad jag erbjuder – What I offer</p>
+<div class="container-fluid py-5">
+    <!-- Sidebar Navigation -->
+    <div class="services-sidebar" id="servicesSidebar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-chevron-left" id="toggleIcon"></i>
+        </button>
+        
+        <div class="sidebar-title">Kategorier</div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="#" onclick="showAllServices()" class="active" id="nav-all">Alla Tjänster</a></li>
+            <li><a href="#" onclick="showCategory('website')" id="nav-website">Webbpaket</a></li>
+            <li><a href="#" onclick="showCategory('hosting')" id="nav-hosting">Hosting & Domäner</a></li>
+            <li><a href="#" onclick="showCategory('support')" id="nav-support">Support & Underhåll</a></li>
+            <li><a href="#" onclick="showCategory('content')" id="nav-content">Content Manager</a></li>
+            <li><a href="#" onclick="showCategory('other')" id="nav-other">Övriga Tjänster</a></li>
+        </ul>
     </div>
 
-    <!-- Services Grid -->
-    <div class="services-grid">
-        {% for service in services %}
-        <div class="service-card">
-            <!-- Icon -->
-            {% if service.icon %}
-            <div class="service-icon">
-                <i class="{{ service.icon }}"></i>
-            </div>
-            {% elif 'Startpaket' in service.title_sv %}
-            <div class="service-icon">
-                <i class="fas fa-laptop-code"></i>
-            </div>
-            {% elif 'Företagspaket' in service.title_sv %}
-            <div class="service-icon">
-                <i class="fas fa-building"></i>
-            </div>
-            {% elif 'Webshop' in service.title_sv %}
-            <div class="service-icon">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-            {% elif 'Hosting' in service.title_sv %}
-            <div class="service-icon">
-                <i class="fas fa-server"></i>
-            </div>
-            {% elif 'Support' in service.title_sv %}
-            <div class="service-icon">
-                <i class="fas fa-headset"></i>
-            </div>
-            {% elif 'Content' in service.title_sv %}
-            <div class="service-icon">
-                <i class="fas fa-edit"></i>
-            </div>
-            {% else %}
-            <div class="service-icon">
-                <i class="fas fa-cog"></i>
-            </div>
-            {% endif %}
+    <!-- Main Content -->
+    <div class="services-content" id="servicesContent">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h2 class="display-4" style="background: linear-gradient(135deg, #00d4ff 0%, #667eea 100%); 
+                                         -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                🛠️ Tjänster / Services
+            </h2>
+            <p class="lead text-light">Vad jag erbjuder – What I offer</p>
+        </div>
 
-            <!-- Title -->
-            <div class="service-title">{{ service.title_sv }}</div>
-            
-            <!-- Subtitle (English version) -->
-            <div class="service-subtitle">{{ service.title_en }}</div>
-            
-            <!-- Description - Both Swedish and English -->
-            <div class="service-description">
-                <div class="desc-swedish">{{ service.description_sv|default:"En professionell lösning anpassad efter dina behov." }}</div>
-                {% if service.description_en %}
-                <div class="desc-english">{{ service.description_en }}</div>
-                {% endif %}
-            </div>
-            
-            <!-- Price -->
-            <div class="service-price">
-                {% if 'Hosting' in service.title_sv or 'Support' in service.title_sv or 'Content' in service.title_sv %}
-                    {{ service.price|floatformat:0 }} SEK/mån
-                {% else %}
-                    Från {{ service.price|floatformat:0 }} SEK
-                {% endif %}
-            </div>
+        <!-- Website Packages Category -->
+        <div class="service-category" id="category-website">
+            <h3 class="category-header">
+                <i class="fas fa-laptop-code me-3"></i>Webbpaket
+            </h3>
+            <div class="services-grid">
+                {% for service in services %}
+                    {% if 'paket' in service.title_sv|lower %}
+                    <div class="service-card">
+                        {% if service.icon %}
+                        <div class="service-icon">
+                            <i class="{{ service.icon }}"></i>
+                        </div>
+                        {% elif 'Startpaket' in service.title_sv %}
+                        <div class="service-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        {% elif 'Företagspaket' in service.title_sv %}
+                        <div class="service-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        {% elif 'Premium' in service.title_sv %}
+                        <div class="service-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        {% elif 'Webshop' in service.title_sv %}
+                        <div class="service-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        {% else %}
+                        <div class="service-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        {% endif %}
 
-            <!-- Buttons -->
-            <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
-                <i class="fas fa-paper-plane me-2"></i>Kontakta mig
-            </a>
-            
-            <div class="mt-2">
-                <button class="btn-secondary-custom" 
-                        data-bs-toggle="modal"
-                        data-bs-target="#infoModal{{ service.id }}">
-                    <i class="fas fa-info-circle me-1"></i>Offert
-                </button>
-                <button class="btn-secondary-custom" 
-                        data-bs-toggle="modal"
-                        data-bs-target="#infoModal{{ service.id }}">
-                    <i class="fas fa-info me-1"></i>Info
-                </button>
+                        <div class="service-title">{{ service.title_sv }}</div>
+                        <div class="service-subtitle">{{ service.title_en }}</div>
+                        
+                        <div class="service-description">
+                            <div class="desc-swedish">{{ service.description_sv|default:"En professionell lösning anpassad efter dina behov." }}</div>
+                            {% if service.description_en %}
+                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="service-price">
+                            Från {{ service.price|floatformat:0 }} SEK
+                        </div>
+
+                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        </a>
+                        
+                        <div class="mt-2">
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info-circle me-1"></i>Offert
+                            </button>
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info me-1"></i>Info
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Hosting & Domains Category -->
+        <div class="service-category" id="category-hosting">
+            <h3 class="category-header">
+                <i class="fas fa-server me-3"></i>Hosting & Domäner
+            </h3>
+            <div class="services-grid">
+                {% for service in services %}
+                    {% if 'Hosting' in service.title_sv %}
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+
+                        <div class="service-title">{{ service.title_sv }}</div>
+                        <div class="service-subtitle">{{ service.title_en }}</div>
+                        
+                        <div class="service-description">
+                            <div class="desc-swedish">{{ service.description_sv|default:"Professionell hosting-lösning för din webbplats." }}</div>
+                            {% if service.description_en %}
+                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="service-price">
+                            {{ service.price|floatformat:0 }} SEK/mån
+                        </div>
+
+                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        </a>
+                        
+                        <div class="mt-2">
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info-circle me-1"></i>Offert
+                            </button>
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info me-1"></i>Info
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Support & Maintenance Category -->
+        <div class="service-category" id="category-support">
+            <h3 class="category-header">
+                <i class="fas fa-tools me-3"></i>Support & Underhåll
+            </h3>
+            <div class="services-grid">
+                {% for service in services %}
+                    {% if 'Support' in service.title_sv and 'Content' not in service.title_sv %}
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+
+                        <div class="service-title">{{ service.title_sv }}</div>
+                        <div class="service-subtitle">{{ service.title_en }}</div>
+                        
+                        <div class="service-description">
+                            <div class="desc-swedish">{{ service.description_sv|default:"Professionell support och underhåll av din webbplats." }}</div>
+                            {% if service.description_en %}
+                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="service-price">
+                            {{ service.price|floatformat:0 }} SEK/mån
+                        </div>
+
+                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        </a>
+                        
+                        <div class="mt-2">
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info-circle me-1"></i>Offert
+                            </button>
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info me-1"></i>Info
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Content Manager Category -->
+        <div class="service-category" id="category-content">
+            <h3 class="category-header">
+                <i class="fas fa-edit me-3"></i>Content Manager
+            </h3>
+            <div class="services-grid">
+                {% for service in services %}
+                    {% if 'Content' in service.title_sv %}
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+
+                        <div class="service-title">{{ service.title_sv }}</div>
+                        <div class="service-subtitle">{{ service.title_en }}</div>
+                        
+                        <div class="service-description">
+                            <div class="desc-swedish">{{ service.description_sv|default:"Content management och uppdateringar för din webbplats." }}</div>
+                            {% if service.description_en %}
+                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="service-price">
+                            {{ service.price|floatformat:0 }} SEK/mån
+                        </div>
+
+                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        </a>
+                        
+                        <div class="mt-2">
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info-circle me-1"></i>Offert
+                            </button>
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info me-1"></i>Info
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Other Services Category -->
+        <div class="service-category" id="category-other">
+            <h3 class="category-header">
+                <i class="fas fa-plus-circle me-3"></i>Övriga Tjänster
+            </h3>
+            <div class="services-grid">
+                {% for service in services %}
+                    {% if 'Konsultation' in service.title_sv or 'Design' in service.title_sv or 'Tillägg' in service.title_sv or 'Teknisk' in service.title_sv %}
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+
+                        <div class="service-title">{{ service.title_sv }}</div>
+                        <div class="service-subtitle">{{ service.title_en }}</div>
+                        
+                        <div class="service-description">
+                            <div class="desc-swedish">{{ service.description_sv|default:"Specialiserad tjänst anpassad efter dina behov." }}</div>
+                            {% if service.description_en %}
+                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="service-price">
+                            Från {{ service.price|floatformat:0 }} SEK
+                        </div>
+
+                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        </a>
+                        
+                        <div class="mt-2">
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info-circle me-1"></i>Offert
+                            </button>
+                            <button class="btn-secondary-custom" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#infoModal{{ service.id }}">
+                                <i class="fas fa-info me-1"></i>Info
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -329,5 +666,72 @@
     </div>
 </div>
 {% endfor %}
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('servicesSidebar');
+    const content = document.getElementById('servicesContent');
+    const icon = document.getElementById('toggleIcon');
+    
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('sidebar-collapsed');
+    
+    if (sidebar.classList.contains('collapsed')) {
+        icon.className = 'fas fa-chevron-right';
+    } else {
+        icon.className = 'fas fa-chevron-left';
+    }
+}
+
+function showAllServices() {
+    // Show all categories
+    const categories = document.querySelectorAll('.service-category');
+    categories.forEach(category => {
+        category.classList.remove('hidden');
+    });
+    
+    // Update active nav
+    updateActiveNav('nav-all');
+}
+
+function showCategory(categoryName) {
+    // Hide all categories first
+    const categories = document.querySelectorAll('.service-category');
+    categories.forEach(category => {
+        category.classList.add('hidden');
+    });
+    
+    // Show selected category
+    const selectedCategory = document.getElementById('category-' + categoryName);
+    if (selectedCategory) {
+        selectedCategory.classList.remove('hidden');
+    }
+    
+    // Update active nav
+    updateActiveNav('nav-' + categoryName);
+    
+    // Scroll to top of content
+    document.getElementById('servicesContent').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateActiveNav(activeId) {
+    // Remove active class from all nav items
+    const navItems = document.querySelectorAll('.sidebar-nav a');
+    navItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to selected item
+    const activeItem = document.getElementById(activeId);
+    if (activeItem) {
+        activeItem.classList.add('active');
+    }
+}
+
+// Initialize - show all services by default
+document.addEventListener('DOMContentLoaded', function() {
+    showAllServices();
+});
+</script>
 
 {% endblock content %}
