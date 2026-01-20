@@ -350,7 +350,7 @@
             </h3>
             <div class="services-grid">
                 {% for service in services %}
-                    {% if 'paket' in service.title_sv|lower %}
+                    {% if 'paket' in service.title_sv|lower or 'Premium' in service.title_sv or 'Webshop' in service.title_sv or 'Website' in service.title_en %}
                     <div class="service-card">
                         {% if service.icon %}
                         <div class="service-icon">
