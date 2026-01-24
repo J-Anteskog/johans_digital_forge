@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add johans_digital_forge/settings.py johans_digital_forge/middleware.py templates/base.html)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
