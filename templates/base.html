@@ -66,13 +66,17 @@
 
   <!-- Cookie Banner -->
   <div id="cookie-banner"
-    class="cookie-banner bg-dark text-white p-3 fixed-bottom d-flex justify-content-between align-items-center hidden">
-    <div>
-      🍪 Vi använder cookies för att förbättra din upplevelse på sidan.
-      <a href="{% url 'privacy_policy_sv' %}" class="text-warning">Integritetspolicy</a>
-      <a href="{% url 'privacy_policy_en' %}" class="text-warning">Privacy Policy</a>
+    class="cookie-banner bg-dark text-white p-3 fixed-bottom hidden">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        🍪 Vi använder cookies för att förbättra din upplevelse på sidan.
+        <a href="{% url 'privacy_policy_sv' %}" class="text-warning">Integritetspolicy</a>
+      </div>
+      <div class="d-flex gap-2">
+        <button id="reject-cookies" class="btn btn-outline-light">Neka</button>
+        <button id="accept-cookies" class="btn btn-warning">Acceptera</button>
+      </div>
     </div>
-    <button id="accept-cookies" class="btn btn-warning">Acceptera</button>
   </div>
 
   <style>
@@ -94,15 +98,22 @@
     document.addEventListener("DOMContentLoaded", function () {
       const banner = document.getElementById("cookie-banner");
       const acceptBtn = document.getElementById("accept-cookies");
+      const rejectBtn = document.getElementById("reject-cookies");
 
-      // Visa banner om cookies inte accepterats
-      if (!localStorage.getItem("cookiesAccepted")) {
+      // Visa banner om inget val gjorts
+      if (!localStorage.getItem("cookieConsent")) {
         banner.classList.remove("hidden");
       }
 
       // Klick på acceptera
       acceptBtn.addEventListener("click", function () {
-        localStorage.setItem("cookiesAccepted", "true");
+        localStorage.setItem("cookieConsent", "accepted");
+        banner.classList.add("hidden");
+      });
+
+      // Klick på neka
+      rejectBtn.addEventListener("click", function () {
+        localStorage.setItem("cookieConsent", "rejected");
         banner.classList.add("hidden");
       });
     });

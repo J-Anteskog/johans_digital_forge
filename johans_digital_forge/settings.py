@@ -79,11 +79,16 @@ SECURE_SSL_REDIRECT = not DEBUG  # FIX: Bara i produktion
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
 
-# FIX: Lägg till säkerhetsinställningar för produktion
+# Säkerhetsinställningar för produktion
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000  # 1 år
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+    SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
 
 # -----------------------------------------------------------
 # APPLICATIONS
@@ -122,6 +127,7 @@ SITE_ID = 1
 # -----------------------------------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'johans_digital_forge.middleware.SecurityHeadersMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
