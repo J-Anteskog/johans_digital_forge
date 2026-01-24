@@ -12,11 +12,11 @@ class SecurityHeadersMiddleware:
 
         response['Content-Security-Policy'] = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com; "
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
             "font-src 'self' https://cdnjs.cloudflare.com; "
-            "img-src 'self' data: https://res.cloudinary.com; "
-            "connect-src 'self'; "
+            "img-src 'self' data: https://res.cloudinary.com https://www.google-analytics.com; "
+            "connect-src 'self' https://www.google-analytics.com https://analytics.google.com; "
             "frame-ancestors 'none'"
         )
 

@@ -95,13 +95,34 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    function loadGoogleAnalytics() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script';
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-SFDS102RKB';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-SFDS102RKB', { anonymize_ip: true });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
       const banner = document.getElementById("cookie-banner");
       const acceptBtn = document.getElementById("accept-cookies");
       const rejectBtn = document.getElementById("reject-cookies");
 
+      const consent = localStorage.getItem("cookieConsent");
+
+      // Ladda GA om användaren redan accepterat
+      if (consent === "accepted") {
+        loadGoogleAnalytics();
+      }
+
       // Visa banner om inget val gjorts
-      if (!localStorage.getItem("cookieConsent")) {
+      if (!consent) {
         banner.classList.remove("hidden");
       }
 
@@ -109,6 +130,7 @@
       acceptBtn.addEventListener("click", function () {
         localStorage.setItem("cookieConsent", "accepted");
         banner.classList.add("hidden");
+        loadGoogleAnalytics();
       });
 
       // Klick på neka
