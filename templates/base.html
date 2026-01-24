@@ -4,6 +4,18 @@
 <html lang="en">
 
 <head>
+  <!-- Google tag (gtag.js) - Consent Mode v2 -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SFDS102RKB"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-SFDS102RKB', { anonymize_ip: true });
+  </script>
+
   {% block meta %}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -69,7 +81,7 @@
     class="cookie-banner bg-dark text-white p-3 fixed-bottom hidden">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
-        🍪 Vi använder cookies för att förbättra din upplevelse på sidan.
+        🍪 Vi använder cookies och Google Analytics för att förbättra din upplevelse och analysera trafik.
         <a href="{% url 'privacy_policy_sv' %}" class="text-warning">Integritetspolicy</a>
       </div>
       <div class="d-flex gap-2">
@@ -93,22 +105,6 @@
   <script src="{% static 'js/base.js' %}"></script>
   <!-- Bootstrap 5 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Google Analytics (Consent Mode v2) -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-
-    // Sätt default consent till denied (ingen spårning utan samtycke)
-    gtag('consent', 'default', {
-      analytics_storage: 'denied'
-    });
-  </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SFDS102RKB"></script>
-  <script>
-    gtag('js', new Date());
-    gtag('config', 'G-SFDS102RKB', { anonymize_ip: true });
-  </script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
