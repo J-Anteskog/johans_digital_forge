@@ -23,6 +23,16 @@
   <meta name="description"
     content="Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.">
 
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://www.johans-digital-forge.se{{ request.path }}">
+
+  <!-- Language alternates (hreflang) -->
+  {% block hreflang %}
+  <link rel="alternate" hreflang="sv" href="https://www.johans-digital-forge.se/">
+  <link rel="alternate" hreflang="en" href="https://www.johans-digital-forge.se/en/">
+  <link rel="alternate" hreflang="x-default" href="https://www.johans-digital-forge.se/">
+  {% endblock %}
+
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.johans-digital-forge.se{{ request.path }}">
@@ -40,6 +50,46 @@
   <meta property="twitter:title" content="Johan's Digital Forge - Webbutveckling & Design">
   <meta property="twitter:description" content="Professionella webbplatser, e-handelslösningar och webbapplikationer.">
   <meta property="twitter:image" content="https://www.johans-digital-forge.se/static/images/preview-image.jpg">
+
+  <!-- Structured Data (JSON-LD) -->
+  {% block jsonld %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Johan's Digital Forge",
+    "description": "Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.",
+    "url": "https://www.johans-digital-forge.se",
+    "logo": "https://www.johans-digital-forge.se/static/images/preview-image.jpg",
+    "image": "https://www.johans-digital-forge.se/static/images/preview-image.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "SE"
+    },
+    "priceRange": "$$",
+    "serviceType": ["Webbutveckling", "Webbdesign", "E-handel", "Webbapplikationer"],
+    "areaServed": {
+      "@type": "Country",
+      "name": "Sweden"
+    },
+    "sameAs": []
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Johan's Digital Forge",
+    "url": "https://www.johans-digital-forge.se",
+    "inLanguage": ["sv-SE", "en"],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.johans-digital-forge.se/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  {% endblock %}
   {% endblock %}
 
   <title>{% block title %}Johan's Digital Forge{% endblock %}</title>

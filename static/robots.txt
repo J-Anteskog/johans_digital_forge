@@ -1,0 +1,22 @@
+# robots.txt for Johan's Digital Forge
+# https://www.johans-digital-forge.se
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.johans-digital-forge.se/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /login/
+Disallow: /logout/
+
+# Allow search engines to crawl all public content
+Allow: /static/
+Allow: /portfolio/
+Allow: /service/
+Allow: /contact/
+Allow: /about/
+Allow: /en/
