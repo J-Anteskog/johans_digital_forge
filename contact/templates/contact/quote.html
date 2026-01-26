@@ -40,8 +40,41 @@
     </div>
     {% endif %}
 
-    <!-- Form -->
+    <!-- Form with Contact Info -->
     <div class="row justify-content-center">
+      <!-- Contact Info Card -->
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <div class="card shadow-lg border-0 h-100">
+          <div class="card-body p-4 text-center">
+            <img src="{% static 'images/johan-profile.jpg' %}"
+                 alt="Johan Anteskog"
+                 class="img-fluid rounded-circle mb-3"
+                 style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #667eea;">
+            <h4 class="fw-bold mb-2">Johan Anteskog</h4>
+            <p class="text-muted mb-3">Grundare & Webbutvecklare</p>
+
+            <!-- Phone number with reveal -->
+            <div class="phone-reveal-container">
+              <button class="btn btn-outline-primary w-100" id="revealPhoneBtn" onclick="revealPhone()">
+                <i class="fas fa-phone me-2"></i>
+                Visa telefonnummer
+              </button>
+              <a href="tel:0720333420" class="btn btn-primary w-100 d-none" id="phoneNumber">
+                <i class="fas fa-phone me-2"></i>
+                072-033 34 20
+              </a>
+            </div>
+
+            <hr class="my-3">
+            <p class="small text-muted mb-0">
+              <i class="fas fa-map-marker-alt me-2"></i>
+              Baserad i Fagersta
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
       <div class="col-lg-8">
         <div class="card shadow-lg border-0">
           <div class="card-body p-4 p-md-5">
@@ -49,11 +82,11 @@
               <i class="fas fa-info-circle me-2"></i>
               <small>* = Obligatoriskt fält / Required field</small>
             </p>
-            
+
             <form method="post" novalidate>
               {% csrf_token %}
               {{ form|crispy }}
-              
+
               <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
                 <i class="fas fa-paper-plane me-2"></i>
                 Skicka offertförfrågan / Submit Quote Request
@@ -63,6 +96,13 @@
         </div>
       </div>
     </div>
+
+    <script>
+    function revealPhone() {
+      document.getElementById('revealPhoneBtn').classList.add('d-none');
+      document.getElementById('phoneNumber').classList.remove('d-none');
+    }
+    </script>
 
   </div>
 </div>
