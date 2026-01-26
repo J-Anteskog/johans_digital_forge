@@ -16,7 +16,7 @@ class SecurityHeadersMiddleware:
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
             "font-src 'self' https://cdnjs.cloudflare.com; "
             "img-src 'self' data: https://res.cloudinary.com https://www.google-analytics.com https://www.googletagmanager.com; "
-            "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; "
+            "connect-src 'self' https://cdn.jsdelivr.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com;"
             "frame-ancestors 'none'"
         )
 
