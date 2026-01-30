@@ -127,6 +127,7 @@ SITE_ID = 1
 # -----------------------------------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'johans_digital_forge.middleware.WwwRedirectMiddleware',  # Omdirigera till www
     'johans_digital_forge.middleware.SecurityHeadersMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -294,12 +295,12 @@ STATICFILES_FINDERS = [
 # FIXA SITES FÖR SITEMAP (kör vid startup)
 # -----------------------------------------------------------
 def setup_site():
-    """Uppdatera Site-objektet med rätt domän"""
+    """Uppdatera Site-objektet med rätt domän (med www för SEO)"""
     try:
         from django.contrib.sites.models import Site
         site, created = Site.objects.get_or_create(pk=1)
-        if site.domain != 'johans-digital-forge.se':
-            site.domain = 'johans-digital-forge.se'
+        if site.domain != 'www.johans-digital-forge.se':
+            site.domain = 'www.johans-digital-forge.se'
             site.name = 'Johans Digital Forge'
             site.save()
             print(f"✅ Site updated: {site.domain}")
