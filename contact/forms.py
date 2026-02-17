@@ -11,6 +11,11 @@ class ContactForm(BaseForm):
         widget=forms.Textarea,
         required=True
     )
+    discount_code = forms.CharField(
+        label="Rabattkod / Partnerkod (valfritt / optional)",
+        max_length=50,
+        required=False,
+    )
 
 
 class QuoteForm(BaseForm):
@@ -92,3 +97,8 @@ class QuoteForm(BaseForm):
     )
 
     message = forms.CharField(label="Berätta mer om ditt projekt / Tell me more about your project", widget=forms.Textarea, required=False)
+    discount_code = forms.CharField(
+        label="Rabattkod / Partnerkod (valfritt / optional)",
+        max_length=50,
+        required=False,
+    )

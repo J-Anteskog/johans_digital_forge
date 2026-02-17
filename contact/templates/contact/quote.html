@@ -118,6 +118,22 @@
       document.getElementById('phoneNumber').classList.remove('d-none');
     }
 
+    // Rabattkod-validering
+    var discountInput = document.getElementById('id_discount_code');
+    if (discountInput) {
+      var infoDiv = document.createElement('div');
+      infoDiv.id = 'discount-info';
+      infoDiv.className = 'discount-message';
+      infoDiv.style.display = 'none';
+      infoDiv.innerHTML = '<p class="mb-0" style="color: #28a745; font-weight: bold;">&#10003; Rabattkod godkänd! Du får 15% rabatt på ditt projekt. / Discount code accepted! You get 15% off.</p>';
+      discountInput.parentNode.appendChild(infoDiv);
+
+      discountInput.addEventListener('input', function() {
+        var kod = this.value.toLowerCase().trim();
+        infoDiv.style.display = (kod === 'makeitgo26') ? 'block' : 'none';
+      });
+    }
+
     document.getElementById('quoteForm').addEventListener('submit', function(e) {
       e.preventDefault();
       var form = this;

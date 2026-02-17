@@ -71,8 +71,12 @@ def contact_view(request):
             message = form.cleaned_data["message"]
             sender = form.cleaned_data["email"]
 
+            discount_code = form.cleaned_data.get("discount_code", "")
+
             # Mejlets innehåll till dig
             full_message = f"Från: {sender}\n\n{message}"
+            if discount_code:
+                full_message += f"\n\nRabattkod: {discount_code}"
 
             # Skicka mejl till dig (Johan)
             thread = threading.Thread(
@@ -148,6 +152,7 @@ def quote_request(request):
                 f"Uppdatera själv: {cleaned.get('self_update', '')}\n"
                 f"Tilläggstjänster: {', '.join(cleaned.get('additional_services', []))}\n"
                 f"Meddelande: {cleaned.get('message', '')}\n"
+                f"Rabattkod: {cleaned.get('discount_code', '')}\n"
             )
 
             # Skicka mejl till dig
