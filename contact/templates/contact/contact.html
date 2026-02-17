@@ -5,6 +5,10 @@
 <link rel="stylesheet" href="{% static 'css/contact.css' %}">
 {% endblock %}
 
+{% block extra_js %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="fade-in-section">
   <div class="container py-5">
@@ -29,6 +33,16 @@
         Offertförfrågan
       </a>
     </div>
+
+    <!-- reCAPTCHA error -->
+    {% if recaptcha_error %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <strong>Verifieringen misslyckades.</strong> Försök igen.<br>
+      <small>Verification failed. Please try again.</small>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
 
     <!-- Success message -->
     {% if success %}
@@ -83,9 +97,10 @@
               <small>* = Obligatoriskt fält / Required field</small>
             </p>
 
-            <form method="post" novalidate>
+            <form method="post" novalidate id="contactForm">
               {% csrf_token %}
               {{ form|crispy }}
+              <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
 
               <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
                 <i class="fas fa-paper-plane me-2"></i>
@@ -102,6 +117,17 @@
       document.getElementById('revealPhoneBtn').classList.add('d-none');
       document.getElementById('phoneNumber').classList.remove('d-none');
     }
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var form = this;
+      grecaptcha.ready(function() {
+        grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'contact'}).then(function(token) {
+          document.getElementById('g-recaptcha-response').value = token;
+          form.submit();
+        });
+      });
+    });
     </script>
 
   </div>

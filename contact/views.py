@@ -4,7 +4,28 @@ from django.conf import settings
 from .forms import ContactForm, QuoteForm
 import threading
 import resend
+import urllib.request
+import urllib.parse
+import json
 
+
+
+def verify_recaptcha(token):
+    """Verifiera reCAPTCHA v3-token mot Googles API. Returnerar True om score >= 0.5."""
+    if not token or not settings.RECAPTCHA_SECRET_KEY:
+        return False
+    try:
+        data = urllib.parse.urlencode({
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': token,
+        }).encode('utf-8')
+        req = urllib.request.Request('https://www.google.com/recaptcha/api/siteverify', data=data)
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            result = json.loads(resp.read().decode('utf-8'))
+        return result.get('success', False) and result.get('score', 0) >= 0.5
+    except Exception as e:
+        print(f"reCAPTCHA verification error: {e}")
+        return False
 
 
 def send_email_async(subject, message, from_email, recipient_list):
@@ -30,9 +51,21 @@ def contact_view(request):
     }
 
     form = ContactForm(initial=initial_data)
+    recaptcha_error = False
 
     if request.method == "POST":
         form = ContactForm(request.POST)
+
+        # Verifiera reCAPTCHA
+        recaptcha_token = request.POST.get('g-recaptcha-response', '')
+        if not verify_recaptcha(recaptcha_token):
+            recaptcha_error = True
+            return render(request, "contact/contact.html", {
+                "form": form,
+                "recaptcha_error": True,
+                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+            })
+
         if form.is_valid():
             subject = form.cleaned_data["subject"]
             message = form.cleaned_data["message"]
@@ -47,8 +80,8 @@ def contact_view(request):
                 args=(
                     subject,
                     full_message,
-                    settings.DEFAULT_FROM_EMAIL,          # ← från info@johans-digital-forge.se
-                    ["info@johans-digital-forge.se"]      # ← till dig själv
+                    settings.DEFAULT_FROM_EMAIL,
+                    ["info@johans-digital-forge.se"]
                 )
             )
             thread.daemon = True
@@ -67,8 +100,8 @@ def contact_view(request):
                 args=(
                     confirm_subject,
                     confirm_message,
-                    settings.DEFAULT_FROM_EMAIL,          # Samma avsändaradress
-                    [sender],                             # Till kunden
+                    settings.DEFAULT_FROM_EMAIL,
+                    [sender],
                 )
             )
             thread_confirm.daemon = True
@@ -77,14 +110,28 @@ def contact_view(request):
             return render(request, "contact/contact.html", {
                 "form": ContactForm(),
                 "success": True,
+                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
             })
 
-    return render(request, "contact/contact.html", {"form": form})
+    return render(request, "contact/contact.html", {
+        "form": form,
+        "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+    })
 
 
 def quote_request(request):
     if request.method == "POST":
         form = QuoteForm(request.POST)
+
+        # Verifiera reCAPTCHA
+        recaptcha_token = request.POST.get('g-recaptcha-response', '')
+        if not verify_recaptcha(recaptcha_token):
+            return render(request, "contact/quote.html", {
+                "form": form,
+                "recaptcha_error": True,
+                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+            })
+
         if form.is_valid():
             cleaned = form.cleaned_data
             subject = f"Ny offertförfrågan från {cleaned['name']}"
@@ -111,7 +158,6 @@ def quote_request(request):
                     message,
                     settings.DEFAULT_FROM_EMAIL,
                     ["info@johans-digital-forge.se"],
-
                 )
             )
             thread.daemon = True
@@ -121,7 +167,7 @@ def quote_request(request):
             confirm_subject = "Tack för din offertförfrågan – Johans Digital Forge"
             confirm_message = (
                 f"Hej {cleaned['name']},\n\n"
-                "Tack för din offertförfrågan! 🙏\n"
+                "Tack för din offertförfrågan!\n"
                 "Jag kommer att titta på din förfrågan och återkomma så snart jag kan.\n\n"
                 "Vänliga hälsningar,\nJohan Anteskog"
             )
@@ -138,9 +184,16 @@ def quote_request(request):
             thread_confirm.daemon = True
             thread_confirm.start()
 
-            return render(request, "contact/quote.html", {"form": QuoteForm(), "success": True})
+            return render(request, "contact/quote.html", {
+                "form": QuoteForm(),
+                "success": True,
+                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+            })
 
     else:
         form = QuoteForm()
 
-    return render(request, "contact/quote.html", {"form": form})
+    return render(request, "contact/quote.html", {
+        "form": form,
+        "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+    })

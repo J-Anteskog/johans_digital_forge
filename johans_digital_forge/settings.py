@@ -264,6 +264,12 @@ LOGIN_REDIRECT_URL = "/admin/"
 LOGOUT_REDIRECT_URL = "/login/"
 
 # -----------------------------------------------------------
+# RECAPTCHA v3
+# -----------------------------------------------------------
+RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
+RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
+
+# -----------------------------------------------------------
 # CRISPY FORMS
 # -----------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
