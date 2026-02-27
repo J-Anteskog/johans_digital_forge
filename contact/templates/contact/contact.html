@@ -5,9 +5,6 @@
 <link rel="stylesheet" href="{% static 'css/contact.css' %}">
 {% endblock %}
 
-{% block extra_js %}
-<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
-{% endblock %}
 
 {% block content %}
 <div class="fade-in-section">
@@ -34,8 +31,8 @@
       </a>
     </div>
 
-    <!-- reCAPTCHA error -->
-    {% if recaptcha_error %}
+    <!-- Spam-skydd fel -->
+    {% if spam_error %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       <i class="fas fa-exclamation-triangle me-2"></i>
       <strong>Verifieringen misslyckades.</strong> Försök igen.<br>
@@ -100,7 +97,13 @@
             <form method="post" novalidate id="contactForm">
               {% csrf_token %}
               {{ form|crispy }}
-              <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+              <!-- Honeypot: dold via CSS, ska lämnas tom -->
+              <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                <label for="website">Website (leave blank)</label>
+                <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+              </div>
+              <!-- Tidsstämpeltoken -->
+              <input type="hidden" name="form_token" value="{{ form_token }}">
 
               <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
                 <i class="fas fa-paper-plane me-2"></i>
@@ -134,17 +137,7 @@
       });
     }
 
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      var form = this;
-      grecaptcha.ready(function() {
-        grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'contact'}).then(function(token) {
-          document.getElementById('g-recaptcha-response').value = token;
-          form.submit();
-        });
-      });
-    });
-    </script>
+</script>
 
   </div>
 </div>

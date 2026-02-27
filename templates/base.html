@@ -4,18 +4,6 @@
 <html lang="en">
 
 <head>
-  <!-- Google tag (gtag.js) - Consent Mode v2 -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('consent', 'default', { analytics_storage: 'denied' });
-  </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SFDS102RKB"></script>
-  <script>
-    gtag('js', new Date());
-    gtag('config', 'G-SFDS102RKB', { anonymize_ip: true });
-  </script>
-
   {% block meta %}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -113,6 +101,12 @@
 
   {% block extra_js %}{% endblock %}
 
+  <!-- Shynet Analytics -->
+  <noscript>
+    <img src="https://analytics.johans-digital-forge.se/ingress/ea5a5e56-7959-4a57-b643-c98797856fa9/pixel.gif">
+  </noscript>
+  <script defer src="https://analytics.johans-digital-forge.se/ingress/ea5a5e56-7959-4a57-b643-c98797856fa9/script.js"></script>
+
 </head>
 
 <body>
@@ -131,7 +125,7 @@
     class="cookie-banner bg-dark text-white p-3 fixed-bottom hidden">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
-        🍪 Vi använder cookies och Google Analytics för att förbättra din upplevelse och analysera trafik.
+        🍪 Vi använder cookies för grundläggande funktioner på webbplatsen.
         <a href="{% url 'privacy_policy_sv' %}" class="text-warning">Integritetspolicy</a>
       </div>
       <div class="d-flex gap-2">
@@ -164,11 +158,6 @@
 
       const consent = localStorage.getItem("cookieConsent");
 
-      // Om användaren redan accepterat, uppdatera consent
-      if (consent === "accepted") {
-        gtag('consent', 'update', { analytics_storage: 'granted' });
-      }
-
       // Visa banner om inget val gjorts
       if (!consent) {
         banner.classList.remove("hidden");
@@ -178,7 +167,6 @@
       acceptBtn.addEventListener("click", function () {
         localStorage.setItem("cookieConsent", "accepted");
         banner.classList.add("hidden");
-        gtag('consent', 'update', { analytics_storage: 'granted' });
       });
 
       // Klick på neka

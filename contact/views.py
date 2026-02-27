@@ -1,31 +1,42 @@
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core import signing
 from .forms import ContactForm, QuoteForm
 import threading
 import resend
-import urllib.request
-import urllib.parse
-import json
+import time
 
 
+def generate_form_token():
+    """Generera ett signerat token som innehåller aktuell Unix-tidsstämpel."""
+    return signing.dumps(int(time.time()))
 
-def verify_recaptcha(token):
-    """Verifiera reCAPTCHA v3-token mot Googles API. Returnerar True om score >= 0.5."""
-    if not token or not settings.RECAPTCHA_SECRET_KEY:
+
+def check_spam_protection(request):
+    """
+    Kontrollera honeypot och tidsstämpel.
+    Returnerar True om inlämningen ser legitim ut, annars False.
+    Avslöjar inte vilken kontroll som utlöste avvisningen.
+    """
+    # Honeypot: 'website'-fältet måste vara tomt
+    if request.POST.get('website', ''):
         return False
+
+    # Tidsstämpel: validera signerat token och förfluten tid
+    token = request.POST.get('form_token', '')
+    if not token:
+        return False
+
     try:
-        data = urllib.parse.urlencode({
-            'secret': settings.RECAPTCHA_SECRET_KEY,
-            'response': token,
-        }).encode('utf-8')
-        req = urllib.request.Request('https://www.google.com/recaptcha/api/siteverify', data=data)
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            result = json.loads(resp.read().decode('utf-8'))
-        return result.get('success', False) and result.get('score', 0) >= 0.5
-    except Exception as e:
-        print(f"reCAPTCHA verification error: {e}")
+        submitted_at = signing.loads(token, max_age=3600)
+    except (signing.BadSignature, signing.SignatureExpired):
         return False
+
+    if int(time.time()) - submitted_at < 3:
+        return False  # Skickades för snabbt (trolig bot)
+
+    return True
 
 
 def send_email_async(subject, message, from_email, recipient_list):
@@ -51,19 +62,15 @@ def contact_view(request):
     }
 
     form = ContactForm(initial=initial_data)
-    recaptcha_error = False
 
     if request.method == "POST":
         form = ContactForm(request.POST)
 
-        # Verifiera reCAPTCHA
-        recaptcha_token = request.POST.get('g-recaptcha-response', '')
-        if not verify_recaptcha(recaptcha_token):
-            recaptcha_error = True
+        if not check_spam_protection(request):
             return render(request, "contact/contact.html", {
                 "form": form,
-                "recaptcha_error": True,
-                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+                "spam_error": True,
+                "form_token": generate_form_token(),
             })
 
         if form.is_valid():
@@ -114,12 +121,12 @@ def contact_view(request):
             return render(request, "contact/contact.html", {
                 "form": ContactForm(),
                 "success": True,
-                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+                "form_token": generate_form_token(),
             })
 
     return render(request, "contact/contact.html", {
         "form": form,
-        "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+        "form_token": generate_form_token(),
     })
 
 
@@ -127,13 +134,11 @@ def quote_request(request):
     if request.method == "POST":
         form = QuoteForm(request.POST)
 
-        # Verifiera reCAPTCHA
-        recaptcha_token = request.POST.get('g-recaptcha-response', '')
-        if not verify_recaptcha(recaptcha_token):
+        if not check_spam_protection(request):
             return render(request, "contact/quote.html", {
                 "form": form,
-                "recaptcha_error": True,
-                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+                "spam_error": True,
+                "form_token": generate_form_token(),
             })
 
         if form.is_valid():
@@ -192,7 +197,7 @@ def quote_request(request):
             return render(request, "contact/quote.html", {
                 "form": QuoteForm(),
                 "success": True,
-                "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+                "form_token": generate_form_token(),
             })
 
     else:
@@ -200,5 +205,5 @@ def quote_request(request):
 
     return render(request, "contact/quote.html", {
         "form": form,
-        "recaptcha_site_key": settings.RECAPTCHA_SITE_KEY,
+        "form_token": generate_form_token(),
     })
