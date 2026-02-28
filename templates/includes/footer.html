@@ -1,23 +1,157 @@
-<footer class="bg-dark text-light text-center py-4 mt-auto">
-  <div class="container">
-    {% if request.path|slice:":4" == "/en/" %}
-      <p class="mb-1">&copy; 2025 Johan's Digital Forge</p>
-      <p class="mb-1">E-mail: info@johans-digital-forge.se</p>
-      <p class="mb-0">
-        <a href="/en/" class="text-light text-decoration-none me-3">Home</a>
-        <a href="{% url 'contact' %}" class="text-light text-decoration-none me-3">Contact</a>
-        <a href="/en/privacy-policy/" class="text-light text-decoration-none me-3">Privacy Policy</a>
-        <a href="https://github.com/J-Anteskog" target="_blank" class="text-light text-decoration-none">GitHub</a>
-      </p>
-    {% else %}
-      <p class="mb-1">&copy; 2025 Johan's Digital Forge</p>
-      <p class="mb-1">E-mail: info@johans-digital-forge.se</p>
-      <p class="mb-0">
-        <a href="/" class="text-light text-decoration-none me-3">Hem</a>
-        <a href="{% url 'contact' %}" class="text-light text-decoration-none me-3">Kontakt</a>
-        <a href="/integritetspolicy/" class="text-light text-decoration-none me-3">Integritetspolicy</a>
-        <a href="https://github.com/J-Anteskog" target="_blank" class="text-light text-decoration-none">GitHub</a>
-      </p>
-    {% endif %}
+{% load static %}
+<footer class="footer mt-auto">
+  <div class="footer-top">
+    <div class="container">
+      <div class="row g-4">
+
+        <!-- Varumärke -->
+        <div class="col-lg-4 col-md-6">
+          <a class="d-flex align-items-center gap-2 text-decoration-none mb-3" href="{% if request.path|slice:":3" == "/en" %}/en/{% else %}/{% endif %}">
+            <img src="{% static 'images/JDFbild-ny.png' %}" alt="Johans Digital Forge logo" height="40" style="filter: drop-shadow(0 0 4px #00bfff);">
+            <span class="fw-bold text-light fs-5">Johan's Digital Forge</span>
+          </a>
+          <p class="footer-tagline">
+            {% if request.path|slice:":3" == "/en" %}
+              Web development, automation &amp; digital solutions — built to last.
+            {% else %}
+              Webbutveckling, automatisering &amp; digitala lösningar — byggda för att hålla.
+            {% endif %}
+          </p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="col-lg-4 col-md-6">
+          <h6 class="footer-heading">
+            {% if request.path|slice:":3" == "/en" %}Navigation{% else %}Navigation{% endif %}
+          </h6>
+          <ul class="footer-links">
+            {% if request.path|slice:":3" == "/en" %}
+              <li><a href="/en/">Home</a></li>
+              <li><a href="{% url 'service_list' %}">Services</a></li>
+              <li><a href="/en/about-us/">About Us</a></li>
+              <li><a href="{% url 'portfolio' %}">Portfolio</a></li>
+              <li><a href="{% url 'contact' %}">Contact</a></li>
+              <li><a href="https://portal.johans-digital-forge.se" target="_blank">Client Portal <i class="bi bi-box-arrow-up-right ms-1" style="font-size:.75rem;"></i></a></li>
+            {% else %}
+              <li><a href="/">Hem</a></li>
+              <li><a href="{% url 'service_list' %}">Tjänster</a></li>
+              <li><a href="{% url 'about:about_us' %}">Om oss</a></li>
+              <li><a href="{% url 'portfolio' %}">Portfölj</a></li>
+              <li><a href="{% url 'contact' %}">Kontakt</a></li>
+              <li><a href="https://portal.johans-digital-forge.se" target="_blank">Kundportal <i class="bi bi-box-arrow-up-right ms-1" style="font-size:.75rem;"></i></a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <!-- Kontakt -->
+        <div class="col-lg-4 col-md-6">
+          <h6 class="footer-heading">
+            {% if request.path|slice:":3" == "/en" %}Contact{% else %}Kontakt{% endif %}
+          </h6>
+          <ul class="footer-links">
+            <li>
+              <a href="mailto:info@johans-digital-forge.se">
+                <i class="bi bi-envelope me-2"></i>info@johans-digital-forge.se
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/J-Anteskog" target="_blank">
+                <i class="bi bi-github me-2"></i>GitHub
+              </a>
+            </li>
+          </ul>
+          <div class="mt-3">
+            {% if request.path|slice:":3" == "/en" %}
+              <a href="/integritetspolicy/" class="footer-small-link me-3">Privacy Policy</a>
+            {% else %}
+              <a href="/integritetspolicy/" class="footer-small-link me-3">Integritetspolicy</a>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Nedre rad -->
+  <div class="footer-bottom">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span class="footer-copy">&copy; 2025 Johan's Digital Forge. {% if request.path|slice:":3" == "/en" %}All rights reserved.{% else %}Alla rättigheter förbehållna.{% endif %}</span>
+      <div>
+        {% if request.path|slice:":3" == "/en" %}
+          <a href="/" class="footer-small-link">🇸🇪 Svenska</a>
+        {% else %}
+          <a href="/en/" class="footer-small-link">🇬🇧 English</a>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </footer>
+
+<style>
+  .footer {
+    background-color: #1a1a1a;
+    border-top: 1px solid rgba(0, 255, 225, 0.2);
+  }
+
+  .footer-top {
+    padding: 3rem 0 2rem;
+  }
+
+  .footer-tagline {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: .9rem;
+    line-height: 1.6;
+  }
+
+  .footer-heading {
+    color: #00ffe1;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-size: .75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links li {
+    margin-bottom: .5rem;
+  }
+
+  .footer-links a {
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    font-size: .9rem;
+    transition: color .2s;
+  }
+
+  .footer-links a:hover {
+    color: #00ffe1;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding: .85rem 0;
+  }
+
+  .footer-copy {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: .8rem;
+  }
+
+  .footer-small-link {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    font-size: .8rem;
+    transition: color .2s;
+  }
+
+  .footer-small-link:hover {
+    color: #00ffe1;
+  }
+</style>
