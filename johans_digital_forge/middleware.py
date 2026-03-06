@@ -38,11 +38,11 @@ class SecurityHeadersMiddleware:
 
         response['Content-Security-Policy'] = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://analytics.johans-digital-forge.se; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://analytics.johans-digital-forge.se https://chat.johans-digital-forge.se; "
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
             "font-src 'self' https://cdnjs.cloudflare.com; "
             "img-src 'self' data: https://res.cloudinary.com https://analytics.johans-digital-forge.se; "
-            "connect-src 'self' https://cdn.jsdelivr.net https://analytics.johans-digital-forge.se; "
+            "connect-src 'self' https://cdn.jsdelivr.net https://analytics.johans-digital-forge.se https://chat.johans-digital-forge.se wss://chat.johans-digital-forge.se; "
             "frame-src 'none'; "
             "frame-ancestors 'none'"
         )
