@@ -2,10 +2,14 @@
 /* Ljusare mörk bakgrund för hela webbplatsen - mindre bländande men ändå bekväm */
 
 html, body {
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     /* Ljusare mörk bakgrund */
     background-color: #2a2a2a;
+    color: #e8e8e8;
+}
+
+p, li, td, th {
     color: #e8e8e8;
 }
 
