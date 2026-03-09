@@ -1,5 +1,5 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <div class="container-fluid">
     <!-- Logo -->
 <a class="navbar-brand d-flex align-items-center gap-2" href="{% if request.path|slice:":3" == "/en" %}/en/{% else %}/{% endif %}">

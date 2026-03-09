@@ -5,7 +5,7 @@
       <div class="row g-4">
 
         <!-- Varumärke -->
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-6 col-md-6">
           <a class="d-flex align-items-center gap-2 text-decoration-none mb-3" href="{% if request.path|slice:":3" == "/en" %}/en/{% else %}/{% endif %}">
             <img src="{% static 'images/JDFbild-ny.png' %}" alt="Johans Digital Forge logo" height="40" style="filter: drop-shadow(0 0 4px #00bfff);">
             <span class="fw-bold text-light fs-5">Johan's Digital Forge</span>
@@ -19,32 +19,8 @@
           </p>
         </div>
 
-        <!-- Navigation -->
-        <div class="col-lg-4 col-md-6">
-          <h6 class="footer-heading">
-            {% if request.path|slice:":3" == "/en" %}Navigation{% else %}Navigation{% endif %}
-          </h6>
-          <ul class="footer-links">
-            {% if request.path|slice:":3" == "/en" %}
-              <li><a href="/en/">Home</a></li>
-              <li><a href="{% url 'service_list' %}">Services</a></li>
-              <li><a href="/en/about-us/">About Us</a></li>
-              <li><a href="{% url 'portfolio' %}">Portfolio</a></li>
-              <li><a href="{% url 'contact' %}">Contact</a></li>
-              <li><a href="https://portal.johans-digital-forge.se" target="_blank">Client Portal <i class="bi bi-box-arrow-up-right ms-1" style="font-size:.75rem;"></i></a></li>
-            {% else %}
-              <li><a href="/">Hem</a></li>
-              <li><a href="{% url 'service_list' %}">Tjänster</a></li>
-              <li><a href="{% url 'about:about_us' %}">Om oss</a></li>
-              <li><a href="{% url 'portfolio' %}">Portfölj</a></li>
-              <li><a href="{% url 'contact' %}">Kontakt</a></li>
-              <li><a href="https://portal.johans-digital-forge.se" target="_blank">Kundportal <i class="bi bi-box-arrow-up-right ms-1" style="font-size:.75rem;"></i></a></li>
-            {% endif %}
-          </ul>
-        </div>
-
         <!-- Kontakt -->
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-6 col-md-6">
           <h6 class="footer-heading">
             {% if request.path|slice:":3" == "/en" %}Contact{% else %}Kontakt{% endif %}
           </h6>
