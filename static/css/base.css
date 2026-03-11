@@ -100,6 +100,28 @@ section {
     color: rgba(255, 255, 255, 0.85) !important;
 }
 
+/* Flagg-språkväxlare */
+.lang-switch {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.lang-flag {
+    width: 28px;
+    height: 18px;
+    border-radius: 2px;
+    border: 1px solid rgba(192, 192, 192, 0.35);
+    box-shadow: 0 0 0 1px rgba(160, 160, 160, 0.15);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: block;
+}
+
+.lang-switch:hover .lang-flag {
+    border-color: rgba(192, 192, 192, 0.65);
+    box-shadow: 0 0 0 1px rgba(192, 192, 192, 0.3);
+}
+
 
 
 /* Footer - ljusare mörk tema */

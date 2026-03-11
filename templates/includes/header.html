@@ -38,9 +38,13 @@
       <!-- Språkväxlare -->
       <div class="ms-3 text-end">
         {% if request.path|slice:":3" == "/en" %}
-          <a href="/" class="text-light text-decoration-none">🇸🇪 Svenska</a>
+          <a href="/" class="lang-switch" title="Svenska">
+            <img src="{% static 'images/flag-sv.svg' %}" alt="Svenska" class="lang-flag">
+          </a>
         {% else %}
-          <a href="/en/" class="text-light text-decoration-none">🇬🇧 English</a>
+          <a href="/en/" class="lang-switch" title="English">
+            <img src="{% static 'images/flag-en.svg' %}" alt="English" class="lang-flag">
+          </a>
         {% endif %}
       </div>
     </div>
