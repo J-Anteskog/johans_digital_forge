@@ -6,6 +6,8 @@ from .forms import ContactForm, QuoteForm
 import threading
 import resend
 import time
+import requests
+import os
 
 
 def generate_form_token():
@@ -37,6 +39,29 @@ def check_spam_protection(request):
         return False  # Skickades för snabbt (trolig bot)
 
     return True
+
+
+def send_email_notification(from_name, from_email, subject, body_text, body_html=""):
+    """Skicka notis via Postal HTTP API"""
+    try:
+        requests.post(
+            "https://email.johans-digital-forge.se/api/incoming/",
+            headers={
+                "Authorization": f"Bearer {os.environ.get('NOTIFICATION_API_KEY', '')}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from_email": from_email,
+                "from_name": from_name,
+                "to_email": "info@johans-digital-forge.se",
+                "subject": subject,
+                "body_text": body_text,
+                "body_html": body_html,
+            },
+            timeout=5,
+        )
+    except Exception:
+        pass  # Låt inte ett misslyckat notis-anrop krascha formuläret
 
 
 def send_email_async(subject, message, from_email, recipient_list):
@@ -84,6 +109,14 @@ def contact_view(request):
             full_message = f"Från: {sender}\n\n{message}"
             if discount_code:
                 full_message += f"\n\nRabattkod: {discount_code}"
+
+            # Skicka notis via Postal
+            send_email_notification(
+                from_name=form.cleaned_data["name"] if "name" in form.cleaned_data else sender,
+                from_email=sender,
+                subject=subject,
+                body_text=full_message,
+            )
 
             # Skicka mejl till dig (Johan)
             thread = threading.Thread(
@@ -158,6 +191,14 @@ def quote_request(request):
                 f"Tilläggstjänster: {', '.join(cleaned.get('additional_services', []))}\n"
                 f"Meddelande: {cleaned.get('message', '')}\n"
                 f"Rabattkod: {cleaned.get('discount_code', '')}\n"
+            )
+
+            # Skicka notis via Postal
+            send_email_notification(
+                from_name=cleaned['name'],
+                from_email=cleaned['email'],
+                subject=subject,
+                body_text=message,
             )
 
             # Skicka mejl till dig
