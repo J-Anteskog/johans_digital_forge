@@ -420,7 +420,7 @@
             </h3>
             <div class="services-grid">
                 {% for service in services %}
-                    {% if 'Hosting' in service.title_sv %}
+                    {% if 'Hosting' in service.title_sv or 'Webbhotell' in service.title_sv %}
                     <div class="service-card">
                         <div class="service-icon">
                             <i class="fas fa-server"></i>
@@ -646,7 +646,7 @@
                 
                 <div class="alert" style="background: rgba(0, 255, 225, 0.1); border: 1px solid rgba(0, 255, 225, 0.3); color: #00ffe1;">
                     <strong><i class="fas fa-tag me-2"></i>Pris:</strong> 
-                    {% if 'Hosting' in service.title_sv or 'Support' in service.title_sv or 'Content' in service.title_sv %}
+                    {% if 'Hosting' in service.title_sv or 'Webbhotell' in service.title_sv or 'Support' in service.title_sv or 'Content' in service.title_sv %}
                         {{ service.price|floatformat:0 }} SEK/månad
                     {% else %}
                         Från {{ service.price|floatformat:0 }} SEK
