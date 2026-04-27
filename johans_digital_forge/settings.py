@@ -118,6 +118,7 @@ INSTALLED_APPS = [
     'portfolio',
     'custom_admin',
     'about',
+    'brief',
 ]
 
 SITE_ID = 1
@@ -255,6 +256,13 @@ EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'resend')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@johans-digital-forge.se')
+
+# -----------------------------------------------------------
+# CLOUDFLARE TURNSTILE (valfritt spam-skydd för brief-formulär)
+# Skaffa nycklar på: https://dash.cloudflare.com/ → Turnstile
+# -----------------------------------------------------------
+TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')
+TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '')
 
 # -----------------------------------------------------------
 # AUTH / LOGIN REDIRECTS

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <title>Ny offertbrief – {{ brief.contact_name }}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
+    .wrapper { max-width: 680px; margin: 32px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .header { background: #1a1a2e; color: #fff; padding: 28px 36px; }
+    .header h1 { margin: 0 0 6px; font-size: 1.3rem; }
+    .header .score-badge {
+      display: inline-block; background: {% if brief.score >= 70 %}#198754{% elif brief.score >= 40 %}#fd7e14{% else %}#6c757d{% endif %};
+      color: #fff; border-radius: 50px; padding: 3px 14px; font-size: .85rem; font-weight: 700;
+    }
+    .body { padding: 32px 36px; color: #333; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    th { text-align: left; color: #888; font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; padding: 6px 0; border-bottom: 1px solid #eee; }
+    td { padding: 10px 0; border-bottom: 1px solid #f3f3f3; font-size: .93rem; vertical-align: top; }
+    td:first-child { font-weight: 600; color: #555; width: 200px; }
+    .section-heading { font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #0d6efd; margin: 28px 0 8px; }
+    .notes-box { background: #fffbeb; border-left: 3px solid #ffc107; border-radius: 4px; padding: 12px 16px; font-size: .93rem; }
+    .footer { background: #f8f9fa; padding: 18px 36px; font-size: .8rem; color: #aaa; border-top: 1px solid #eee; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>📋 Ny offertbrief</h1>
+      <p style="margin:6px 0 12px; opacity:.8;">{{ brief.created_at|date:"j F Y, H:i" }} &middot; Språk: {{ brief.get_language_display }}</p>
+      <span class="score-badge">Score: {{ brief.score }}/100</span>
+    </div>
+
+    <div class="body">
+
+      <!-- Kontaktuppgifter -->
+      <div class="section-heading">Kontakt</div>
+      <table>
+        <tr><td>Namn</td><td>{{ brief.contact_name }}</td></tr>
+        <tr><td>E-post</td><td><a href="mailto:{{ brief.contact_email }}">{{ brief.contact_email }}</a></td></tr>
+        <tr>
+          <td>Telefon</td>
+          <td>{% if brief.contact_phone %}<a href="tel:{{ brief.contact_phone }}">{{ brief.contact_phone }}</a>{% else %}–{% endif %}</td>
+        </tr>
+        {% if brief.referrer %}
+        <tr><td>Referrer / UTM</td><td>{{ brief.referrer }}</td></tr>
+        {% endif %}
+      </table>
+
+      <!-- Steg 1 -->
+      <div class="section-heading">Mål, budget & tidslinje</div>
+      <table>
+        <tr>
+          <td>Mål</td>
+          <td>
+            {% for g in brief.goals %}
+              {% for val, label in brief.GOAL_CHOICES %}{% if val == g %}{{ label }}{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% if brief.goals_other %}<br><em>Annat: {{ brief.goals_other }}</em>{% endif %}
+          </td>
+        </tr>
+        <tr><td>Budget</td><td>{{ brief.get_budget_display }}</td></tr>
+        <tr>
+          <td>Tidslinje</td>
+          <td>
+            {{ brief.get_timeline_display }}
+            {% if brief.timeline_specific %} – {{ brief.timeline_specific|date:"j F Y" }}{% endif %}
+          </td>
+        </tr>
+      </table>
+
+      <!-- Steg 2 -->
+      <div class="section-heading">Befintlig sida, storlek & funktioner</div>
+      <table>
+        <tr><td>Har hemsida</td><td>{{ brief.get_has_existing_site_display }}</td></tr>
+        <tr><td>Antal sidor</td><td>{{ brief.get_num_pages_display }}</td></tr>
+        <tr>
+          <td>Funktioner</td>
+          <td>
+            {% if brief.features %}
+              {% for f in brief.features %}
+                {% for val, label in brief.FEATURE_CHOICES %}{% if val == f %}{{ label }}{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+              {% if brief.features_other %}<br><em>Annat: {{ brief.features_other }}</em>{% endif %}
+            {% else %}–{% endif %}
+          </td>
+        </tr>
+      </table>
+
+      <!-- Steg 3 -->
+      <div class="section-heading">Stil, material & övrigt</div>
+      <table>
+        <tr>
+          <td>Stilpreferens</td>
+          <td>
+            {% if brief.style_preferences %}
+              {% for s in brief.style_preferences %}
+                {% for val, label in brief.STYLE_CHOICES %}{% if val == s %}{{ label }}{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% else %}–{% endif %}
+          </td>
+        </tr>
+        <tr><td>Har material</td><td>{{ brief.get_has_material_display }}</td></tr>
+      </table>
+
+      {% if brief.notes %}
+      <div class="section-heading">Kommentarer</div>
+      <div class="notes-box">{{ brief.notes|linebreaksbr }}</div>
+      {% endif %}
+
+    </div>
+
+    <div class="footer">
+      <p>
+        Genererat automatiskt av offertbriefs-formuläret &middot;
+        ID #{{ brief.pk }} &middot;
+        <a href="https://www.johans-digital-forge.se/admin/">Öppna i admin</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

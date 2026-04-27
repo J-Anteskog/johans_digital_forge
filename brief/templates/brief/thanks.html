@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_english %}Thank you! – Johan's Digital Forge{% else %}Tack! – Johans Digital Forge{% endif %}{% endblock %}
+
+{% block content %}
+<div class="fade-in-section">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 text-center">
+
+        <div class="mb-4" style="font-size: 4rem;" aria-hidden="true">✅</div>
+
+        <h1 class="display-5 fw-bold mb-3">
+          {% if is_english %}Thank you!{% else %}Tack!{% endif %}
+        </h1>
+
+        <p class="lead mb-4">
+          {% if is_english %}
+            I've received your project brief and will get back to you within <strong>24 hours</strong>
+            with a tailored proposal.
+          {% else %}
+            Jag har tagit emot din offertbrief och återkommer inom <strong>24 timmar</strong>
+            med ett skräddarsytt förslag.
+          {% endif %}
+        </p>
+
+        <div class="card shadow-sm border-0 text-start mb-4">
+          <div class="card-body p-4">
+            <h2 class="h6 fw-bold mb-3">
+              {% if is_english %}What happens next?{% else %}Vad händer nu?{% endif %}
+            </h2>
+            <ol class="mb-0 ps-3">
+              {% if is_english %}
+              <li class="mb-2">I review your brief and calculate a preliminary price.</li>
+              <li class="mb-2">I get in touch via email (or phone if you left a number).</li>
+              <li>We book a free 30-minute call to go through the details.</li>
+              {% else %}
+              <li class="mb-2">Jag granskar din brief och räknar ut ett preliminärt pris.</li>
+              <li class="mb-2">Jag hör av mig via e-post (eller telefon om du lämnat nummer).</li>
+              <li>Vi bokar ett kostnadsfritt 30-minuterssamtal för att gå igenom detaljerna.</li>
+              {% endif %}
+            </ol>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="{% url 'home_sv' %}" class="btn btn-outline-primary">
+            <i class="fas fa-home me-2"></i>
+            {% if is_english %}Back to start{% else %}Tillbaka till start{% endif %}
+          </a>
+          <a href="{% url 'portfolio' %}" class="btn btn-primary">
+            <i class="fas fa-briefcase me-2"></i>
+            {% if is_english %}View portfolio{% else %}Se portfölj{% endif %}
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="{{ brief.language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if is_english %}Thank you for your project brief{% else %}Tack för din offertbrief{% endif %}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
+    .wrapper { max-width: 600px; margin: 32px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; padding: 36px 40px; text-align: center; }
+    .header h1 { margin: 0 0 8px; font-size: 1.6rem; }
+    .header p { margin: 0; opacity: .8; font-size: .95rem; }
+    .body { padding: 36px 40px; color: #333; line-height: 1.7; }
+    .body h2 { font-size: 1.15rem; color: #1a1a2e; margin-top: 0; }
+    .summary-box { background: #f0f6ff; border-left: 4px solid #0d6efd; border-radius: 6px; padding: 16px 20px; margin: 24px 0; }
+    .summary-row { display: flex; gap: 12px; margin-bottom: 8px; font-size: .93rem; }
+    .summary-row:last-child { margin-bottom: 0; }
+    .summary-label { font-weight: 600; min-width: 130px; color: #555; }
+    .footer { background: #f8f9fa; padding: 24px 40px; text-align: center; font-size: .82rem; color: #888; border-top: 1px solid #eee; }
+    .footer a { color: #0d6efd; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>Johans Digital Forge</h1>
+      <p>johans-digital-forge.se</p>
+    </div>
+
+    <div class="body">
+      {% if is_english %}
+        <h2>Thank you, {{ brief.contact_name }}! 👋</h2>
+        <p>
+          I've received your project brief and will review it carefully.
+          You can expect to hear from me within <strong>24 hours</strong> with a preliminary proposal.
+        </p>
+        <p>Here's a summary of what you submitted:</p>
+        <div class="summary-box">
+          <div class="summary-row">
+            <span class="summary-label">Goals:</span>
+            <span>{{ brief.goals|join:", " }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Budget:</span>
+            <span>{{ brief.get_budget_display }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Timeline:</span>
+            <span>{{ brief.get_timeline_display }}</span>
+          </div>
+        </div>
+        <p>
+          If you have any questions in the meantime, feel free to reply to this email
+          or visit <a href="https://www.johans-digital-forge.se/en/">johans-digital-forge.se</a>.
+        </p>
+        <p>Talk soon,<br><strong>Johan Anteskog</strong><br>Founder & Web Developer – Johans Digital Forge</p>
+      {% else %}
+        <h2>Tack, {{ brief.contact_name }}! 👋</h2>
+        <p>
+          Jag har tagit emot din offertbrief och kommer att gå igenom den noggrant.
+          Du kan räkna med att höra från mig inom <strong>24 timmar</strong> med ett preliminärt förslag.
+        </p>
+        <p>Här är en sammanfattning av vad du skickade:</p>
+        <div class="summary-box">
+          <div class="summary-row">
+            <span class="summary-label">Mål:</span>
+            <span>{{ brief.goals|join:", " }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Budget:</span>
+            <span>{{ brief.get_budget_display }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Tidslinje:</span>
+            <span>{{ brief.get_timeline_display }}</span>
+          </div>
+        </div>
+        <p>
+          Har du frågor i mellantiden är du välkommen att svara på det här mejlet
+          eller besöka <a href="https://www.johans-digital-forge.se/">johans-digital-forge.se</a>.
+        </p>
+        <p>Hörs snart,<br><strong>Johan Anteskog</strong><br>Grundare & Webbutvecklare – Johans Digital Forge</p>
+      {% endif %}
+    </div>
+
+    <div class="footer">
+      <p>
+        Johans Digital Forge &middot; Fagersta, Sverige<br>
+        <a href="https://www.johans-digital-forge.se/integritetspolicy/">Integritetspolicy</a>
+        &middot;
+        <a href="https://www.johans-digital-forge.se/en/privacy-policy/">Privacy Policy</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

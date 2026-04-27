@@ -1,0 +1,619 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_english %}Project Brief – Johan's Digital Forge{% else %}Offertbrief – Johans Digital Forge{% endif %}{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="sv" href="https://www.johans-digital-forge.se/brief/">
+<link rel="alternate" hreflang="en" href="https://www.johans-digital-forge.se/en/brief/">
+<link rel="alternate" hreflang="x-default" href="https://www.johans-digital-forge.se/brief/">
+{% endblock %}
+
+{% block extracss %}
+<style>
+  /* ── Progressive enhancement: utan JS visas alla steg ── */
+  .brief-step { display: block; }
+  .js-ready .brief-step { display: none; }
+  .js-ready .brief-step.active { display: block; }
+
+  /* ── Progress indicator ── */
+  .brief-progress { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 2.5rem; }
+  .brief-progress-step {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    position: relative; flex: 1; max-width: 140px;
+  }
+  .brief-progress-step .step-bubble {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+    background: #e9ecef; color: #6c757d;
+    border: 2px solid #dee2e6; transition: all .3s;
+  }
+  .brief-progress-step.active .step-bubble   { background: #0d6efd; color: #fff; border-color: #0d6efd; }
+  .brief-progress-step.completed .step-bubble{ background: #198754; color: #fff; border-color: #198754; }
+  .brief-progress-step .step-label { font-size: .78rem; color: #6c757d; text-align: center; }
+  .brief-progress-step.active .step-label { color: #0d6efd; font-weight: 600; }
+  .brief-progress-step.completed .step-label{ color: #198754; }
+  .brief-progress-line {
+    height: 2px; flex: 1; background: #dee2e6;
+    margin-bottom: 24px; max-width: 80px; transition: background .3s;
+  }
+  .brief-progress-line.done { background: #198754; }
+
+  /* ── Radio / Checkbox cards ── */
+  .choice-card { display: flex; flex-direction: column; gap: .5rem; }
+  .choice-card .form-check {
+    border: 1.5px solid #dee2e6; border-radius: .5rem;
+    padding: .75rem 1rem .75rem 2.8rem;
+    cursor: pointer; transition: border-color .2s, background .2s;
+  }
+  .choice-card .form-check:hover { border-color: #0d6efd; background: #f0f6ff; }
+  .choice-card .form-check input:checked ~ label { font-weight: 600; }
+  .choice-card .form-check:has(input:checked) { border-color: #0d6efd; background: #eef4ff; }
+
+  /* ── Step buttons ── */
+  .brief-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+  .brief-nav .btn { min-width: 140px; }
+
+  /* ── Invalid field highlight ── */
+  .brief-invalid-msg { color: #dc3545; font-size: .85rem; margin-top: .25rem; }
+  .brief-field-error .choice-card .form-check { border-color: #dc3545; }
+
+  /* ── Timeline specific date ── */
+  #timeline-specific-row { transition: opacity .2s; }
+
+  /* ── Step heading ── */
+  .step-badge {
+    display: inline-block; background: #0d6efd; color: #fff;
+    border-radius: 50px; padding: 2px 14px; font-size: .8rem;
+    font-weight: 600; margin-bottom: .5rem;
+  }
+</style>
+
+{% if turnstile_site_key %}
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="fade-in-section">
+  <div class="container py-5">
+
+    <!-- Header -->
+    <div class="section-header text-center mb-4">
+      <h1 class="display-5 fw-bold">
+        {% if is_english %}📋 Project Brief{% else %}📋 Offertbrief{% endif %}
+      </h1>
+      <p class="lead">
+        {% if is_english %}
+          Fill in the form and I'll get back to you with a tailored proposal within 24 hours.
+        {% else %}
+          Fyll i formuläret så återkommer jag med ett skräddarsytt förslag inom 24 timmar.
+        {% endif %}
+      </p>
+      <p class="text-muted small">
+        {% if is_english %}
+          Already know what you want? Use the
+          <a href="{% url 'contact' %}">quick contact form</a> instead.
+        {% else %}
+          Redan klar med vad du vill ha? Använd det
+          <a href="{% url 'contact' %}">enkla kontaktformuläret</a> istället.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Spam error -->
+    {% if spam_error %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <strong>{% if is_english %}Verification failed.{% else %}Verifieringen misslyckades.{% endif %}</strong>
+      {% if is_english %}Please try again.{% else %}Försök igen.{% endif %}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <!-- Non-field errors -->
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {% for e in form.non_field_errors %}<p class="mb-0">{{ e }}</p>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- Progress indicator -->
+        <div class="brief-progress" id="briefProgress" aria-label="Formulärsteg">
+          <div class="brief-progress-step active" id="prog-1">
+            <div class="step-bubble">1</div>
+            <span class="step-label">{% if is_english %}The essentials{% else %}Det viktigaste{% endif %}</span>
+          </div>
+          <div class="brief-progress-line" id="prog-line-1"></div>
+          <div class="brief-progress-step" id="prog-2">
+            <div class="step-bubble">2</div>
+            <span class="step-label">{% if is_english %}Details{% else %}Detaljer{% endif %}</span>
+          </div>
+          <div class="brief-progress-line" id="prog-line-2"></div>
+          <div class="brief-progress-step" id="prog-3">
+            <div class="step-bubble">3</div>
+            <span class="step-label">{% if is_english %}Style & contact{% else %}Stil & kontakt{% endif %}</span>
+          </div>
+        </div>
+
+        <!-- Card wrapper -->
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4 p-md-5">
+
+            <form method="post" novalidate id="briefForm">
+              {% csrf_token %}
+              <input type="hidden" name="form_token" value="{{ form_token }}">
+              {{ form.language }}
+              {{ form.referrer }}
+
+              <!-- Honeypot: osynligt, lämna tomt -->
+              <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                <label for="id_website_url">Website (leave blank)</label>
+                {{ form.website_url }}
+              </div>
+
+              <!-- ═══════════════════════════════════════════════
+                   STEG 1 – Det viktigaste: mål, budget, tidslinje
+                   ═══════════════════════════════════════════════ -->
+              <div class="brief-step active" id="step-1">
+                <span class="step-badge">{% if is_english %}Step 1 of 3{% else %}Steg 1 av 3{% endif %}</span>
+                <h2 class="h4 fw-bold mb-4">
+                  {% if is_english %}The essentials{% else %}Det viktigaste{% endif %}
+                </h2>
+
+                <!-- Mål -->
+                <div class="mb-4 {% if form.goals.errors %}brief-field-error{% endif %}">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}What should the website achieve? *{% else %}Vad ska hemsidan åstadkomma? *{% endif %}
+                  </label>
+                  <div class="choice-card" id="goals-group">
+                    {% for choice in form.goals %}
+                    <div class="form-check">
+                      {{ choice.tag }}
+                      <label class="form-check-label w-100" for="{{ choice.id_for_label }}">
+                        {{ choice.choice_label }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% if form.goals.errors %}
+                  <div class="brief-invalid-msg">
+                    {% for e in form.goals.errors %}{{ e }}{% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <!-- Mål – annat -->
+                <div class="mb-4" id="goals-other-row">
+                  <label class="form-label" for="{{ form.goals_other.id_for_label }}">
+                    {{ form.goals_other.label }}
+                  </label>
+                  {{ form.goals_other }}
+                </div>
+
+                <!-- Budget -->
+                <div class="mb-4 {% if form.budget.errors %}brief-field-error{% endif %}">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}Budget *{% else %}Budget *{% endif %}
+                  </label>
+                  <div class="choice-card">
+                    {% for choice in form.budget %}
+                    <div class="form-check">
+                      {{ choice.tag }}
+                      <label class="form-check-label w-100" for="{{ choice.id_for_label }}">
+                        {{ choice.choice_label }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% if form.budget.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.budget.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Tidslinje -->
+                <div class="mb-3 {% if form.timeline.errors %}brief-field-error{% endif %}">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}When do you need it? *{% else %}När behöver du det klart? *{% endif %}
+                  </label>
+                  <div class="choice-card">
+                    {% for choice in form.timeline %}
+                    <div class="form-check">
+                      {{ choice.tag }}
+                      <label class="form-check-label w-100" for="{{ choice.id_for_label }}">
+                        {{ choice.choice_label }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% if form.timeline.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.timeline.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Specifikt datum (visas bara om 'specific' valts) -->
+                <div class="mb-4 ps-3" id="timeline-specific-row" style="display:none;">
+                  <label class="form-label" for="{{ form.timeline_specific.id_for_label }}">
+                    {{ form.timeline_specific.label }}
+                  </label>
+                  {{ form.timeline_specific }}
+                  {% if form.timeline_specific.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.timeline_specific.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+              </div><!-- /steg-1 -->
+
+
+              <!-- ═══════════════════════════════════════════════════
+                   STEG 2 – Detaljer: befintlig sida, sidor, funktioner
+                   ═══════════════════════════════════════════════════ -->
+              <div class="brief-step" id="step-2">
+                <span class="step-badge">{% if is_english %}Step 2 of 3{% else %}Steg 2 av 3{% endif %}</span>
+                <h2 class="h4 fw-bold mb-4">
+                  {% if is_english %}Details{% else %}Detaljer{% endif %}
+                </h2>
+
+                <!-- Befintlig sida -->
+                <div class="mb-4 {% if form.has_existing_site.errors %}brief-field-error{% endif %}">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}Do you have a website today? *{% else %}Har du en hemsida idag? *{% endif %}
+                  </label>
+                  <div class="choice-card">
+                    {% for choice in form.has_existing_site %}
+                    <div class="form-check">
+                      {{ choice.tag }}
+                      <label class="form-check-label w-100" for="{{ choice.id_for_label }}">
+                        {{ choice.choice_label }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% if form.has_existing_site.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.has_existing_site.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Antal sidor -->
+                <div class="mb-4 {% if form.num_pages.errors %}brief-field-error{% endif %}">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}How many pages / subpages? *{% else %}Hur många sidor / undersidor? *{% endif %}
+                  </label>
+                  <div class="choice-card">
+                    {% for choice in form.num_pages %}
+                    <div class="form-check">
+                      {{ choice.tag }}
+                      <label class="form-check-label w-100" for="{{ choice.id_for_label }}">
+                        {{ choice.choice_label }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% if form.num_pages.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.num_pages.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Funktioner -->
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}Which pages / features do you need?{% else %}Vilka sidor / funktioner behöver du?{% endif %}
+                    <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
+                  </label>
+                  <div class="row g-2">
+                    {% for choice in form.features %}
+                    <div class="col-6 col-md-4">
+                      <div class="form-check border rounded p-2">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                          {{ choice.choice_label }}
+                        </label>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <!-- Funktioner – annat -->
+                <div class="mb-4">
+                  <label class="form-label" for="{{ form.features_other.id_for_label }}">
+                    {{ form.features_other.label }}
+                  </label>
+                  {{ form.features_other }}
+                </div>
+
+              </div><!-- /steg-2 -->
+
+
+              <!-- ══════════════════════════════════════════════
+                   STEG 3 – Stil & kontakt
+                   ══════════════════════════════════════════════ -->
+              <div class="brief-step" id="step-3">
+                <span class="step-badge">{% if is_english %}Step 3 of 3{% else %}Steg 3 av 3{% endif %}</span>
+                <h2 class="h4 fw-bold mb-4">
+                  {% if is_english %}Style & contact{% else %}Stil & kontakt{% endif %}
+                </h2>
+
+                <!-- Stilpreferens -->
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}Which style appeals to you?{% else %}Vilken känsla vill du ha på sidan?{% endif %}
+                    <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
+                  </label>
+                  <div class="row g-2">
+                    {% for choice in form.style_preferences %}
+                    <div class="col-6">
+                      <div class="form-check border rounded p-2">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                          {{ choice.choice_label }}
+                        </label>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <!-- Har material -->
+                <div class="mb-4 {% if form.has_material.errors %}brief-field-error{% endif %}">
+                  <label class="form-label fw-semibold">
+                    {% if is_english %}Do you have texts and images ready? *{% else %}Har du texter och bilder klara? *{% endif %}
+                  </label>
+                  <div class="choice-card">
+                    {% for choice in form.has_material %}
+                    <div class="form-check">
+                      {{ choice.tag }}
+                      <label class="form-check-label w-100" for="{{ choice.id_for_label }}">
+                        {{ choice.choice_label }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% if form.has_material.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.has_material.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Anteckningar -->
+                <div class="mb-4">
+                  <label class="form-label fw-semibold" for="{{ form.notes.id_for_label }}">
+                    {% if is_english %}Anything else you'd like to add?{% else %}Övriga kommentarer eller önskemål?{% endif %}
+                    <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
+                  </label>
+                  {{ form.notes }}
+                </div>
+
+                <hr class="my-4">
+                <h3 class="h5 fw-bold mb-3">
+                  {% if is_english %}Your contact details{% else %}Dina kontaktuppgifter{% endif %}
+                </h3>
+
+                <!-- Kontakt: namn -->
+                <div class="mb-3 {% if form.contact_name.errors %}has-validation{% endif %}">
+                  <label class="form-label" for="{{ form.contact_name.id_for_label }}">
+                    {{ form.contact_name.label }}
+                  </label>
+                  {{ form.contact_name }}
+                  {% if form.contact_name.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.contact_name.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Kontakt: e-post -->
+                <div class="mb-3 {% if form.contact_email.errors %}has-validation{% endif %}">
+                  <label class="form-label" for="{{ form.contact_email.id_for_label }}">
+                    {{ form.contact_email.label }}
+                  </label>
+                  {{ form.contact_email }}
+                  {% if form.contact_email.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.contact_email.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Kontakt: telefon -->
+                <div class="mb-4">
+                  <label class="form-label" for="{{ form.contact_phone.id_for_label }}">
+                    {{ form.contact_phone.label }}
+                  </label>
+                  {{ form.contact_phone }}
+                </div>
+
+                <!-- Cloudflare Turnstile (valfritt) -->
+                {% if turnstile_site_key %}
+                <div class="mb-3">
+                  <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-theme="light"></div>
+                </div>
+                {% endif %}
+
+                <!-- Integritetspolicy -->
+                <p class="text-muted small mb-4">
+                  {% if is_english %}
+                    By submitting you agree that I store your details in order to get back to you with a proposal.
+                    See <a href="{% url 'privacy_policy_en' %}">privacy policy</a>.
+                  {% else %}
+                    Genom att skicka godkänner du att jag lagrar uppgifterna för att kunna återkomma med ett förslag.
+                    Se <a href="{% url 'privacy_policy_sv' %}">integritetspolicy</a>.
+                  {% endif %}
+                </p>
+
+              </div><!-- /steg-3 -->
+
+
+              <!-- ── Navigeringsknappar ── -->
+              <div class="brief-nav">
+                <button type="button" id="prevBtn" class="btn btn-outline-secondary" style="display:none">
+                  ← {% if is_english %}Back{% else %}Tillbaka{% endif %}
+                </button>
+                <div></div><!-- spacer för flexbox -->
+                <button type="button" id="nextBtn" class="btn btn-primary">
+                  {% if is_english %}Next step{% else %}Nästa steg{% endif %} →
+                </button>
+                <button type="submit" id="submitBtn" class="btn btn-success d-none">
+                  <i class="fas fa-check me-2"></i>
+                  {% if is_english %}Send project brief{% else %}Skicka offertförfrågan{% endif %} ✓
+                </button>
+              </div>
+
+            </form>
+          </div><!-- /card-body -->
+        </div><!-- /card -->
+      </div><!-- /col -->
+    </div><!-- /row -->
+  </div><!-- /container -->
+</div><!-- /fade-in-section -->
+
+<script>
+(function () {
+  // Progressive enhancement: aktivera multi-step-läge
+  document.documentElement.classList.add('js-ready');
+
+  const totalSteps = 3;
+  let current = {{ initial_step|default:1 }};
+  const isEnglish = {{ is_english|yesno:"true,false" }};
+
+  function t(sv, en) { return isEnglish ? en : sv; }
+
+  // ── Steg-rendering ──────────────────────────────────────────
+  function showStep(n) {
+    document.querySelectorAll('.brief-step').forEach(el => el.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+
+    // Progress indicator
+    for (let i = 1; i <= totalSteps; i++) {
+      const p = document.getElementById('prog-' + i);
+      p.classList.toggle('active', i === n);
+      p.classList.toggle('completed', i < n);
+    }
+    for (let i = 1; i < totalSteps; i++) {
+      const l = document.getElementById('prog-line-' + i);
+      l.classList.toggle('done', i < n);
+    }
+
+    document.getElementById('prevBtn').style.display = n > 1 ? '' : 'none';
+    const nxt = document.getElementById('nextBtn');
+    const sub = document.getElementById('submitBtn');
+    if (n < totalSteps) {
+      nxt.classList.remove('d-none');
+      sub.classList.add('d-none');
+    } else {
+      nxt.classList.add('d-none');
+      sub.classList.remove('d-none');
+    }
+
+    current = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Validering per steg ──────────────────────────────────────
+  function clearErrors() {
+    document.querySelectorAll('.brief-js-error').forEach(el => el.remove());
+    document.querySelectorAll('.brief-field-error').forEach(el => el.classList.remove('brief-field-error'));
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+  }
+
+  function addError(containerEl, msg) {
+    containerEl.classList.add('brief-field-error');
+    const div = document.createElement('div');
+    div.className = 'brief-invalid-msg brief-js-error';
+    div.textContent = msg;
+    containerEl.appendChild(div);
+  }
+
+  function validateStep(n) {
+    clearErrors();
+    let ok = true;
+
+    if (n === 1) {
+      const goals = document.querySelectorAll('#goals-group input:checked');
+      if (!goals.length) {
+        addError(document.getElementById('goals-group').parentElement,
+          t('Välj minst ett mål.', 'Please select at least one goal.'));
+        ok = false;
+      }
+      if (!document.querySelector('input[name="budget"]:checked')) {
+        const wrap = document.querySelector('input[name="budget"]').closest('.mb-4');
+        addError(wrap, t('Välj budget.', 'Please select a budget.'));
+        ok = false;
+      }
+      if (!document.querySelector('input[name="timeline"]:checked')) {
+        const wrap = document.querySelector('input[name="timeline"]').closest('.mb-3');
+        addError(wrap, t('Välj tidslinje.', 'Please select a timeline.'));
+        ok = false;
+      }
+    }
+
+    if (n === 2) {
+      if (!document.querySelector('input[name="has_existing_site"]:checked')) {
+        const wrap = document.querySelector('input[name="has_existing_site"]').closest('.mb-4');
+        addError(wrap, t('Välj ett alternativ.', 'Please select an option.'));
+        ok = false;
+      }
+      if (!document.querySelector('input[name="num_pages"]:checked')) {
+        const wrap = document.querySelector('input[name="num_pages"]').closest('.mb-4');
+        addError(wrap, t('Välj antal sidor.', 'Please select the number of pages.'));
+        ok = false;
+      }
+    }
+
+    if (n === 3) {
+      const nameEl = document.getElementById('id_contact_name');
+      if (!nameEl.value.trim()) {
+        nameEl.classList.add('is-invalid');
+        ok = false;
+      }
+      const emailEl = document.getElementById('id_contact_email');
+      const emailOk = emailEl.value.trim() && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailEl.value);
+      if (!emailOk) {
+        emailEl.classList.add('is-invalid');
+        ok = false;
+      }
+      if (!document.querySelector('input[name="has_material"]:checked')) {
+        const wrap = document.querySelector('input[name="has_material"]').closest('.mb-4');
+        addError(wrap, t('Välj ett alternativ.', 'Please select an option.'));
+        ok = false;
+      }
+    }
+
+    return ok;
+  }
+
+  // ── Knappar ──────────────────────────────────────────────────
+  document.getElementById('nextBtn').addEventListener('click', function () {
+    if (validateStep(current)) showStep(current + 1);
+  });
+  document.getElementById('prevBtn').addEventListener('click', function () {
+    clearErrors();
+    showStep(current - 1);
+  });
+
+  // ── Specifikt datum: visa/dölj ────────────────────────────────
+  document.querySelectorAll('input[name="timeline"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      document.getElementById('timeline-specific-row').style.display =
+        this.value === 'specific' ? '' : 'none';
+    });
+    // Bevara valt värde vid sidhämtning (server-side errors)
+    if (r.checked && r.value === 'specific') {
+      document.getElementById('timeline-specific-row').style.display = '';
+    }
+  });
+
+  // ── Mål-"Annat": visa/dölj goals_other ───────────────────────
+  document.querySelectorAll('#goals-group input[value="other"]').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      document.getElementById('goals-other-row').style.display = this.checked ? '' : 'none';
+    });
+    if (!cb.checked) {
+      document.getElementById('goals-other-row').style.display = 'none';
+    }
+  });
+
+  // Initialisera rätt steg (t.ex. om servern skickar tillbaka steg 2 vid fel)
+  showStep(current);
+}());
+</script>
+{% endblock %}

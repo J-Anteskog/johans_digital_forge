@@ -31,4 +31,6 @@ urlpatterns = [
          name='django.contrib.sitemaps.views.sitemap'),
     path('about/', include('about.urls')),
     path('en/about-us/', about_us_en, name='about_us_en'),
+    path('brief/', include('brief.urls')),
+    path('en/brief/', include('brief.en_urls')),
 ]
