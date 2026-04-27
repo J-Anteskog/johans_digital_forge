@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if obj.language == 'en' %}Analysing…{% else %}Analyserar…{% endif %} – Johans Digital Forge{% endblock %}
+
+{% block content %}
+
+<section class="py-5 min-vh-100 d-flex align-items-start"
+         style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);">
+  <div class="container text-center" style="max-width: 640px; padding-top: 4rem;">
+
+    <!-- Spinner -->
+    <div class="mb-4" id="spinner-wrap">
+      <div class="spinner-border text-warning"
+           style="width: 4.5rem; height: 4.5rem; border-width: .35rem;" role="status">
+        <span class="visually-hidden">{% if obj.language == 'en' %}Loading…{% else %}Laddar…{% endif %}</span>
+      </div>
+    </div>
+
+    <h1 class="h3 text-light fw-bold mb-2">
+      {% if obj.language == 'en' %}Analysing your website…{% else %}Analyserar din webbplats…{% endif %}
+    </h1>
+
+    <p class="text-secondary mb-1" style="font-size:.95rem; word-break: break-all;">
+      {{ obj.url }}
+    </p>
+
+    <p id="status-msg" class="text-warning small mb-4" style="min-height: 1.4em;">
+      {% if obj.language == 'en' %}Checking HTTP…{% else %}Kontrollerar HTTP…{% endif %}
+    </p>
+
+    <!-- Progress dots -->
+    <div class="d-flex justify-content-center gap-2 mb-5" id="dots">
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.9;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
+    </div>
+
+    <p class="text-secondary" style="font-size:.8rem;">
+      {% if obj.language == 'en' %}
+        This usually takes 30–60 seconds. The page updates automatically.
+      {% else %}
+        Det brukar ta 30–60 sekunder. Sidan uppdateras automatiskt.
+      {% endif %}
+    </p>
+
+    <p class="text-secondary mt-2" style="font-size:.8rem;">
+      {% if obj.language == 'en' %}Elapsed:{% else %}Förfluten tid:{% endif %}
+      <span id="elapsed" class="text-light">0s</span>
+    </p>
+
+  </div>
+</section>
+
+<script>
+(function () {
+  var statusUrl = "{% url 'analysis_status_json' obj.id %}";
+  var isEnglish = "{{ obj.language }}" === "en";
+
+  var messages = isEnglish
+    ? [
+        "Checking HTTP redirects…",
+        "Verifying SSL certificate…",
+        "Fetching page HTML…",
+        "Analysing SEO signals…",
+        "Measuring performance…",
+        "Waiting for PageSpeed Insights…",
+        "Calculating scores…",
+      ]
+    : [
+        "Kontrollerar HTTP-omdirigering…",
+        "Verifierar SSL-certifikat…",
+        "Hämtar sidans HTML…",
+        "Analyserar SEO-signaler…",
+        "Mäter prestanda…",
+        "Väntar på PageSpeed Insights…",
+        "Beräknar poäng…",
+      ];
+
+  var msgEl    = document.getElementById("status-msg");
+  var elapsedEl = document.getElementById("elapsed");
+  var dots     = document.querySelectorAll(".dot");
+  var elapsed  = 0;
+  var msgIndex = 0;
+  var dotIndex = 0;
+
+  function updateDots() {
+    dots.forEach(function (d, i) {
+      d.style.opacity = i === dotIndex ? "0.9" : "0.2";
+    });
+    dotIndex = (dotIndex + 1) % dots.length;
+  }
+
+  function tick() {
+    elapsed += 3;
+    elapsedEl.textContent = elapsed + "s";
+
+    msgIndex = Math.min(msgIndex + 1, messages.length - 1);
+    msgEl.textContent = messages[msgIndex];
+    updateDots();
+
+    fetch(statusUrl)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.done) {
+          clearInterval(timer);
+          window.location.reload();
+        }
+      })
+      .catch(function () { /* ignore, keep polling */ });
+  }
+
+  // First poll after 5s (give backend a head start), then every 3s
+  var timer = setInterval(tick, 3000);
+  setTimeout(function () {
+    updateDots();
+  }, 500);
+})();
+</script>
+
+{% endblock %}

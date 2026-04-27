@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if is_english %}Website Analysis – Johans Digital Forge{% else %}Gratis webbplatsanalys – Johans Digital Forge{% endif %}{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="sv" href="https://www.johans-digital-forge.se/analys/">
+<link rel="alternate" hreflang="en" href="https://www.johans-digital-forge.se/en/analysis/">
+<link rel="alternate" hreflang="x-default" href="https://www.johans-digital-forge.se/analys/">
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="py-5" style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);">
+  <div class="container" style="max-width: 780px;">
+
+    <div class="text-center mb-5">
+      <p class="text-warning fw-semibold text-uppercase mb-2" style="letter-spacing:.12em; font-size:.85rem;">
+        {% if is_english %}Free tool{% else %}Kostnadsfritt verktyg{% endif %}
+      </p>
+      <h1 class="display-5 fw-bold text-light mb-3">
+        {% if is_english %}
+          Analyse your website in 60 seconds
+        {% else %}
+          Analysera din webbplats på 60 sekunder
+        {% endif %}
+      </h1>
+      <p class="text-secondary fs-5" style="max-width: 600px; margin: 0 auto;">
+        {% if is_english %}
+          Get an instant report on SEO, security, performance, and mobile-friendliness.
+          No registration required.
+        {% else %}
+          Få en rapport om SEO, säkerhet, prestanda och mobilanpassning direkt.
+          Ingen registrering krävs.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- ── Errors ─────────────────────────────────────────────────────────── -->
+    {% if spam_error %}
+    <div class="alert alert-danger border-0 rounded-3 mb-4" role="alert">
+      {% if is_english %}
+        Something went wrong. Please try again.
+      {% else %}
+        Något gick fel. Försök igen.
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if rate_limit_error %}
+    <div class="alert alert-warning border-0 rounded-3 mb-4" role="alert">
+      {% if is_english %}
+        You have reached the limit of 5 analyses per hour. Please try again later.
+      {% else %}
+        Du har nått gränsen på 5 analyser per timme. Försök igen om en stund.
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ── Form card ──────────────────────────────────────────────────────── -->
+    <div class="rounded-4 p-4 p-md-5 mb-5" style="background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);">
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="form_token" value="{{ form_token }}">
+
+        <!-- Honeypot -->
+        <div style="display:none;" aria-hidden="true">
+          {{ form.website_name }}
+        </div>
+
+        <!-- URL field -->
+        <div class="mb-4">
+          <label for="{{ form.url.id_for_label }}" class="form-label text-light fw-semibold fs-5">
+            {% if is_english %}Website address{% else %}Webbplatsens adress{% endif %}
+          </label>
+          {{ form.url }}
+          {% if form.url.errors %}
+          <div class="text-danger small mt-1">
+            {% for e in form.url.errors %}{{ e }}{% endfor %}
+          </div>
+          {% endif %}
+          <div class="form-text text-secondary" style="font-size:.85rem;">
+            {% if is_english %}
+              Enter the full address, e.g. <span class="text-light">https://example.com</span>
+            {% else %}
+              Ange hela adressen, t.ex. <span class="text-light">https://example.com</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Email field -->
+        <div class="mb-4">
+          <label for="{{ form.email.id_for_label }}" class="form-label text-secondary">
+            {% if is_english %}
+              Email address <span class="fw-normal">(optional – receive the report by email)</span>
+            {% else %}
+              E-postadress <span class="fw-normal">(valfritt – få rapporten via e-post)</span>
+            {% endif %}
+          </label>
+          {{ form.email }}
+          {% if form.email.errors %}
+          <div class="text-danger small mt-1">
+            {% for e in form.email.errors %}{{ e }}{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Non-field errors -->
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger border-0 rounded-3 mb-4">
+          {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold py-3">
+          {% if is_english %}
+            <span class="me-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </span>
+            Analyse now
+          {% else %}
+            <span class="me-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </span>
+            Analysera nu
+          {% endif %}
+        </button>
+      </form>
+    </div>
+
+    <!-- ── What we check ──────────────────────────────────────────────────── -->
+    <div class="row g-3 text-center mb-5">
+      {% if is_english %}
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#ffc107;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">Security</div>
+          <div class="text-secondary" style="font-size:.75rem;">HTTPS &amp; SSL</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#00d4ff;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">Performance</div>
+          <div class="text-secondary" style="font-size:.75rem;">Speed &amp; PageSpeed</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#6f42c1;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">SEO</div>
+          <div class="text-secondary" style="font-size:.75rem;">Title, meta, sitemap</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#20c997;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">Mobile</div>
+          <div class="text-secondary" style="font-size:.75rem;">Responsive &amp; viewport</div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#ffc107;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">Säkerhet</div>
+          <div class="text-secondary" style="font-size:.75rem;">HTTPS &amp; SSL</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#00d4ff;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">Prestanda</div>
+          <div class="text-secondary" style="font-size:.75rem;">Hastighet &amp; PageSpeed</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#6f42c1;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">SEO</div>
+          <div class="text-secondary" style="font-size:.75rem;">Title, meta, sitemap</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
+          <div class="mb-2" style="color:#20c997;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+          </div>
+          <div class="text-light fw-semibold small">Mobil</div>
+          <div class="text-secondary" style="font-size:.75rem;">Responsiv &amp; viewport</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- ── CTA to brief ───────────────────────────────────────────────────── -->
+    <div class="text-center pt-3" style="border-top: 1px solid rgba(255,255,255,.08);">
+      <p class="text-secondary small mb-2">
+        {% if is_english %}
+          Want a professional evaluation and a quote?
+        {% else %}
+          Vill du ha en professionell genomgång och offert?
+        {% endif %}
+      </p>
+      <a href="{% if is_english %}{% url 'brief_en' %}{% else %}{% url 'brief' %}{% endif %}"
+         class="btn btn-outline-warning btn-sm">
+        {% if is_english %}Fill in a project brief{% else %}Fyll i en offertbrief{% endif %}
+      </a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

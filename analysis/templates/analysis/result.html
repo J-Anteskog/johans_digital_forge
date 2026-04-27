@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if obj.language == 'en' %}Analysis result – {{ obj.url }}{% else %}Analysresultat – {{ obj.url }}{% endif %}
+– Johans Digital Forge
+{% endblock %}
+
+{% block content %}
+<section class="py-5 min-vh-100"
+         style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);">
+  <div class="container" style="max-width: 860px;">
+
+    {% if obj.status == 'error' %}
+    <div class="alert alert-danger border-0 rounded-3 mb-4">
+      {% if obj.language == 'en' %}
+        The analysis failed. Please try again or contact us if the problem persists.
+      {% else %}
+        Analysen misslyckades. Försök igen eller kontakta oss om problemet kvarstår.
+      {% endif %}
+      {% if obj.error_message %}
+      <details class="mt-2">
+        <summary class="small text-muted" style="cursor:pointer;">
+          {% if obj.language == 'en' %}Technical details{% else %}Tekniska detaljer{% endif %}
+        </summary>
+        <pre class="mt-2 small text-muted" style="white-space:pre-wrap;word-break:break-all;">{{ obj.error_message }}</pre>
+      </details>
+      {% endif %}
+    </div>
+    {% else %}
+
+    <!-- Grade badge -->
+    <div class="text-center mb-5">
+      <p class="text-secondary small text-uppercase mb-2" style="letter-spacing:.1em;">
+        {% if obj.language == 'en' %}Overall score{% else %}Sammanlagt betyg{% endif %}
+      </p>
+      <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3
+                  bg-{{ obj.grade_color }}"
+           style="width:110px;height:110px;">
+        <span class="display-4 fw-bold text-dark">{{ obj.grade }}</span>
+      </div>
+      <div class="text-light fs-2 fw-bold">{{ obj.score_overall }}<span class="text-secondary fs-5">/100</span></div>
+      <p class="text-secondary mt-1" style="font-size:.9rem; word-break:break-all;">{{ obj.url }}</p>
+    </div>
+
+    <!-- Category scores -->
+    <div class="row g-3 mb-5">
+      {% with cats=obj %}
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);">
+          <div class="text-warning mb-1" style="font-size:.8rem;">
+            {% if obj.language == 'en' %}Security{% else %}Säkerhet{% endif %}
+          </div>
+          <div class="text-light fw-bold fs-4">{{ obj.score_security|default:"–" }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);">
+          <div class="text-info mb-1" style="font-size:.8rem;">SEO</div>
+          <div class="text-light fw-bold fs-4">{{ obj.score_seo|default:"–" }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);">
+          <div class="text-primary mb-1" style="font-size:.8rem;">
+            {% if obj.language == 'en' %}Performance{% else %}Prestanda{% endif %}
+          </div>
+          <div class="text-light fw-bold fs-4">{{ obj.score_performance|default:"–" }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);">
+          <div class="text-success mb-1" style="font-size:.8rem;">
+            {% if obj.language == 'en' %}Mobile{% else %}Mobilanpassning{% endif %}
+          </div>
+          <div class="text-light fw-bold fs-4">{{ obj.score_mobile|default:"–" }}</div>
+        </div>
+      </div>
+      {% endwith %}
+    </div>
+
+    {% endif %}
+
+    <!-- CTA -->
+    <div class="text-center pt-4" style="border-top:1px solid rgba(255,255,255,.08);">
+      <p class="text-secondary mb-3">
+        {% if obj.language == 'en' %}
+          Want Johan to fix the issues found? Get a free quote.
+        {% else %}
+          Vill du att Johan åtgärdar bristerna? Begär en kostnadsfri offert.
+        {% endif %}
+      </p>
+      <a href="{% if obj.language == 'en' %}{% url 'brief_en' %}?ref=analysis&site={{ obj.url|urlencode }}{% else %}{% url 'brief' %}?ref=analysis&site={{ obj.url|urlencode }}{% endif %}"
+         class="btn btn-warning btn-lg fw-bold me-2">
+        {% if obj.language == 'en' %}Get a quote{% else %}Begär offert{% endif %}
+      </a>
+      <a href="{% if obj.language == 'en' %}{% url 'analysis_en' %}{% else %}{% url 'analysis' %}{% endif %}"
+         class="btn btn-outline-light">
+        {% if obj.language == 'en' %}New analysis{% else %}Ny analys{% endif %}
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

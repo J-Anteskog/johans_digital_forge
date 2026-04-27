@@ -33,4 +33,6 @@ urlpatterns = [
     path('en/about-us/', about_us_en, name='about_us_en'),
     path('brief/', include('brief.urls')),
     path('en/brief/', include('brief.en_urls')),
+    path('analys/', include('analysis.urls')),
+    path('en/analysis/', include('analysis.en_urls')),
 ]

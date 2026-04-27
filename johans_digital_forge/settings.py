@@ -119,6 +119,7 @@ INSTALLED_APPS = [
     'custom_admin',
     'about',
     'brief',
+    'analysis',
 ]
 
 SITE_ID = 1
@@ -256,6 +257,13 @@ EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'resend')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@johans-digital-forge.se')
+
+# -----------------------------------------------------------
+# PAGESPEED INSIGHTS API
+# Skaffa nyckel: console.cloud.google.com → PageSpeed Insights API
+# Gratis: 25 000 anrop/dag (2 per analys = 12 500 analyser/dag)
+# -----------------------------------------------------------
+PAGESPEED_API_KEY = os.environ.get('PAGESPEED_API_KEY', '')
 
 # -----------------------------------------------------------
 # CLOUDFLARE TURNSTILE (valfritt spam-skydd för brief-formulär)
