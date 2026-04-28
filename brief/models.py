@@ -86,6 +86,7 @@ class ProjectBrief(models.Model):
 
     # --- Steg 2: Befintlig sida, antal sidor, funktioner ---
     has_existing_site = models.CharField(max_length=20, choices=HAS_EXISTING_SITE_CHOICES)
+    existing_site_url = models.URLField(blank=True)
     num_pages = models.CharField(max_length=10, choices=NUM_PAGES_CHOICES)
     features = models.JSONField(default=list)
     features_other = models.CharField(max_length=255, blank=True)

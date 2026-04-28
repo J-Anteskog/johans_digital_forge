@@ -24,7 +24,7 @@ class ProjectBriefAdmin(admin.ModelAdmin):
             'fields': ('goals', 'goals_other', 'budget', 'timeline', 'timeline_specific'),
         }),
         ('Steg 2 – Befintlig sida, storlek & funktioner', {
-            'fields': ('has_existing_site', 'num_pages', 'features', 'features_other'),
+            'fields': ('has_existing_site', 'existing_site_url', 'num_pages', 'features', 'features_other'),
         }),
         ('Steg 3 – Stil, material & kontakt', {
             'fields': (

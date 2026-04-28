@@ -47,7 +47,7 @@ class ProjectBriefForm(forms.ModelForm):
         fields = [
             'goals', 'goals_other',
             'budget', 'timeline', 'timeline_specific',
-            'has_existing_site', 'num_pages',
+            'has_existing_site', 'existing_site_url', 'num_pages',
             'features', 'features_other',
             'has_material', 'style_preferences',
             'notes',
@@ -66,12 +66,14 @@ class ProjectBriefForm(forms.ModelForm):
             'referrer': forms.HiddenInput,
             'goals_other': forms.TextInput(attrs={'placeholder': 'Beskriv kortfattat...'}),
             'features_other': forms.TextInput(attrs={'placeholder': 'Beskriv kortfattat...'}),
+            'existing_site_url': forms.URLInput(attrs={'placeholder': 'https://dinhemsida.se'}),
             'contact_phone': forms.TextInput(attrs={'placeholder': '070-xxx xx xx'}),
         }
         labels = {
             'goals_other': 'Annat – beskriv gärna',
             'features_other': 'Annat – beskriv gärna',
             'has_existing_site': 'Har du en hemsida idag?',
+            'existing_site_url': 'Vad är adressen till hemsidan?',
             'num_pages': 'Hur många sidor/undersidor behöver du?',
             'has_material': 'Har du texter och bilder klara?',
             'timeline_specific': 'Vilket datum behöver du det klart?',
@@ -108,3 +110,11 @@ class ProjectBriefForm(forms.ModelForm):
         if not goals:
             raise forms.ValidationError('Välj minst ett mål.')
         return goals
+
+    def clean(self):
+        cleaned = super().clean()
+        has_existing_site = cleaned.get('has_existing_site')
+        existing_site_url = (cleaned.get('existing_site_url') or '').strip()
+        if has_existing_site in ('redo_needed', 'unhappy') and not existing_site_url:
+            self.add_error('existing_site_url', 'Fyll i adressen till er nuvarande hemsida.')
+        return cleaned

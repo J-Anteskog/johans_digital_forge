@@ -72,6 +72,7 @@
       <div class="section-heading">Befintlig sida, storlek & funktioner</div>
       <table>
         <tr><td>Har hemsida</td><td>{{ brief.get_has_existing_site_display }}</td></tr>
+        <tr><td>Webbadress</td><td>{% if brief.existing_site_url %}<a href="{{ brief.existing_site_url }}">{{ brief.existing_site_url }}</a>{% else %}–{% endif %}</td></tr>
         <tr><td>Antal sidor</td><td>{{ brief.get_num_pages_display }}</td></tr>
         <tr>
           <td>Funktioner</td>

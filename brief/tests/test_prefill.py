@@ -148,6 +148,7 @@ class BriefFormPostTests(TestCase):
             'budget': '10k_20k',
             'timeline': '2_3_months',
             'has_existing_site': 'unhappy',
+            'existing_site_url': 'https://example.com',
             'num_pages': '3-5',
             'features': ['startsida', 'kontakt'],
             'has_material': 'partial',

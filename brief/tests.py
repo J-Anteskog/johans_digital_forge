@@ -17,6 +17,7 @@ VALID_POST = {
     'timeline': '1_month',
     'timeline_specific': '',
     'has_existing_site': 'no_new',
+    'existing_site_url': '',
     'num_pages': '3-5',
     'features': ['startsida', 'kontakt'],
     'features_other': '',
@@ -120,6 +121,25 @@ class ProjectBriefFormValidationTest(TestCase):
         form = ProjectBriefForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn('contact_name', form.errors)
+
+    def test_form_requires_existing_site_url_when_yes_selected(self):
+        data = {
+            **VALID_POST,
+            'has_existing_site': 'unhappy',
+            'existing_site_url': '',
+        }
+        form = ProjectBriefForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('existing_site_url', form.errors)
+
+    def test_form_allows_empty_existing_site_url_when_no_site(self):
+        data = {
+            **VALID_POST,
+            'has_existing_site': 'no_new',
+            'existing_site_url': '',
+        }
+        form = ProjectBriefForm(data=data)
+        self.assertTrue(form.is_valid(), form.errors)
 
 
 # ── Test 3: Honeypot ───────────────────────────────────────────────────────

@@ -330,6 +330,17 @@
                   {% endif %}
                 </div>
 
+                <!-- URL till befintlig hemsida (visas bara om ja) -->
+                <div class="mb-4 ps-3 {% if form.existing_site_url.errors %}brief-field-error{% endif %}" id="existing-site-url-row" style="display:none;">
+                  <label class="form-label" for="{{ form.existing_site_url.id_for_label }}">
+                    {% if is_english %}What is your current website address? *{% else %}Vad är adressen till er nuvarande hemsida? *{% endif %}
+                  </label>
+                  {{ form.existing_site_url }}
+                  {% if form.existing_site_url.errors %}
+                  <div class="brief-invalid-msg">{% for e in form.existing_site_url.errors %}{{ e }}{% endfor %}</div>
+                  {% endif %}
+                </div>
+
                 <!-- Antal sidor -->
                 <div class="mb-4 {% if form.num_pages.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
@@ -604,9 +615,18 @@
     }
 
     if (n === 2) {
-      if (!document.querySelector('input[name="has_existing_site"]:checked')) {
+      const existingSite = document.querySelector('input[name="has_existing_site"]:checked');
+      if (!existingSite) {
         const wrap = document.querySelector('input[name="has_existing_site"]').closest('.mb-4');
         addError(wrap, t('Välj ett alternativ.', 'Please select an option.'));
+        ok = false;
+      }
+      const existingSiteUrlWrap = document.getElementById('existing-site-url-row');
+      const existingSiteUrlInput = document.getElementById('id_existing_site_url');
+      const requiresExistingSiteUrl = existingSite && (existingSite.value === 'redo_needed' || existingSite.value === 'unhappy');
+      if (requiresExistingSiteUrl && !existingSiteUrlInput.value.trim()) {
+        addError(existingSiteUrlWrap, t('Fyll i adressen till er nuvarande hemsida.', 'Please enter your current website address.'));
+        existingSiteUrlInput.classList.add('is-invalid');
         ok = false;
       }
       if (!document.querySelector('input[name="num_pages"]:checked')) {
@@ -658,6 +678,24 @@
       document.getElementById('timeline-specific-row').style.display = '';
     }
   });
+
+  // ── Befintlig hemsida-URL: visa/dölj och rensa vid Nej/Osäker ─────────
+  function updateExistingSiteUrlVisibility() {
+    const selected = document.querySelector('input[name="has_existing_site"]:checked');
+    const row = document.getElementById('existing-site-url-row');
+    const input = document.getElementById('id_existing_site_url');
+    const show = selected && (selected.value === 'redo_needed' || selected.value === 'unhappy');
+    row.style.display = show ? '' : 'none';
+    if (!show) {
+      input.value = '';
+      input.classList.remove('is-invalid');
+    }
+  }
+
+  document.querySelectorAll('input[name="has_existing_site"]').forEach(function (r) {
+    r.addEventListener('change', updateExistingSiteUrlVisibility);
+  });
+  updateExistingSiteUrlVisibility();
 
   // ── Mål-"Annat": visa/dölj goals_other ───────────────────────
   document.querySelectorAll('#goals-group input[value="other"]').forEach(function (cb) {
