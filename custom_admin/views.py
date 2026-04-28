@@ -14,6 +14,7 @@ import json
 
 from service.models import Service
 from portfolio.models import Project
+from brief.models import ProjectBrief
 from .models import CalendarEvent
 
 
@@ -25,11 +26,15 @@ def dashboard(request):
     services_count = Service.objects.count()
     projects_count = Project.objects.count()
     active_services = Service.objects.filter(is_active=True).count()
+    briefs_count = ProjectBrief.objects.count()
+    recent_briefs = ProjectBrief.objects.order_by('-created_at')[:8]
     
     return render(request, "custom_admin/dashboard.html", {
         "services_count": services_count,
         "projects_count": projects_count,
         "active_services": active_services,
+        "briefs_count": briefs_count,
+        "recent_briefs": recent_briefs,
     })
 
 
