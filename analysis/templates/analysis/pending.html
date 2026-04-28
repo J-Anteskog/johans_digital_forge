@@ -52,6 +52,28 @@
       <span id="elapsed" class="text-light">0s</span>
     </p>
 
+    <!-- Visas bara om analysen avbryts medan man väntar -->
+    <div id="error-state" class="d-none mt-4">
+      <div class="alert alert-danger text-start" role="alert" style="border-radius:.75rem;">
+        <h5 class="alert-heading mb-1">
+          <i class="fas fa-circle-exclamation me-2"></i>
+          {% if obj.language == 'en' %}Analysis failed{% else %}Analysen misslyckades{% endif %}
+        </h5>
+        <p id="error-detail" class="mb-3 small text-danger-emphasis">
+          {% if obj.language == 'en' %}
+            The server was restarted while your analysis was running. Please try again.
+          {% else %}
+            Servern startades om medan analysen kördes. Försök igen.
+          {% endif %}
+        </p>
+        <a href="{% if obj.language == 'en' %}/en/analysis/{% else %}/analys/{% endif %}"
+           class="btn btn-outline-light btn-sm">
+          <i class="fas fa-rotate-right me-1"></i>
+          {% if obj.language == 'en' %}Try again{% else %}Försök igen{% endif %}
+        </a>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -105,7 +127,16 @@
     fetch(statusUrl)
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        if (data.done) {
+        if (data.status === 'error') {
+          clearInterval(timer);
+          document.getElementById('spinner-wrap').classList.add('d-none');
+          document.getElementById('dots').classList.add('d-none');
+          document.getElementById('status-msg').classList.add('d-none');
+          if (data.error_message) {
+            document.getElementById('error-detail').textContent = data.error_message;
+          }
+          document.getElementById('error-state').classList.remove('d-none');
+        } else if (data.done) {
           clearInterval(timer);
           window.location.reload();
         }

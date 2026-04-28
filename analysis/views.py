@@ -120,4 +120,7 @@ def analysis_result(request, token):
 
 def analysis_status_json(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token)
-    return JsonResponse({'status': obj.status, 'done': obj.is_done})
+    payload = {'status': obj.status, 'done': obj.is_done}
+    if obj.status == 'error' and obj.error_message:
+        payload['error_message'] = obj.error_message
+    return JsonResponse(payload)
