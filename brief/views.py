@@ -91,6 +91,33 @@ def _first_error_step(form):
 
 # --- Views -----------------------------------------------------------------
 
+def _load_analysis_prefill(request):
+    """
+    Looks up a SiteAnalysis by UUID from query params.
+    Returns (initial_dict, prefill_ctx) or ({}, {}) if invalid/missing.
+    """
+    if request.GET.get('ref') != 'analysis':
+        return {}, {}
+    analysis_id = request.GET.get('analysis_id', '').strip()
+    if not analysis_id:
+        return {}, {}
+    try:
+        from analysis.models import SiteAnalysis
+        from analysis.utils import build_brief_initial_from_analysis
+        analysis = SiteAnalysis.objects.get(pk=analysis_id, status='complete')
+        initial = build_brief_initial_from_analysis(analysis)
+        prefill_ctx = {
+            'from_analysis': True,
+            'analyzed_url': analysis.url,
+            'analysis_grade': analysis.grade,
+            'analysis_score': analysis.score_overall,
+            'analysis_id': str(analysis.id),
+        }
+        return initial, prefill_ctx
+    except Exception:
+        return {}, {}
+
+
 def _brief_view(request, language):
     is_english = language == 'en'
     ctx_base = {'language': language, 'is_english': is_english}
@@ -117,11 +144,16 @@ def _brief_view(request, language):
         if form.is_valid():
             brief = form.save(commit=False)
             brief.language = language
-            brief.referrer = (
-                request.POST.get('referrer', '')
-                or request.GET.get('utm_source', '')
-                or request.META.get('HTTP_REFERER', '')[:255]
-            )
+
+            # Prioritise analysis link; fall back to utm_source / HTTP Referer
+            posted_analysis_id = request.POST.get('analysis_id', '').strip()
+            if posted_analysis_id:
+                brief.referrer = f'analysis:{posted_analysis_id}'
+            else:
+                brief.referrer = (
+                    request.GET.get('utm_source', '')
+                    or request.META.get('HTTP_REFERER', '')[:255]
+                )
             brief.save()
 
             threading.Thread(
@@ -171,9 +203,12 @@ def _brief_view(request, language):
             'turnstile_site_key': getattr(settings, 'TURNSTILE_SITE_KEY', ''),
         })
 
-    form = ProjectBriefForm(initial={'language': language})
+    initial, prefill_ctx = _load_analysis_prefill(request)
+    initial.setdefault('language', language)
+    form = ProjectBriefForm(initial=initial)
     return render(request, 'brief/form.html', {
         **ctx_base,
+        **prefill_ctx,
         'form': form,
         'form_token': _generate_form_token(),
         'initial_step': 1,

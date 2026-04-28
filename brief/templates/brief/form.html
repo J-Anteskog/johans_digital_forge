@@ -68,6 +68,19 @@
     border-radius: 50px; padding: 2px 14px; font-size: .8rem;
     font-weight: 600; margin-bottom: .5rem;
   }
+
+  /* ── Analysis prefill banner ── */
+  .analysis-prefill-banner {
+    border-left: 4px solid #0d6efd;
+    background: rgba(13, 110, 253, .07);
+    border-radius: .5rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    color: #cfe2ff;
+  }
+  .analysis-prefill-banner strong { color: #fff; }
+  .analysis-prefill-banner a { color: #8bb8ff; }
+  .analysis-prefill-banner a:hover { color: #fff; }
 </style>
 
 {% if turnstile_site_key %}
@@ -101,6 +114,27 @@
         {% endif %}
       </p>
     </div>
+
+    <!-- Analysis prefill banner -->
+    {% if from_analysis %}
+    <div class="analysis-prefill-banner" role="status">
+      <i class="fas fa-circle-info me-2"></i>
+      <strong>{% if is_english %}Pre-filled from analysis{% else %}Förifyllt från analys{% endif %}</strong>
+      <p class="mb-0 mt-1 small">
+        {% if is_english %}
+          We analysed
+          <a href="{{ analyzed_url }}" target="_blank" rel="noopener noreferrer">{{ analyzed_url }}</a>
+          and got an overall grade of <strong>{{ analysis_grade }} ({{ analysis_score }}/100)</strong>.
+          Some fields are pre-filled based on the result — feel free to change anything that doesn't fit.
+        {% else %}
+          Vi har analyserat
+          <a href="{{ analyzed_url }}" target="_blank" rel="noopener noreferrer">{{ analyzed_url }}</a>
+          och fick betyget <strong>{{ analysis_grade }} ({{ analysis_score }}/100)</strong>.
+          Vissa fält är förifyllda baserat på resultatet — ändra gärna om något inte stämmer.
+        {% endif %}
+      </p>
+    </div>
+    {% endif %}
 
     <!-- Spam error -->
     {% if spam_error %}
@@ -147,6 +181,7 @@
             <form method="post" novalidate id="briefForm">
               {% csrf_token %}
               <input type="hidden" name="form_token" value="{{ form_token }}">
+              {% if analysis_id %}<input type="hidden" name="analysis_id" value="{{ analysis_id }}">{% endif %}
               {{ form.language }}
               {{ form.referrer }}
 

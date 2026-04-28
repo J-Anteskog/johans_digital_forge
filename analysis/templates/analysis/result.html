@@ -597,7 +597,7 @@
           Fyll i en offertbrief och få en personlig offert inom 24 timmar.
         {% endif %}
       </p>
-      <a href="{% if obj.language == 'en' %}{% url 'brief_en' %}?ref=analysis&site={{ obj.url|urlencode }}{% else %}{% url 'brief' %}?ref=analysis&site={{ obj.url|urlencode }}{% endif %}"
+      <a href="{% if obj.language == 'en' %}{% url 'brief_en' %}?ref=analysis&analysis_id={{ obj.id }}{% else %}{% url 'brief' %}?ref=analysis&analysis_id={{ obj.id }}{% endif %}"
          class="btn btn-warning btn-lg fw-bold px-5 me-2">
         {% if obj.language == 'en' %}Get a free quote{% else %}Begär kostnadsfri offert{% endif %}
       </a>

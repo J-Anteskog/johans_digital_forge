@@ -1,0 +1,37 @@
+from django.urls import reverse
+
+
+def build_brief_initial_from_analysis(analysis) -> dict:
+    """
+    Builds an initial-dict for ProjectBriefForm from a completed SiteAnalysis.
+    Never raises — caller is responsible for passing a valid analysis object.
+    """
+    overall = analysis.score_overall or 0
+
+    has_existing = 'redo_needed' if overall < 50 else 'unhappy'
+
+    try:
+        report_path = reverse('analysis_result', kwargs={'token': analysis.id})
+        report_line = f'Rapport: https://www.johans-digital-forge.se{report_path}'
+    except Exception:
+        report_line = ''
+
+    lines = [
+        f'Kommer från webbplatsanalys av {analysis.url}.',
+        (
+            f'Övergripande betyg: {analysis.grade}'
+            f' ({analysis.score_overall}/100).'
+        ),
+        (
+            f'Säkerhet: {analysis.score_security}/100, '
+            f'SEO: {analysis.score_seo}/100, '
+            f'Prestanda: {analysis.score_performance}/100, '
+            f'Mobil: {analysis.score_mobile}/100.'
+        ),
+        report_line,
+    ]
+
+    return {
+        'has_existing_site': has_existing,
+        'notes': '\n'.join(line for line in lines if line),
+    }
