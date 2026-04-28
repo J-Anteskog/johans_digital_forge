@@ -91,6 +91,12 @@ class ProjectBriefForm(forms.ModelForm):
                     field.widget.attrs['class'] = f"{cls} form-control".strip()
         self.fields['contact_name'].required = True
         self.fields['contact_email'].required = True
+        # Django auto-adds a blank ("–––") choice for required CharField fields
+        # that have no model default. Remove it so no phantom empty option appears.
+        radio_fields = ('budget', 'timeline', 'has_existing_site', 'num_pages', 'has_material')
+        for name in radio_fields:
+            field = self.fields[name]
+            field.choices = [(k, v) for k, v in field.choices if k != '']
 
     def clean_website_url(self):
         if self.cleaned_data.get('website_url'):

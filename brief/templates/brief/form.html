@@ -41,15 +41,26 @@
   .brief-progress-line.done { background: #198754; }
 
   /* ── Radio / Checkbox cards ── */
-  .choice-card { display: flex; flex-direction: column; gap: .5rem; }
+  .choice-card { display: flex; flex-direction: column; gap: .3rem; }
   .choice-card .form-check {
     border: 1.5px solid #dee2e6; border-radius: .5rem;
-    padding: .75rem 1rem .75rem 2.8rem;
-    cursor: pointer; transition: border-color .2s, background .2s;
+    padding: 10px 14px 10px 2.5rem;
+    cursor: pointer; transition: border-color .15s, background .15s;
+    min-height: 44px; display: flex; align-items: center;
   }
-  .choice-card .form-check:hover { border-color: #0d6efd; background: #f0f6ff; }
+  .choice-card .form-check-input { margin-top: 0; }
+  .choice-card .form-check:hover { border-color: rgba(13,110,253,.5); background: rgba(13,110,253,.04); }
   .choice-card .form-check input:checked ~ label { font-weight: 600; }
-  .choice-card .form-check:has(input:checked) { border-color: #0d6efd; background: #eef4ff; }
+  .choice-card .form-check:has(input:checked) { border-color: #0d6efd; background: transparent; }
+
+  /* ── 2-kolumns grid (desktop) för mål-checkboxar ── */
+  .choice-card-2col {
+    display: grid; grid-template-columns: 1fr 1fr; gap: .3rem;
+  }
+  @media (max-width: 767px) { .choice-card-2col { grid-template-columns: 1fr; } }
+
+  /* ── Frågeikon ── */
+  .brief-icon { width: 18px; height: 18px; vertical-align: -3px; color: #6c757d; }
 
   /* ── Step buttons ── */
   .brief-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
@@ -203,9 +214,10 @@
                 <!-- Mål -->
                 <div class="mb-4 {% if form.goals.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="target" class="brief-icon"></i>
                     {% if is_english %}What should the website achieve? *{% else %}Vad ska hemsidan åstadkomma? *{% endif %}
                   </label>
-                  <div class="choice-card" id="goals-group">
+                  <div class="choice-card choice-card-2col" id="goals-group">
                     {% for choice in form.goals %}
                     <div class="form-check">
                       {{ choice.tag }}
@@ -233,6 +245,7 @@
                 <!-- Budget -->
                 <div class="mb-4 {% if form.budget.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="wallet" class="brief-icon"></i>
                     {% if is_english %}Budget *{% else %}Budget *{% endif %}
                   </label>
                   <div class="choice-card">
@@ -253,6 +266,7 @@
                 <!-- Tidslinje -->
                 <div class="mb-3 {% if form.timeline.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="calendar" class="brief-icon"></i>
                     {% if is_english %}When do you need it? *{% else %}När behöver du det klart? *{% endif %}
                   </label>
                   <div class="choice-card">
@@ -296,6 +310,7 @@
                 <!-- Befintlig sida -->
                 <div class="mb-4 {% if form.has_existing_site.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="globe" class="brief-icon"></i>
                     {% if is_english %}Do you have a website today? *{% else %}Har du en hemsida idag? *{% endif %}
                   </label>
                   <div class="choice-card">
@@ -316,6 +331,7 @@
                 <!-- Antal sidor -->
                 <div class="mb-4 {% if form.num_pages.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="file-text" class="brief-icon"></i>
                     {% if is_english %}How many pages / subpages? *{% else %}Hur många sidor / undersidor? *{% endif %}
                   </label>
                   <div class="choice-card">
@@ -336,6 +352,7 @@
                 <!-- Funktioner -->
                 <div class="mb-4">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="layout-grid" class="brief-icon"></i>
                     {% if is_english %}Which pages / features do you need?{% else %}Vilka sidor / funktioner behöver du?{% endif %}
                     <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
                   </label>
@@ -376,6 +393,7 @@
                 <!-- Stilpreferens -->
                 <div class="mb-4">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="palette" class="brief-icon"></i>
                     {% if is_english %}Which style appeals to you?{% else %}Vilken känsla vill du ha på sidan?{% endif %}
                     <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
                   </label>
@@ -396,6 +414,7 @@
                 <!-- Har material -->
                 <div class="mb-4 {% if form.has_material.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
+                    <i data-lucide="folder" class="brief-icon"></i>
                     {% if is_english %}Do you have texts and images ready? *{% else %}Har du texter och bilder klara? *{% endif %}
                   </label>
                   <div class="choice-card">
@@ -416,6 +435,7 @@
                 <!-- Anteckningar -->
                 <div class="mb-4">
                   <label class="form-label fw-semibold" for="{{ form.notes.id_for_label }}">
+                    <i data-lucide="message-square" class="brief-icon"></i>
                     {% if is_english %}Anything else you'd like to add?{% else %}Övriga kommentarer eller önskemål?{% endif %}
                     <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
                   </label>

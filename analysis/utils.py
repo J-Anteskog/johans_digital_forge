@@ -5,10 +5,20 @@ def build_brief_initial_from_analysis(analysis) -> dict:
     """
     Builds an initial-dict for ProjectBriefForm from a completed SiteAnalysis.
     Never raises — caller is responsible for passing a valid analysis object.
+
+    Score thresholds for has_existing_site:
+      >= 80  → not set (site is good, let user decide)
+      60–79  → 'unhappy'
+      < 60   → 'redo_needed'
     """
     overall = analysis.score_overall or 0
 
-    has_existing = 'redo_needed' if overall < 50 else 'unhappy'
+    if overall >= 80:
+        has_existing = None
+    elif overall >= 60:
+        has_existing = 'unhappy'
+    else:
+        has_existing = 'redo_needed'
 
     try:
         report_path = reverse('analysis_result', kwargs={'token': analysis.id})
@@ -31,7 +41,7 @@ def build_brief_initial_from_analysis(analysis) -> dict:
         report_line,
     ]
 
-    return {
-        'has_existing_site': has_existing,
-        'notes': '\n'.join(line for line in lines if line),
-    }
+    initial = {'notes': '\n'.join(line for line in lines if line)}
+    if has_existing is not None:
+        initial['has_existing_site'] = has_existing
+    return initial

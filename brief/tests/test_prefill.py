@@ -25,20 +25,31 @@ def _make_analysis(**kwargs):
 
 class BuildBriefInitialTests(TestCase):
 
-    def test_score_below_50_gives_redo_needed(self):
+    def test_score_below_60_gives_redo_needed(self):
+        for score in (0, 30, 59):
+            with self.subTest(score=score):
+                analysis = _make_analysis(score_overall=score)
+                initial = build_brief_initial_from_analysis(analysis)
+                self.assertEqual(initial['has_existing_site'], 'redo_needed')
+
+    def test_score_60_to_79_gives_unhappy(self):
+        for score in (60, 72, 79):
+            with self.subTest(score=score):
+                analysis = _make_analysis(score_overall=score)
+                initial = build_brief_initial_from_analysis(analysis)
+                self.assertEqual(initial['has_existing_site'], 'unhappy')
+
+    def test_score_80_plus_does_not_set_has_existing_site(self):
+        for score in (80, 92, 100):
+            with self.subTest(score=score):
+                analysis = _make_analysis(score_overall=score)
+                initial = build_brief_initial_from_analysis(analysis)
+                self.assertNotIn('has_existing_site', initial)
+
+    def test_goals_never_set(self):
         analysis = _make_analysis(score_overall=30)
         initial = build_brief_initial_from_analysis(analysis)
-        self.assertEqual(initial['has_existing_site'], 'redo_needed')
-
-    def test_score_50_to_69_gives_unhappy(self):
-        analysis = _make_analysis(score_overall=60)
-        initial = build_brief_initial_from_analysis(analysis)
-        self.assertEqual(initial['has_existing_site'], 'unhappy')
-
-    def test_score_70_plus_gives_unhappy(self):
-        analysis = _make_analysis(score_overall=80)
-        initial = build_brief_initial_from_analysis(analysis)
-        self.assertEqual(initial['has_existing_site'], 'unhappy')
+        self.assertNotIn('goals', initial)
 
     def test_notes_contains_url(self):
         analysis = _make_analysis(url='https://mysite.se')
