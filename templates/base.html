@@ -180,8 +180,16 @@
   {% endblock %}
 
   <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', function () { lucide.createIcons(); });</script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      } else {
+        console.error('Lucide kunde inte laddas');
+      }
+    });
+  </script>
 
   <!-- ForgeChat Widget -->
   <script src="https://chat.johans-digital-forge.se/widget.js"></script>
