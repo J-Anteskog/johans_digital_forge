@@ -25,6 +25,10 @@ urlpatterns = [
     # Offertbrief-URL:er
     path("briefs/", views.BriefListView.as_view(), name="admin_briefs"),
     path("briefs/<int:pk>/", views.BriefDetailView.as_view(), name="admin_brief_detail"),
+
+    # Analysrapporter-URL:er
+    path("analyses/", views.AnalysisListView.as_view(), name="admin_analyses"),
+    path("analyses/<uuid:pk>/", views.AnalysisDetailView.as_view(), name="admin_analysis_detail"),
     
     # Kalender
     path("calendar/", views.AdminCalendarView.as_view(), name="admin_calendar"),

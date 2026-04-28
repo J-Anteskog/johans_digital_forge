@@ -15,6 +15,7 @@ import json
 from service.models import Service
 from portfolio.models import Project
 from brief.models import ProjectBrief
+from analysis.models import SiteAnalysis
 from .models import CalendarEvent
 
 
@@ -28,6 +29,8 @@ def dashboard(request):
     active_services = Service.objects.filter(is_active=True).count()
     briefs_count = ProjectBrief.objects.count()
     recent_briefs = ProjectBrief.objects.order_by('-created_at')[:8]
+    analyses_count = SiteAnalysis.objects.count()
+    recent_analyses = SiteAnalysis.objects.order_by('-created_at')[:8]
     
     return render(request, "custom_admin/dashboard.html", {
         "services_count": services_count,
@@ -35,6 +38,8 @@ def dashboard(request):
         "active_services": active_services,
         "briefs_count": briefs_count,
         "recent_briefs": recent_briefs,
+        "analyses_count": analyses_count,
+        "recent_analyses": recent_analyses,
     })
 
 
@@ -216,6 +221,25 @@ class BriefDetailView(DetailView):
     model = ProjectBrief
     template_name = "custom_admin/brief_detail.html"
     context_object_name = "brief"
+
+
+# ---------------------------
+# 🔎 ANALYSRAPPORTER ADMIN
+# ---------------------------
+@method_decorator(login_required, name="dispatch")
+class AnalysisListView(ListView):
+    model = SiteAnalysis
+    template_name = "custom_admin/analysis_list.html"
+    context_object_name = "analyses"
+    paginate_by = 25
+    ordering = ["-created_at"]
+
+
+@method_decorator(login_required, name="dispatch")
+class AnalysisDetailView(DetailView):
+    model = SiteAnalysis
+    template_name = "custom_admin/analysis_detail.html"
+    context_object_name = "analysis"
 
 
 # ---------------------------
