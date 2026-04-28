@@ -117,7 +117,7 @@
           Fyll i formuläret så återkommer jag med ett skräddarsytt förslag inom 24 timmar.
         {% endif %}
       </p>
-      <p class="text-muted small">
+      <p class="small">
         {% if is_english %}
           Already know what you want? Use the
           <a href="{% url 'contact' %}">quick contact form</a> instead.
@@ -367,7 +367,7 @@
                   <label class="form-label fw-semibold">
                     <i data-lucide="layout-grid" class="brief-icon"></i>
                     {% if is_english %}Which pages / features do you need?{% else %}Vilka sidor / funktioner behöver du?{% endif %}
-                    <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
+                    <span class="fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
                   </label>
                   <div class="row g-2">
                     {% for choice in form.features %}
@@ -408,7 +408,7 @@
                   <label class="form-label fw-semibold">
                     <i data-lucide="palette" class="brief-icon"></i>
                     {% if is_english %}Which style appeals to you?{% else %}Vilken känsla vill du ha på sidan?{% endif %}
-                    <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
+                    <span class="fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
                   </label>
                   <div class="row g-2">
                     {% for choice in form.style_preferences %}
@@ -450,7 +450,7 @@
                   <label class="form-label fw-semibold" for="{{ form.notes.id_for_label }}">
                     <i data-lucide="message-square" class="brief-icon"></i>
                     {% if is_english %}Anything else you'd like to add?{% else %}Övriga kommentarer eller önskemål?{% endif %}
-                    <span class="text-muted fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
+                    <span class="fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
                   </label>
                   {{ form.notes }}
                 </div>
@@ -498,7 +498,7 @@
                 {% endif %}
 
                 <!-- Integritetspolicy -->
-                <p class="text-muted small mb-4">
+                <p class="small mb-4">
                   {% if is_english %}
                     By submitting you agree that I store your details in order to get back to you with a proposal.
                     See <a href="{% url 'privacy_policy_en' %}">privacy policy</a>.
