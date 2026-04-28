@@ -11,6 +11,7 @@
       <li class="nav-item mb-2"><a href="{% url 'admin_dashboard' %}" class="nav-link text-light"><i class="fas fa-home me-2"></i>Översikt</a></li>
       <li class="nav-item mb-2"><a href="{% url 'admin_services' %}" class="nav-link text-light"><i class="fas fa-cogs me-2"></i>Tjänster</a></li>
       <li class="nav-item mb-2"><a href="{% url 'admin_projects' %}" class="nav-link text-light"><i class="fas fa-briefcase me-2"></i>Projekt</a></li>
+      <li class="nav-item mb-2"><a href="{% url 'admin_briefs' %}" class="nav-link text-light"><i class="fas fa-file-signature me-2"></i>Offertbriefar</a></li>
       <li class="nav-item mb-2"><a href="#" class="nav-link text-light"><i class="fas fa-calendar-alt me-2"></i>Kalender</a></li>
       <li class="nav-item mt-4">
         <form action="{% url 'logout' %}" method="post">{% csrf_token %}
@@ -67,7 +68,7 @@
             <i class="fas fa-file-signature fa-3x text-success mb-3"></i>
             <h5 class="card-title">Offertbriefar</h5>
             <p class="display-5 fw-bold">{{ briefs_count }}</p>
-            <a href="#recent-briefs" class="btn btn-outline-success w-100">Visa senaste</a>
+            <a href="{% url 'admin_briefs' %}" class="btn btn-outline-success w-100">Visa alla</a>
           </div>
         </div>
       </div>
@@ -94,11 +95,14 @@
               <tbody>
                 {% for brief in recent_briefs %}
                 <tr>
-                  <td>#{{ brief.pk }}</td>
+                  <td><a href="{% url 'admin_brief_detail' brief.pk %}">#{{ brief.pk }}</a></td>
                   <td>{{ brief.contact_name }}</td>
                   <td>{{ brief.contact_email }}</td>
                   <td>{{ brief.created_at|date:"Y-m-d H:i" }}</td>
-                  <td>Genererat automatiskt av offertbriefs-formuläret &middot; ID #{{ brief.pk }} &middot; Öppna i admin</td>
+                  <td>
+                    Genererat automatiskt av offertbriefs-formuläret &middot; ID #{{ brief.pk }} &middot;
+                    <a href="{% url 'admin_brief_detail' brief.pk %}">Öppna i admin</a>
+                  </td>
                 </tr>
                 {% empty %}
                 <tr>

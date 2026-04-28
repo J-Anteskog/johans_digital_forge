@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Offertbriefar - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex" style="min-height: 100vh;">
+  {% include 'custom_admin/_sidebar.html' %}
+
+  <main class="flex-grow-1 bg-light p-5">
+    <div class="container-fluid">
+      <h1 class="mb-4">Offertbriefar</h1>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Namn</th>
+                  <th>E-post</th>
+                  <th>Status</th>
+                  <th>Skapad</th>
+                  <th>Info</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for brief in briefs %}
+                <tr>
+                  <td><a href="{% url 'admin_brief_detail' brief.pk %}">#{{ brief.pk }}</a></td>
+                  <td>{{ brief.contact_name }}</td>
+                  <td>{{ brief.contact_email }}</td>
+                  <td>{{ brief.get_status_display }}</td>
+                  <td>{{ brief.created_at|date:"Y-m-d H:i" }}</td>
+                  <td>
+                    Genererat automatiskt av offertbriefs-formuläret &middot; ID #{{ brief.pk }} &middot;
+                    <a href="{% url 'admin_brief_detail' brief.pk %}">Öppna i admin</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-muted">Inga offertbriefar hittades ännu.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {% if is_paginated %}
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Föregående</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }} av {{ page_obj.paginator.num_pages }}</span></li>
+          {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Nästa</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}

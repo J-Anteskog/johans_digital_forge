@@ -21,6 +21,10 @@ urlpatterns = [
     path("projects/add/", views.ProjectCreateView.as_view(), name="add_project"),
     path("projects/<int:pk>/edit/", views.ProjectUpdateView.as_view(), name="edit_project"),
     path("projects/<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete_project"),
+
+    # Offertbrief-URL:er
+    path("briefs/", views.BriefListView.as_view(), name="admin_briefs"),
+    path("briefs/<int:pk>/", views.BriefDetailView.as_view(), name="admin_brief_detail"),
     
     # Kalender
     path("calendar/", views.AdminCalendarView.as_view(), name="admin_calendar"),

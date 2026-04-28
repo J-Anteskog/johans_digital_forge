@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, DetailView
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
@@ -197,6 +197,25 @@ class ProjectDeleteView(DeleteView):
     model = Project
     template_name = "custom_admin/project_confirm_delete.html"
     success_url = reverse_lazy("admin_projects")
+
+
+# ---------------------------
+# 🧾 OFFERTBRIEF ADMIN
+# ---------------------------
+@method_decorator(login_required, name="dispatch")
+class BriefListView(ListView):
+    model = ProjectBrief
+    template_name = "custom_admin/brief_list.html"
+    context_object_name = "briefs"
+    paginate_by = 25
+    ordering = ["-created_at"]
+
+
+@method_decorator(login_required, name="dispatch")
+class BriefDetailView(DetailView):
+    model = ProjectBrief
+    template_name = "custom_admin/brief_detail.html"
+    context_object_name = "brief"
 
 
 # ---------------------------
