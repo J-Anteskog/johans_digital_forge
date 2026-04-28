@@ -11,9 +11,11 @@ import traceback
 
 import requests
 from bs4 import BeautifulSoup
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from .models import SiteAnalysis
+from .validators import validate_target_url
 from .checks.http import check_http, check_ssl
 from .checks.seo import check_seo
 from .checks.performance import check_performance
@@ -21,7 +23,29 @@ from .checks.pagespeed import check_pagespeed
 from .scoring import calculate_scores
 
 _UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
-_HTML_TIMEOUT = 20
+_CONNECT_TIMEOUT = 5
+_READ_TIMEOUT = 15
+_TIMEOUT = (_CONNECT_TIMEOUT, _READ_TIMEOUT)
+_MAX_HTML_BYTES = 2_000_000  # 2 MB
+
+
+def _fetch_html(url: str) -> str:
+    """Hämtar HTML med storleksgräns (skydd mot zip bombs och jättesidor)."""
+    resp = requests.get(
+        url,
+        timeout=_TIMEOUT,
+        stream=True,
+        headers={'User-Agent': _UA},
+        allow_redirects=True,
+    )
+    resp.raise_for_status()
+
+    content = b''
+    for chunk in resp.iter_content(chunk_size=8192):
+        content += chunk
+        if len(content) > _MAX_HTML_BYTES:
+            raise ValueError('Sidan är för stor för att analyseras (>2 MB).')
+    return content.decode(resp.encoding or 'utf-8', errors='replace')
 
 
 def run_analysis(analysis_id: str) -> None:
@@ -38,13 +62,27 @@ def run_analysis(analysis_id: str) -> None:
     obj.save(update_fields=['status'])
 
     try:
-        url = obj.url
+        # Re-validera precis innan requests skickas (skydd mot DNS rebinding)
+        try:
+            safe_url = validate_target_url(obj.url)
+        except ValidationError as e:
+            obj.status = 'error'
+            obj.error_message = str(e)
+            obj.save(update_fields=['status', 'error_message'])
+            return
+
         results = {}
 
         # ── 1. HTTP ───────────────────────────────────────────────────────
-        http_res = check_http(url)
+        http_res = check_http(safe_url)
         results['http'] = http_res
-        final_url = http_res.get('final_url') or url
+        final_url = http_res.get('final_url') or safe_url
+
+        # Re-validera final_url efter eventuella redirects
+        try:
+            final_url = validate_target_url(final_url)
+        except ValidationError:
+            final_url = safe_url
 
         # ── 2. SSL ────────────────────────────────────────────────────────
         results['ssl'] = check_ssl(final_url)
@@ -52,13 +90,8 @@ def run_analysis(analysis_id: str) -> None:
         # ── 3. Hämta + parsa HTML ─────────────────────────────────────────
         soup = None
         try:
-            resp = requests.get(
-                final_url,
-                timeout=_HTML_TIMEOUT,
-                headers={'User-Agent': _UA},
-                allow_redirects=True,
-            )
-            soup = BeautifulSoup(resp.text, 'lxml')
+            html = _fetch_html(final_url)
+            soup = BeautifulSoup(html, 'lxml')
         except Exception as e:
             results['html_fetch_error'] = str(e)
 

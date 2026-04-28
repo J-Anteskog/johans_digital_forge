@@ -1,5 +1,6 @@
 from django import forms
-from django.core.validators import URLValidator
+
+from .validators import validate_target_url
 
 
 class AnalysisForm(forms.Form):
@@ -34,14 +35,10 @@ class AnalysisForm(forms.Form):
             raise forms.ValidationError('Ange en URL.')
         if not url.startswith(('http://', 'https://')):
             url = 'https://' + url
-        validate = URLValidator()
         try:
-            validate(url)
-        except forms.ValidationError:
-            raise forms.ValidationError(
-                'Ange en giltig URL, t.ex. https://example.com'
-            )
-        return url
+            return validate_target_url(url)
+        except Exception as e:
+            raise forms.ValidationError(str(e))
 
     def clean_website_name(self):
         if self.cleaned_data.get('website_name'):
