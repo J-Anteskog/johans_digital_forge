@@ -7,18 +7,18 @@ from .models import ProjectBrief
 @admin.register(ProjectBrief)
 class ProjectBriefAdmin(admin.ModelAdmin):
     list_display = [
-        'contact_name', 'contact_email', 'budget', 'timeline',
+        'id', 'contact_name', 'contact_email', 'budget', 'timeline',
         'status', 'score_display', 'language', 'created_at',
     ]
     list_filter = ['status', 'budget', 'timeline', 'language']
     search_fields = ['contact_name', 'contact_email', 'notes']
-    readonly_fields = ['created_at', 'score_display', 'referrer_link']
+    readonly_fields = ['created_at', 'score_display', 'referrer_link', 'admin_meta_info']
     ordering = ['-created_at']
     date_hierarchy = 'created_at'
 
     fieldsets = [
         ('Metadata', {
-            'fields': ('created_at', 'status', 'language', 'referrer_link', 'score_display'),
+            'fields': ('created_at', 'status', 'language', 'referrer_link', 'score_display', 'admin_meta_info'),
         }),
         ('Steg 1 – Mål, budget & tidslinje', {
             'fields': ('goals', 'goals_other', 'budget', 'timeline', 'timeline_specific'),
@@ -58,6 +58,15 @@ class ProjectBriefAdmin(admin.ModelAdmin):
             color = '#6c757d'
         return f'{score}/100'
     score_display.allow_tags = False
+
+    @admin.display(description='Info')
+    def admin_meta_info(self, obj):
+        changelist_url = reverse('admin:brief_projectbrief_changelist')
+        return format_html(
+            'Genererat automatiskt av offertbriefs-formuläret &middot; ID #{} &middot; <a href="{}">Öppna i admin</a>',
+            obj.pk,
+            changelist_url,
+        )
 
     @admin.action(description='Markera som granskade')
     def mark_as_reviewed(self, request, queryset):
