@@ -26,6 +26,13 @@
           </h6>
           <ul class="footer-links">
             <li>
+              {% if request.path|slice:":3" == "/en" %}
+                <a href="{% url 'brief_en' %}"><i class="bi bi-file-text me-2"></i>Get a quote</a>
+              {% else %}
+                <a href="{% url 'brief' %}"><i class="bi bi-file-text me-2"></i>Begär offert</a>
+              {% endif %}
+            </li>
+            <li>
               <a href="mailto:info@johans-digital-forge.se">
                 <i class="bi bi-envelope me-2"></i>info@johans-digital-forge.se
               </a>

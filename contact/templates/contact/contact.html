@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
+
+{% block title %}Kontakt – Johan's Digital Forge{% endblock %}
+
+{% block meta_description %}Skicka en kort fråga eller säg hej. För konkreta offertförfrågningar, använd vår offertbrief.{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/contact.css' %}">
 {% endblock %}
@@ -11,24 +16,15 @@
   <div class="container py-5">
     
     <!-- Header -->
-    <div class="section-header text-center mb-5">
-      <h2 class="display-4">✉️ Kontakta mig / Contact me</h2>
+    <div class="section-header text-center mb-4">
+      <h2 class="display-4">✉️ Skicka ett meddelande</h2>
       <p class="lead">
-        Välj om du vill skicka en snabb fråga eller begära offert.<br>
-        Choose to send a quick question or request a quote.
+        Har du en kort fråga eller vill bara säga hej? Skriv några rader så återkommer jag inom kort.
       </p>
-    </div>
-
-    <!-- Navigation buttons -->
-    <div class="d-flex justify-content-center gap-3 mb-5">
-      <a href="{% url 'contact' %}" class="btn btn-primary btn-lg active">
-        <i class="fas fa-comments me-2"></i>
-        Snabb fråga
-      </a>
-      <a href="{% url 'quote_request' %}" class="btn btn-outline-info btn-lg">
-        <i class="fas fa-file-invoice me-2"></i>
-        Offertförfrågan
-      </a>
+      <p class="text-muted">
+        Söker du ett konkret pris eller förslag på hemsida? Då passar
+        <a href="{% url 'brief' %}">offertbriefen</a> bättre — där får jag den info jag behöver för att lämna ett skarpt förslag direkt.
+      </p>
     </div>
 
     <!-- Spam-skydd fel -->
@@ -107,8 +103,11 @@
 
               <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
                 <i class="fas fa-paper-plane me-2"></i>
-                Skicka meddelande / Send message
+                Skicka meddelande
               </button>
+              <p class="text-muted small text-center mt-3 mb-0">
+                Vill du ha ett konkret förslag istället? Fyll i <a href="{% url 'brief' %}">offertbriefen</a>.
+              </p>
             </form>
           </div>
         </div>

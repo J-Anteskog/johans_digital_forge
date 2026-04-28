@@ -8,8 +8,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-    content="Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.">
+  <meta name="description" content="{% block meta_description %}Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.{% endblock %}">
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://www.johans-digital-forge.se{{ request.path }}">
@@ -96,6 +95,23 @@
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
   <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
   {% endblock %}
+
+  <style>
+    .nav-cta-button {
+      background: #D4A356;
+      color: #1a1a1a !important;
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-cta-button:hover { background: #C19140; color: #1a1a1a !important; }
+    @media (max-width: 991px) {
+      .nav-cta-button { display: inline-block; margin: 6px 0; }
+    }
+  </style>
 
   {% block extracss %}{% endblock %}
 

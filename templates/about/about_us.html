@@ -189,9 +189,11 @@
       <h2 class="display-5 fw-bold mb-3">Redo att samarbeta?</h2>
       <p class="lead mb-4">Kontakta oss för en gratis konsultation och låt oss diskutera ditt projekt.</p>
       <div class="d-flex gap-3 justify-content-center">
-        <a href="{% url 'contact' %}" class="btn btn-primary btn-lg">
-          <i class="fas fa-phone me-2"></i>
-          Kontakta oss
+        <a href="{% url 'brief' %}" class="btn btn-warning btn-lg fw-semibold">
+          Begär offert →
+        </a>
+        <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">
+          Skicka en snabb fråga
         </a>
         <a href="{% url 'service_list' %}" class="btn btn-outline-info btn-lg">
           <i class="fas fa-list me-2"></i>

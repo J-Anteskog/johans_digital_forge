@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{% if is_english %}Project Brief – Johan's Digital Forge{% else %}Offertbrief – Johans Digital Forge{% endif %}{% endblock %}
+{% block title %}{% if is_english %}Get a quote – Johan's Digital Forge{% else %}Begär offert – Johans Digital Forge{% endif %}{% endblock %}
+
+{% block meta_description %}{% if is_english %}Get a tailored proposal for your new website within 24 hours. Fill in the project brief and tell me about your project.{% else %}Få ett skräddarsytt förslag på din nya hemsida inom 24 timmar. Fyll i offertbriefen och berätta om ditt projekt.{% endif %}{% endblock %}
 
 {% block hreflang %}
 <link rel="alternate" hreflang="sv" href="https://www.johans-digital-forge.se/brief/">

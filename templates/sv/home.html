@@ -349,10 +349,12 @@
         <h2 class="display-5 fw-bold mb-3">Redo för en komplett digital lösning?</h2>
         <p class="lead mb-4 mb-lg-0">Vi sköter allt från hemsida till hosting - du fokuserar på ditt företag.</p>
       </div>
-      <div class="col-lg-4 text-center text-lg-end">
-        <a href="{% url 'contact' %}" class="btn btn-primary btn-lg shadow-lg">
-          <i class="fas fa-phone me-2"></i>
-          Boka gratis konsultation
+      <div class="col-lg-4 text-center text-lg-end d-flex flex-column gap-2 align-items-center align-items-lg-end">
+        <a href="{% url 'brief' %}" class="btn btn-warning btn-lg shadow-lg fw-semibold">
+          Begär offert →
+        </a>
+        <a href="{% url 'contact' %}" class="btn btn-outline-light btn-sm">
+          Eller skicka en snabb fråga
         </a>
       </div>
     </div>

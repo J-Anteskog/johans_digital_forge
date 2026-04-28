@@ -35,6 +35,13 @@
         {% endif %}
       </ul>
 
+      <!-- Offert CTA -->
+      {% if request.path|slice:":3" == "/en" %}
+        <a href="{% url 'brief_en' %}" class="nav-cta-button ms-2">Get a quote</a>
+      {% else %}
+        <a href="{% url 'brief' %}" class="nav-cta-button ms-2">Begär offert</a>
+      {% endif %}
+
       <!-- Språkväxlare -->
       <div class="ms-3 text-end">
         {% if request.path|slice:":3" == "/en" %}
