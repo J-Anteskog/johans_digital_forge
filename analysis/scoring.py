@@ -1,26 +1,39 @@
 """
 Poängsystem  (0–100 per kategori, viktat overall):
-  Säkerhet     25 %  – HTTPS, SSL-giltighet, certifikat ej snart-utgånget
-  SEO          30 %  – title, meta desc, H1, viewport, OG, robots, sitemap
-  Prestanda    25 %  – PageSpeed desktop (om tillgänglig) + svarstid + resurser
-  Mobilanpassning 20 % – PageSpeed mobile (om tillgänglig) + viewport
+  Säkerhet        20 %  – HTTPS, SSL-giltighet, certifikat ej snart-utgånget
+  SEO             22 %  – title, meta desc, H1, viewport, OG, robots, sitemap
+  Prestanda       20 %  – PageSpeed desktop (om tillgänglig) + svarstid + resurser
+  Mobilanpassning 15 %  – PageSpeed mobile (om tillgänglig) + viewport
+  Säkerhetsheaders 13 % – HSTS, CSP, X-Frame-Options, X-Content-Type, m.fl.
+  Tillgänglighet  10 %  – lang, landmarks, skip-nav, alt-texter, onclick
 
 Betyg: A ≥85 · B ≥70 · C ≥50 · D <50
 """
 
 
 def calculate_scores(results: dict) -> dict:
-    sec  = _score_security(results)
-    seo  = _score_seo(results)
-    perf = _score_performance(results)
-    mob  = _score_mobile(results)
-    overall = int(round(sec * 0.25 + seo * 0.30 + perf * 0.25 + mob * 0.20))
+    sec   = _score_security(results)
+    seo   = _score_seo(results)
+    perf  = _score_performance(results)
+    mob   = _score_mobile(results)
+    hdr   = _score_headers(results)
+    a11y  = _score_accessibility(results)
+    overall = int(round(
+        sec  * 0.20 +
+        seo  * 0.22 +
+        perf * 0.20 +
+        mob  * 0.15 +
+        hdr  * 0.13 +
+        a11y * 0.10
+    ))
     return {
-        'security':    sec,
-        'seo':         seo,
-        'performance': perf,
-        'mobile':      mob,
-        'overall':     min(100, max(0, overall)),
+        'security':      sec,
+        'seo':           seo,
+        'performance':   perf,
+        'mobile':        mob,
+        'headers':       hdr,
+        'accessibility': a11y,
+        'overall':       min(100, max(0, overall)),
     }
 
 
@@ -106,6 +119,22 @@ def _score_mobile(results):
     # Fallback: viewport meta
     viewport = results.get('seo', {}).get('viewport', {})
     return 60 if viewport.get('found') else 20
+
+
+# ── Säkerhetsheaders (max 100) ────────────────────────────────────────────
+
+def _score_headers(results):
+    hdr = results.get('headers', {})
+    if hdr.get('error') or not hdr.get('headers'):
+        return 0
+    return hdr.get('score', 0)
+
+
+# ── Tillgänglighet (max 100) ──────────────────────────────────────────────
+
+def _score_accessibility(results):
+    a11y = results.get('accessibility', {})
+    return a11y.get('score', 0)
 
 
 # ── Hjälp ────────────────────────────────────────────────────────────────

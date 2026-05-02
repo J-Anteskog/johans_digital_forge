@@ -15,6 +15,7 @@ class SiteAnalysis(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     url = models.URLField(max_length=200)
+    domain = models.CharField(max_length=253, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
@@ -28,6 +29,8 @@ class SiteAnalysis(models.Model):
     score_mobile = models.SmallIntegerField(null=True, blank=True)
     score_seo = models.SmallIntegerField(null=True, blank=True)
     score_security = models.SmallIntegerField(null=True, blank=True)
+    score_headers = models.SmallIntegerField(null=True, blank=True)
+    score_accessibility = models.SmallIntegerField(null=True, blank=True)
 
     error_message = models.TextField(blank=True)
 

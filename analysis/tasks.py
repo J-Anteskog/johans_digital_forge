@@ -8,6 +8,7 @@ och dekorera run_analysis med @shared_task – resten av koden är oförändrad.
 
 import threading
 import traceback
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -20,6 +21,8 @@ from .checks.http import check_http, check_ssl
 from .checks.seo import check_seo
 from .checks.performance import check_performance
 from .checks.pagespeed import check_pagespeed
+from .checks.headers import check_headers
+from .checks.accessibility import check_accessibility
 from .scoring import calculate_scores
 
 _UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
@@ -59,7 +62,8 @@ def run_analysis(analysis_id: str) -> None:
         return
 
     obj.status = 'running'
-    obj.save(update_fields=['status'])
+    obj.domain = urlparse(obj.url).netloc
+    obj.save(update_fields=['status', 'domain'])
 
     try:
         # Re-validera precis innan requests skickas (skydd mot DNS rebinding)
@@ -95,28 +99,35 @@ def run_analysis(analysis_id: str) -> None:
         except Exception as e:
             results['html_fetch_error'] = str(e)
 
-        # ── 4. SEO + prestanda (kräver HTML) ─────────────────────────────
+        # ── 4. SEO + prestanda + tillgänglighet (kräver HTML) ────────────
         if soup:
-            results['seo']         = check_seo(final_url, soup)
-            results['performance'] = check_performance(final_url, soup)
+            results['seo']           = check_seo(final_url, soup)
+            results['performance']   = check_performance(final_url, soup)
+            results['accessibility'] = check_accessibility(soup)
         else:
-            results['seo']         = {}
-            results['performance'] = {}
+            results['seo']           = {}
+            results['performance']   = {}
+            results['accessibility'] = {}
 
-        # ── 5. PageSpeed API (nätverksintensiv – sist) ───────────────────
+        # ── 5. Säkerhetsheaders ──────────────────────────────────────────
+        results['headers'] = check_headers(final_url)
+
+        # ── 6. PageSpeed API (nätverksintensiv – sist) ───────────────────
         results['pagespeed'] = check_pagespeed(final_url)
 
-        # ── 6. Beräkna poäng ─────────────────────────────────────────────
+        # ── 7. Beräkna poäng ─────────────────────────────────────────────
         scores = calculate_scores(results)
 
-        obj.results           = results
-        obj.score_overall     = scores['overall']
-        obj.score_performance = scores['performance']
-        obj.score_mobile      = scores['mobile']
-        obj.score_seo         = scores['seo']
-        obj.score_security    = scores['security']
-        obj.status            = 'complete'
-        obj.completed_at      = timezone.now()
+        obj.results               = results
+        obj.score_overall         = scores['overall']
+        obj.score_performance     = scores['performance']
+        obj.score_mobile          = scores['mobile']
+        obj.score_seo             = scores['seo']
+        obj.score_security        = scores['security']
+        obj.score_headers         = scores['headers']
+        obj.score_accessibility   = scores['accessibility']
+        obj.status                = 'complete'
+        obj.completed_at          = timezone.now()
         obj.save()
 
     except Exception:

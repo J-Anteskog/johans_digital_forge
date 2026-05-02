@@ -124,6 +124,28 @@
             </div>
           </div>
 
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>{% if obj.language == 'en' %}Security headers{% else %}Säkerhetsheaders{% endif %}</span>
+              <span class="text-light fw-semibold">{{ obj.score_headers|default:"–" }}</span>
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              <div class="progress-bar rounded-pill"
+                   style="width:{{ obj.score_headers|default:0 }}%;background:#fd7e14;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>{% if obj.language == 'en' %}Accessibility{% else %}Tillgänglighet{% endif %}</span>
+              <span class="text-light fw-semibold">{{ obj.score_accessibility|default:"–" }}</span>
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              <div class="progress-bar rounded-pill"
+                   style="width:{{ obj.score_accessibility|default:0 }}%;background:#0dcaf0;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -582,6 +604,181 @@
       </ul>
     </div>
     {% endwith %}
+
+
+    {# ════════════════════════════════════════════════════════════════════ #}
+    {# SÄKERHETSHEADERS / SECURITY HEADERS                                   #}
+    {# ════════════════════════════════════════════════════════════════════ #}
+    {% with hdr=r.headers %}
+    {% if hdr %}
+    <div class="rounded-4 mb-4 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
+
+      <div class="px-4 py-3 d-flex align-items-center gap-3"
+           style="background:rgba(253,126,20,.07);border-bottom:1px solid rgba(255,255,255,.08);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+             fill="none" stroke="#fd7e14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}Security Headers{% else %}Säkerhetsheaders{% endif %}</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_headers|default:"–" }}/100</span>
+      </div>
+
+      <ul class="list-unstyled mb-0">
+        {% for h in hdr.headers %}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 {% if not forloop.last %}border-bottom border-dark{% endif %}">
+          {% if h.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
+          <div>
+            <span class="text-light small fw-semibold">{{ h.label }}</span>
+            {% if h.found and h.value %}
+              <span class="ms-2 text-secondary" style="font-size:.75rem;font-family:monospace;">{{ h.value|truncatechars:80 }}</span>
+            {% endif %}
+            <br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% if obj.language == 'en' %}{{ h.description_en }}{% else %}{{ h.description_sv }}{% endif %}
+              {% if not h.found %}
+                &nbsp;·&nbsp; <span class="text-warning">{% if obj.language == 'en' %}Missing — {{ h.points }} points{% else %}Saknas — {{ h.points }} poäng{% endif %}</span>
+              {% endif %}
+            </span>
+          </div>
+        </li>
+        {% endfor %}
+        {% if hdr.error %}
+        <li class="px-4 py-3 text-secondary small">
+          <i class="fas fa-exclamation-triangle text-warning me-2"></i>{{ hdr.error }}
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+    {# ════════════════════════════════════════════════════════════════════ #}
+    {# TILLGÄNGLIGHET / ACCESSIBILITY                                        #}
+    {# ════════════════════════════════════════════════════════════════════ #}
+    {% with a11y=r.accessibility %}
+    {% if a11y %}
+    <div class="rounded-4 mb-5 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
+
+      <div class="px-4 py-3 d-flex align-items-center gap-3"
+           style="background:rgba(13,202,240,.07);border-bottom:1px solid rgba(255,255,255,.08);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+             fill="none" stroke="#0dcaf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4l3 3"/>
+        </svg>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}Accessibility{% else %}Tillgänglighet{% endif %}</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_accessibility|default:"–" }}/100</span>
+      </div>
+
+      <ul class="list-unstyled mb-0">
+
+        {# lang #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
+          {% if a11y.lang.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
+          <div>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Language attribute{% else %}Språkattribut{% endif %} (lang)</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% if a11y.lang.found %}
+                <span class="text-light">lang="{{ a11y.lang.value }}"</span>
+                &nbsp;·&nbsp; {% if obj.language == 'en' %}Screen readers use this to select the right voice{% else %}Skärmläsare använder detta för att välja rätt röst{% endif %}
+              {% else %}
+                {% if obj.language == 'en' %}Missing — screen readers cannot determine the page language{% else %}Saknas — skärmläsare kan inte avgöra sidans språk{% endif %}
+              {% endif %}
+            </span>
+          </div>
+        </li>
+
+        {# landmarks #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
+          {% if a11y.landmarks.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
+          <div>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Landmark regions{% else %}Landmärken{% endif %}</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% if a11y.landmarks.found %}
+                {{ a11y.landmarks.count }} {% if obj.language == 'en' %}found{% else %}hittade{% endif %}:
+                {% for tag in a11y.landmarks.tags %}<code class="text-light">&lt;{{ tag }}&gt;</code>{% if not forloop.last %}, {% endif %}{% endfor %}
+              {% else %}
+                {% if obj.language == 'en' %}No semantic landmark elements (&lt;main&gt;, &lt;nav&gt;, etc.) found{% else %}Inga semantiska landmärkeselement (&lt;main&gt;, &lt;nav&gt; m.fl.) hittades{% endif %}
+              {% endif %}
+            </span>
+          </div>
+        </li>
+
+        {# skip nav #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
+          {% if a11y.skip_nav.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
+          <div>
+            <span class="text-light small fw-semibold">Skip navigation</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% if a11y.skip_nav.found %}
+                {% if obj.language == 'en' %}Skip link found — keyboard users can jump directly to content{% else %}Skip-länk hittad — tangentbordsanvändare kan hoppa direkt till innehållet{% endif %}
+              {% else %}
+                {% if obj.language == 'en' %}Not found — keyboard users must tab through all navigation on every page{% else %}Saknas — tangentbordsanvändare måste tabba igenom all navigation på varje sida{% endif %}
+              {% endif %}
+            </span>
+          </div>
+        </li>
+
+        {# images alt #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
+          {% if a11y.images_without_alt.count == 0 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
+          <div>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Image alt texts{% else %}Alt-texter på bilder{% endif %}</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {{ a11y.images_without_alt.total }} {% if obj.language == 'en' %}images total{% else %}bilder totalt{% endif %}
+              {% if a11y.images_without_alt.count > 0 %}
+                &nbsp;·&nbsp; <span class="text-danger">{{ a11y.images_without_alt.count }} {% if obj.language == 'en' %}missing alt attribute{% else %}saknar alt-attribut{% endif %}</span>
+              {% else %}
+                &nbsp;·&nbsp; {% if obj.language == 'en' %}all have alt text ✓{% else %}alla har alt-text ✓{% endif %}
+              {% endif %}
+            </span>
+          </div>
+        </li>
+
+        {# interactive divs #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3">
+          {% if a11y.interactive_divs.count == 0 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
+          <div>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Interactive elements{% else %}Interaktiva element{% endif %}</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% if a11y.interactive_divs.count == 0 %}
+                {% if obj.language == 'en' %}No clickable &lt;div&gt;/&lt;span&gt; without role found{% else %}Inga klickbara &lt;div&gt;/&lt;span&gt; utan roll hittades{% endif %}
+              {% else %}
+                <span class="text-warning">{{ a11y.interactive_divs.count }} {% if obj.language == 'en' %}clickable &lt;div&gt;/&lt;span&gt; without ARIA role — not accessible via keyboard{% else %}klickbara &lt;div&gt;/&lt;span&gt; utan ARIA-roll — ej nåbara via tangentbord{% endif %}</span>
+              {% endif %}
+            </span>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+    {# ── Åtgärder: PDF + Historik ─────────────────────────────────────── #}
+    {% if obj.domain %}
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <a href="{% url 'analysis_pdf' obj.id %}"
+         class="btn btn-outline-light btn-sm">
+        <i class="fas fa-file-pdf me-1"></i>
+        {% if obj.language == 'en' %}Download PDF report{% else %}Ladda ned PDF-rapport{% endif %}
+      </a>
+      <a href="{% url 'domain_history' obj.domain %}"
+         class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-chart-line me-1"></i>
+        {% if obj.language == 'en' %}View history for {{ obj.domain }}{% else %}Visa historik för {{ obj.domain }}{% endif %}
+      </a>
+    </div>
+    {% endif %}
 
 
     {# ── CTA ──────────────────────────────────────────────────────────── #}

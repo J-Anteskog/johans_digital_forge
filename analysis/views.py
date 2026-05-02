@@ -2,8 +2,9 @@ import time
 from datetime import timedelta
 
 from django.core import signing
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone
 
 from .forms import AnalysisForm
@@ -124,3 +125,68 @@ def analysis_status_json(request, token):
     if obj.status == 'error' and obj.error_message:
         payload['error_message'] = obj.error_message
     return JsonResponse(payload)
+
+
+def domain_history(request, domain):
+    analyses = (
+        SiteAnalysis.objects
+        .filter(domain=domain, status='complete')
+        .order_by('completed_at')
+    )
+    chart_labels = []
+    chart_overall = []
+    chart_security = []
+    chart_seo = []
+    chart_performance = []
+    chart_mobile = []
+    chart_headers = []
+    chart_accessibility = []
+
+    for a in analyses:
+        label = a.completed_at.strftime('%Y-%m-%d') if a.completed_at else str(a.created_at.date())
+        chart_labels.append(label)
+        chart_overall.append(a.score_overall or 0)
+        chart_security.append(a.score_security or 0)
+        chart_seo.append(a.score_seo or 0)
+        chart_performance.append(a.score_performance or 0)
+        chart_mobile.append(a.score_mobile or 0)
+        chart_headers.append(a.score_headers or 0)
+        chart_accessibility.append(a.score_accessibility or 0)
+
+    return render(request, 'analysis/domain_history.html', {
+        'domain': domain,
+        'analyses': analyses,
+        'chart_labels': chart_labels,
+        'chart_overall': chart_overall,
+        'chart_security': chart_security,
+        'chart_seo': chart_seo,
+        'chart_performance': chart_performance,
+        'chart_mobile': chart_mobile,
+        'chart_headers': chart_headers,
+        'chart_accessibility': chart_accessibility,
+    })
+
+
+def analysis_pdf(request, token):
+    obj = get_object_or_404(SiteAnalysis, pk=token, status='complete')
+    try:
+        import weasyprint
+        html = render_to_string(
+            'analysis/report_pdf.html',
+            {'obj': obj, 'r': obj.results or {}},
+            request=request,
+        )
+        pdf = weasyprint.HTML(
+            string=html,
+            base_url=request.build_absolute_uri('/'),
+        ).write_pdf()
+        response = HttpResponse(pdf, content_type='application/pdf')
+        filename = f"rapport-{obj.domain or 'analys'}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    except ImportError:
+        return HttpResponse(
+            'WeasyPrint är inte installerat på servern.',
+            status=503,
+            content_type='text/plain; charset=utf-8',
+        )

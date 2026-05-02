@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="{{ obj.language|default:'sv' }}">
+<head>
+<meta charset="utf-8">
+<title>Webbplatsanalys – {{ obj.url }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 18mm 20mm 18mm;
+    @bottom-right {
+      content: "Sida " counter(page) " av " counter(pages);
+      font-size: 9pt;
+      color: #888;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    color: #1a1a2e;
+    line-height: 1.55;
+    background: #fff;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 16mm;
+    page-break-after: always;
+  }
+
+  .cover-header {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 10mm 18mm;
+    margin: -20mm -18mm 0 -18mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand { font-size: 14pt; font-weight: 700; color: #D4A356; }
+  .brand-sub { font-size: 8pt; color: #aaa; margin-top: 2pt; }
+
+  .cover-body { padding-top: 24mm; }
+  .cover-body h1 { font-size: 24pt; color: #1a1a2e; font-weight: 800; line-height: 1.2; margin-bottom: 4mm; }
+  .cover-url { font-size: 11pt; color: #555; word-break: break-all; margin-bottom: 10mm; }
+  .cover-date { font-size: 9pt; color: #888; }
+
+  /* Grade circle */
+  .grade-circle {
+    display: inline-block;
+    width: 48mm;
+    height: 48mm;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 48mm;
+    font-size: 28pt;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 6mm;
+  }
+  .bg-success { background: #198754; }
+  .bg-info    { background: #0dcaf0; color: #000; }
+  .bg-warning { background: #ffc107; color: #000; }
+  .bg-danger  { background: #dc3545; }
+
+  /* ── Score overview table ── */
+  .score-table { width: 100%; border-collapse: collapse; margin-top: 8mm; }
+  .score-table th, .score-table td { padding: 4mm 3mm; border-bottom: 1px solid #e8e8e8; }
+  .score-table th { font-size: 8pt; text-transform: uppercase; color: #888; font-weight: 600; letter-spacing: .04em; }
+  .score-table td:last-child { text-align: right; font-weight: 700; font-size: 11pt; }
+
+  .bar-wrap { background: #f0f0f0; border-radius: 4pt; height: 7pt; width: 60mm; display: inline-block; vertical-align: middle; }
+  .bar-fill  { height: 7pt; border-radius: 4pt; }
+
+  /* ── Section cards ── */
+  .section { page-break-inside: avoid; margin-bottom: 8mm; }
+  .section-header {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 3mm 5mm;
+    border-radius: 4pt 4pt 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-header .title { font-size: 10pt; font-weight: 700; }
+  .section-header .score { font-size: 10pt; color: #aaa; }
+  .section-body { border: 1px solid #ddd; border-top: none; border-radius: 0 0 4pt 4pt; }
+  .section-row { padding: 3mm 5mm; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start; gap: 3mm; }
+  .section-row:last-child { border-bottom: none; }
+
+  .icon-ok   { color: #198754; font-weight: 900; }
+  .icon-warn { color: #e6a817; font-weight: 900; }
+  .icon-fail { color: #dc3545; font-weight: 900; }
+
+  .row-label { font-weight: 600; font-size: 9.5pt; }
+  .row-detail { font-size: 8.5pt; color: #555; margin-top: 1pt; }
+
+  /* ── Footer strip ── */
+  .doc-footer {
+    position: fixed;
+    bottom: 8mm;
+    left: 18mm;
+    right: 18mm;
+    font-size: 8pt;
+    color: #bbb;
+    border-top: 1px solid #eee;
+    padding-top: 3mm;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+{# ── COVER PAGE ───────────────────────────────────────────────────────────── #}
+<div class="cover">
+  <div class="cover-header">
+    <div>
+      <div class="brand">Johans Digital Forge</div>
+      <div class="brand-sub">johans-digital-forge.se</div>
+    </div>
+    <div style="color:#aaa;font-size:8pt;">Webbplatsanalys</div>
+  </div>
+
+  <div class="cover-body">
+    <div style="text-align:center;margin-bottom:8mm;">
+      <div class="grade-circle bg-{{ obj.grade_color }}">{{ obj.grade }}</div>
+      <div style="font-size:28pt;font-weight:800;color:#1a1a2e;">{{ obj.score_overall }}<span style="font-size:14pt;color:#888;">/100</span></div>
+      <div style="font-size:9pt;color:#888;margin-top:2mm;">Sammanlagt betyg</div>
+    </div>
+
+    <h1>Webbplatsanalys</h1>
+    <div class="cover-url">{{ obj.url }}</div>
+    <div class="cover-date">Analyserades: {{ obj.completed_at|date:"Y-m-d H:i" }}</div>
+  </div>
+
+  {# Score overview #}
+  <table class="score-table">
+    <thead>
+      <tr>
+        <th>Kategori</th>
+        <th></th>
+        <th>Poäng</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% with cats=obj %}
+      <tr>
+        <td>Säkerhet</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_security|default:0 }}%;background:#ffc107;"></div></div></td>
+        <td>{{ obj.score_security|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>SEO</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_seo|default:0 }}%;background:#6f42c1;"></div></div></td>
+        <td>{{ obj.score_seo|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Prestanda</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_performance|default:0 }}%;background:#0d6efd;"></div></div></td>
+        <td>{{ obj.score_performance|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Mobilanpassning</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_mobile|default:0 }}%;background:#20c997;"></div></div></td>
+        <td>{{ obj.score_mobile|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Säkerhetsheaders</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_headers|default:0 }}%;background:#fd7e14;"></div></div></td>
+        <td>{{ obj.score_headers|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Tillgänglighet</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_accessibility|default:0 }}%;background:#0dcaf0;"></div></div></td>
+        <td>{{ obj.score_accessibility|default:"–" }}</td>
+      </tr>
+      {% endwith %}
+    </tbody>
+  </table>
+</div>
+
+
+{# ── PAGE 2: DETALJER ─────────────────────────────────────────────────────── #}
+
+{# SÄKERHET #}
+{% with http=r.http ssl=r.ssl %}
+<div class="section">
+  <div class="section-header">
+    <span class="title">Säkerhet</span>
+    <span class="score">{{ obj.score_security|default:"–" }}/100</span>
+  </div>
+  <div class="section-body">
+    <div class="section-row">
+      {% if http.is_https %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">HTTPS</div>
+        <div class="row-detail">{% if http.is_https %}Sidan serveras via HTTPS.{% else %}Sidan saknar HTTPS — data skickas okrypterat.{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if ssl.valid %}{% if ssl.expires_soon %}<span class="icon-warn">!</span>{% else %}<span class="icon-ok">✓</span>{% endif %}
+      {% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">SSL-certifikat</div>
+        <div class="row-detail">
+          {% if ssl.valid %}Giltigt · utgår {{ ssl.expiry_date }} ({{ ssl.days_remaining }} dagar kvar){% if ssl.expires_soon %} — förnya snart!{% endif %}
+          {% elif ssl.error %}{{ ssl.error }}
+          {% else %}Certifikatet är ogiltigt.{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if http.response_time_ms and http.response_time_ms < 800 %}<span class="icon-ok">✓</span>
+      {% elif http.response_time_ms %}<span class="icon-warn">!</span>{% else %}<span class="icon-ok">✓</span>{% endif %}
+      <div>
+        <div class="row-label">Svarstid</div>
+        <div class="row-detail">{% if http.response_time_ms %}{{ http.response_time_ms }} ms{% else %}–{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endwith %}
+
+{# SEO #}
+{% with seo=r.seo %}
+<div class="section">
+  <div class="section-header">
+    <span class="title">SEO</span>
+    <span class="score">{{ obj.score_seo|default:"–" }}/100</span>
+  </div>
+  <div class="section-body">
+    <div class="section-row">
+      {% if seo.title.found and seo.title.ok %}<span class="icon-ok">✓</span>{% elif seo.title.found %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Sidtitel</div>
+        <div class="row-detail">{% if seo.title.found %}"{{ seo.title.value }}" ({{ seo.title.length }} tecken{% if not seo.title.ok %} · idealt 30–60{% endif %}){% else %}Saknas — kritiskt för SEO.{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if seo.meta_description.found and seo.meta_description.ok %}<span class="icon-ok">✓</span>{% elif seo.meta_description.found %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Meta description</div>
+        <div class="row-detail">{% if seo.meta_description.found %}{{ seo.meta_description.length }} tecken{% if not seo.meta_description.ok %} · idealt 50–160{% endif %}{% else %}Saknas — påverkar klickfrekvens i sökresultat.{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if seo.h1.found and seo.h1.unique %}<span class="icon-ok">✓</span>{% elif seo.h1.found %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">H1</div>
+        <div class="row-detail">{% if seo.h1.found %}{{ seo.h1.count }} st{% if not seo.h1.unique %} · ska vara exakt en{% endif %}{% if seo.h1.value %} · "{{ seo.h1.value }}"{% endif %}{% else %}Saknas.{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if seo.og_title.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
+      <div>
+        <div class="row-label">Open Graph</div>
+        <div class="row-detail">og:title {% if seo.og_title.found %}✓{% else %}saknas{% endif %} · og:image {% if seo.og_image.found %}✓{% else %}saknas{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if seo.robots_txt.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
+      <div>
+        <div class="row-label">robots.txt / Sitemap</div>
+        <div class="row-detail">robots.txt {% if seo.robots_txt.found %}hittad{% else %}ej hittad{% endif %} · sitemap {% if seo.sitemap.found %}hittad{% else %}ej hittad{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endwith %}
+
+{# PRESTANDA #}
+{% with perf=r.performance psp_d=r.pagespeed.desktop %}
+<div class="section">
+  <div class="section-header">
+    <span class="title">Prestanda</span>
+    <span class="score">{{ obj.score_performance|default:"–" }}/100</span>
+  </div>
+  <div class="section-body">
+    {% if psp_d and not psp_d.error %}
+    <div class="section-row">
+      {% if psp_d.score >= 90 %}<span class="icon-ok">✓</span>{% elif psp_d.score >= 50 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">PageSpeed Insights (Dator): {{ psp_d.score }}/100</div>
+        <div class="row-detail">
+          {% if psp_d.lcp_ms %}LCP {{ psp_d.lcp_ms }} ms · {% endif %}
+          {% if psp_d.fcp_ms %}FCP {{ psp_d.fcp_ms }} ms · {% endif %}
+          {% if psp_d.tbt_ms %}TBT {{ psp_d.tbt_ms }} ms · {% endif %}
+          {% if psp_d.cls %}CLS {{ psp_d.cls }}{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="section-row">
+      {% if perf.total_external_resources <= 5 %}<span class="icon-ok">✓</span>{% elif perf.total_external_resources <= 12 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Externa resurser: {{ perf.total_external_resources }} totalt</div>
+        <div class="row-detail">{{ perf.external_css }} CSS · {{ perf.external_js }} JS</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if perf.images_without_alt == 0 and perf.images_large == 0 %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
+      <div>
+        <div class="row-label">Bilder: {{ perf.images_total }} totalt</div>
+        <div class="row-detail">
+          {% if perf.images_without_alt > 0 %}{{ perf.images_without_alt }} saknar alt-text · {% endif %}
+          {% if perf.images_large > 0 %}{{ perf.images_large }} över 500 KB{% endif %}
+          {% if perf.images_without_alt == 0 and perf.images_large == 0 %}Alla bilder godkända.{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endwith %}
+
+{# MOBILANPASSNING #}
+{% with psp_m=r.pagespeed.mobile seo=r.seo %}
+<div class="section">
+  <div class="section-header">
+    <span class="title">Mobilanpassning</span>
+    <span class="score">{{ obj.score_mobile|default:"–" }}/100</span>
+  </div>
+  <div class="section-body">
+    {% if psp_m and not psp_m.error %}
+    <div class="section-row">
+      {% if psp_m.score >= 90 %}<span class="icon-ok">✓</span>{% elif psp_m.score >= 50 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">PageSpeed Insights (Mobil): {{ psp_m.score }}/100</div>
+        <div class="row-detail">{% if psp_m.lcp_ms %}LCP {{ psp_m.lcp_ms }} ms · {% endif %}{% if psp_m.fcp_ms %}FCP {{ psp_m.fcp_ms }} ms{% endif %}</div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="section-row">
+      {% if seo.viewport.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Viewport meta</div>
+        <div class="row-detail">{% if seo.viewport.found %}Responsiv viewport konfigurerad.{% else %}Saknas — sidan skalas fel på mobila enheter.{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endwith %}
+
+{# SÄKERHETSHEADERS #}
+{% with hdr=r.headers %}
+{% if hdr and hdr.headers %}
+<div class="section">
+  <div class="section-header">
+    <span class="title">Säkerhetsheaders</span>
+    <span class="score">{{ obj.score_headers|default:"–" }}/100</span>
+  </div>
+  <div class="section-body">
+    {% for h in hdr.headers %}
+    <div class="section-row">
+      {% if h.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">{{ h.label }}</div>
+        <div class="row-detail">{{ h.description_sv }}{% if not h.found %} · Saknas ({{ h.points }} poäng).{% endif %}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endwith %}
+
+{# TILLGÄNGLIGHET #}
+{% with a11y=r.accessibility %}
+{% if a11y %}
+<div class="section">
+  <div class="section-header">
+    <span class="title">Tillgänglighet</span>
+    <span class="score">{{ obj.score_accessibility|default:"–" }}/100</span>
+  </div>
+  <div class="section-body">
+    <div class="section-row">
+      {% if a11y.lang.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Språkattribut (lang)</div>
+        <div class="row-detail">{% if a11y.lang.found %}lang="{{ a11y.lang.value }}"{% else %}Saknas — skärmläsare kan inte avgöra sidans språk.{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if a11y.landmarks.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Landmärken</div>
+        <div class="row-detail">{% if a11y.landmarks.found %}{{ a11y.landmarks.count }} hittade: {% for t in a11y.landmarks.tags %}&lt;{{ t }}&gt;{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Inga semantiska landmärkeselement hittades.{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if a11y.images_without_alt.count == 0 %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Alt-texter på bilder</div>
+        <div class="row-detail">{{ a11y.images_without_alt.total }} bilder totalt · {% if a11y.images_without_alt.count > 0 %}{{ a11y.images_without_alt.count }} saknar alt-attribut.{% else %}alla har alt-text.{% endif %}</div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if a11y.interactive_divs.count == 0 %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
+      <div>
+        <div class="row-label">Interaktiva element</div>
+        <div class="row-detail">{% if a11y.interactive_divs.count == 0 %}Inga klickbara &lt;div&gt;/&lt;span&gt; utan roll hittades.{% else %}{{ a11y.interactive_divs.count }} klickbara element saknar ARIA-roll.{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endwith %}
+
+
+{# ── DOCUMENT FOOTER ───────────────────────────────────────────────────────── #}
+<div class="doc-footer">
+  <span>Johans Digital Forge · johans-digital-forge.se</span>
+  <span>Rapporten genererades {{ obj.completed_at|date:"Y-m-d" }}</span>
+</div>
+
+</body>
+</html>
