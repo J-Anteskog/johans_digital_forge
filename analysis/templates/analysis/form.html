@@ -28,10 +28,10 @@
       </h1>
       <p class="text-secondary fs-5" style="max-width: 600px; margin: 0 auto;">
         {% if is_english %}
-          Get an instant report on SEO, security, performance, and mobile-friendliness.
+          Get an instant report on SEO, security, performance, mobile-friendliness, security headers, and accessibility.
           No registration required.
         {% else %}
-          Få en rapport om SEO, säkerhet, prestanda och mobilanpassning direkt.
+          Få en rapport om SEO, säkerhet, prestanda, mobilanpassning, säkerhetsheaders och tillgänglighet direkt.
           Ingen registrering krävs.
         {% endif %}
       </p>
@@ -138,8 +138,9 @@
 
     <!-- ── What we check ──────────────────────────────────────────────────── -->
     <div class="row g-3 text-center mb-5">
-      {% if is_english %}
-      <div class="col-6 col-md-3">
+
+      <!-- Säkerhet / Security -->
+      <div class="col-6 col-md-4">
         <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
           <div class="mb-2" style="color:#ffc107;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
@@ -147,11 +148,13 @@
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
           </div>
-          <div class="text-light fw-semibold small">Security</div>
+          <div class="text-light fw-semibold small">{% if is_english %}Security{% else %}Säkerhet{% endif %}</div>
           <div class="text-secondary" style="font-size:.75rem;">HTTPS &amp; SSL</div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
+
+      <!-- Prestanda / Performance -->
+      <div class="col-6 col-md-4">
         <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
           <div class="mb-2" style="color:#00d4ff;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
@@ -159,11 +162,13 @@
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
             </svg>
           </div>
-          <div class="text-light fw-semibold small">Performance</div>
-          <div class="text-secondary" style="font-size:.75rem;">Speed &amp; PageSpeed</div>
+          <div class="text-light fw-semibold small">{% if is_english %}Performance{% else %}Prestanda{% endif %}</div>
+          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}Speed &amp; PageSpeed{% else %}Hastighet &amp; PageSpeed{% endif %}</div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
+
+      <!-- SEO -->
+      <div class="col-6 col-md-4">
         <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
           <div class="mb-2" style="color:#6f42c1;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
@@ -172,10 +177,12 @@
             </svg>
           </div>
           <div class="text-light fw-semibold small">SEO</div>
-          <div class="text-secondary" style="font-size:.75rem;">Title, meta, sitemap</div>
+          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}Title, meta, sitemap{% else %}Titel, meta, sitemap{% endif %}</div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
+
+      <!-- Mobil / Mobile -->
+      <div class="col-6 col-md-4">
         <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
           <div class="mb-2" style="color:#20c997;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
@@ -184,61 +191,43 @@
               <line x1="12" y1="18" x2="12.01" y2="18"/>
             </svg>
           </div>
-          <div class="text-light fw-semibold small">Mobile</div>
-          <div class="text-secondary" style="font-size:.75rem;">Responsive &amp; viewport</div>
+          <div class="text-light fw-semibold small">{% if is_english %}Mobile{% else %}Mobil{% endif %}</div>
+          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}Responsive &amp; viewport{% else %}Responsiv &amp; viewport{% endif %}</div>
         </div>
       </div>
-      {% else %}
-      <div class="col-6 col-md-3">
+
+      <!-- Säkerhetsheaders / Security Headers -->
+      <div class="col-6 col-md-4">
         <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#ffc107;">
+          <div class="mb-2" style="color:#fd7e14;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
           </div>
-          <div class="text-light fw-semibold small">Säkerhet</div>
-          <div class="text-secondary" style="font-size:.75rem;">HTTPS &amp; SSL</div>
+          <div class="text-light fw-semibold small">{% if is_english %}Security Headers{% else %}Säkerhetsheaders{% endif %}</div>
+          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}CSP, HSTS, X-Frame{% else %}CSP, HSTS, X-Frame{% endif %}</div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
+
+      <!-- Tillgänglighet / Accessibility -->
+      <div class="col-6 col-md-4">
         <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#00d4ff;">
+          <div class="mb-2" style="color:#0dcaf0;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              <circle cx="12" cy="4" r="2"/>
+              <path d="M12 6v6l3 3M8.5 9.5C9.5 8.5 11 8 12 8s2.5.5 3.5 1.5"/>
+              <path d="M6 15l2-3M18 15l-2-3"/>
+              <path d="M8 21l2-5M16 21l-2-5"/>
             </svg>
           </div>
-          <div class="text-light fw-semibold small">Prestanda</div>
-          <div class="text-secondary" style="font-size:.75rem;">Hastighet &amp; PageSpeed</div>
+          <div class="text-light fw-semibold small">{% if is_english %}Accessibility{% else %}Tillgänglighet{% endif %}</div>
+          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}WCAG, lang, landmarks{% else %}WCAG, lang, landmärken{% endif %}</div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#6f42c1;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">SEO</div>
-          <div class="text-secondary" style="font-size:.75rem;">Title, meta, sitemap</div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#20c997;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-              <line x1="12" y1="18" x2="12.01" y2="18"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">Mobil</div>
-          <div class="text-secondary" style="font-size:.75rem;">Responsiv &amp; viewport</div>
-        </div>
-      </div>
-      {% endif %}
+
     </div>
 
     <!-- ── CTA to brief ───────────────────────────────────────────────────── -->
