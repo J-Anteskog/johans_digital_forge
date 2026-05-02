@@ -1,4 +1,6 @@
 # custom_admin/views.py - Komplett version med alla views
+import csv
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -6,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, DetailView
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from django.contrib import messages
@@ -240,6 +242,49 @@ class AnalysisDetailView(DetailView):
     model = SiteAnalysis
     template_name = "custom_admin/analysis_detail.html"
     context_object_name = "analysis"
+
+
+# ---------------------------
+# 📧 LEADS (E-POST OPT-IN)
+# ---------------------------
+@login_required
+def analysis_leads(request):
+    qs = SiteAnalysis.objects.filter(email_submitted=True).order_by('-created_at')
+
+    total     = qs.count()
+    consent   = qs.filter(marketing_consent=True).count()
+    followup  = qs.filter(followup_sent=True).count()
+    shown     = SiteAnalysis.objects.filter(email_form_shown=True).count()
+    conversion = round(total / shown * 100, 1) if shown else 0
+
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+        response['Content-Disposition'] = (
+            f'attachment; filename="leads-{timezone.now().strftime("%Y%m%d")}.csv"'
+        )
+        writer = csv.writer(response)
+        writer.writerow([
+            'E-post', 'URL', 'Domän', 'Betyg', 'Score',
+            'Marknadssamtycke', 'Uppföljning skickad', 'Datum',
+        ])
+        for obj in qs:
+            writer.writerow([
+                obj.email, obj.url, obj.domain, obj.grade,
+                obj.score_overall or '',
+                'Ja' if obj.marketing_consent else 'Nej',
+                'Ja' if obj.followup_sent else 'Nej',
+                obj.created_at.strftime('%Y-%m-%d %H:%M') if obj.created_at else '',
+            ])
+        return response
+
+    return render(request, 'custom_admin/analysis_leads.html', {
+        'leads': qs,
+        'total': total,
+        'consent': consent,
+        'followup': followup,
+        'shown': shown,
+        'conversion': conversion,
+    })
 
 
 # ---------------------------

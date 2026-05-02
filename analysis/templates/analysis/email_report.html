@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Din webbplatsanalys</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+
+  <!-- Header -->
+  <tr>
+    <td style="background:#1a1a2e;padding:24px 32px;text-align:left;">
+      <span style="color:#D4A356;font-size:18px;font-weight:700;">Johans Digital Forge</span>
+      <br><span style="color:#888;font-size:11px;">johans-digital-forge.se</span>
+    </td>
+  </tr>
+
+  <!-- Grade badge -->
+  <tr>
+    <td style="padding:32px 32px 16px;text-align:center;background:#fafafa;border-bottom:1px solid #eee;">
+      <div style="display:inline-block;width:72px;height:72px;border-radius:50%;
+                  background:{% if obj.grade == 'A' %}#198754{% elif obj.grade == 'B' %}#0dcaf0{% elif obj.grade == 'C' %}#ffc107{% else %}#dc3545{% endif %};
+                  line-height:72px;font-size:32px;font-weight:900;
+                  color:{% if obj.grade in 'BC' %}#000{% else %}#fff{% endif %};">
+        {{ obj.grade }}
+      </div>
+      <div style="font-size:28px;font-weight:800;color:#1a1a2e;margin-top:8px;">
+        {{ obj.score_overall }}<span style="font-size:14px;color:#888;">/100</span>
+      </div>
+      <div style="font-size:13px;color:#888;">Sammanlagt betyg</div>
+      <div style="font-size:13px;color:#555;margin-top:6px;word-break:break-all;">{{ obj.url }}</div>
+    </td>
+  </tr>
+
+  <!-- Score table -->
+  <tr>
+    <td style="padding:24px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr style="border-bottom:1px solid #eee;">
+          <td style="padding:8px 0;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;font-weight:600;">Kategori</td>
+          <td style="padding:8px 0;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;font-weight:600;text-align:right;">Poäng</td>
+        </tr>
+        {% with rows=obj %}
+        <tr style="border-bottom:1px solid #f5f5f5;">
+          <td style="padding:10px 0;font-size:14px;color:#333;">🔒 Säkerhet</td>
+          <td style="padding:10px 0;font-size:14px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_security|default:"–" }}</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f5f5;">
+          <td style="padding:10px 0;font-size:14px;color:#333;">🔍 SEO</td>
+          <td style="padding:10px 0;font-size:14px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_seo|default:"–" }}</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f5f5;">
+          <td style="padding:10px 0;font-size:14px;color:#333;">⚡ Prestanda</td>
+          <td style="padding:10px 0;font-size:14px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_performance|default:"–" }}</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f5f5;">
+          <td style="padding:10px 0;font-size:14px;color:#333;">📱 Mobilanpassning</td>
+          <td style="padding:10px 0;font-size:14px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_mobile|default:"–" }}</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f5f5;">
+          <td style="padding:10px 0;font-size:14px;color:#333;">🔐 Säkerhetsheaders</td>
+          <td style="padding:10px 0;font-size:14px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_headers|default:"–" }}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-size:14px;color:#333;">♿ Tillgänglighet</td>
+          <td style="padding:10px 0;font-size:14px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_accessibility|default:"–" }}</td>
+        </tr>
+        {% endwith %}
+      </table>
+    </td>
+  </tr>
+
+  <!-- CTA -->
+  <tr>
+    <td style="padding:0 32px 32px;text-align:center;">
+      <a href="https://www.johans-digital-forge.se/analys/r/{{ obj.id }}/"
+         style="display:inline-block;background:#D4A356;color:#000;font-weight:700;
+                font-size:15px;padding:14px 32px;border-radius:6px;text-decoration:none;">
+        Se fullständig rapport →
+      </a>
+      <div style="margin-top:12px;">
+        <a href="https://www.johans-digital-forge.se/analys/r/{{ obj.id }}/rapport/"
+           style="font-size:12px;color:#888;text-decoration:underline;">
+          Skriv ut / Spara som PDF
+        </a>
+      </div>
+    </td>
+  </tr>
+
+  <!-- CTA brief -->
+  <tr>
+    <td style="padding:24px 32px;background:#fafafa;border-top:1px solid #eee;text-align:center;">
+      <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">
+        Vill du ha hjälp att åtgärda bristerna?
+      </div>
+      <div style="font-size:13px;color:#555;margin-bottom:14px;">
+        Fyll i en offertbrief och få en personlig offert inom 24 timmar.
+      </div>
+      <a href="https://www.johans-digital-forge.se/brief/?ref=analysis&analysis_id={{ obj.id }}"
+         style="display:inline-block;background:#1a1a2e;color:#fff;font-weight:600;
+                font-size:14px;padding:11px 24px;border-radius:6px;text-decoration:none;">
+        Begär kostnadsfri offert
+      </a>
+    </td>
+  </tr>
+
+  <!-- Footer -->
+  <tr>
+    <td style="padding:20px 32px;border-top:1px solid #eee;text-align:center;">
+      <div style="font-size:11px;color:#bbb;line-height:1.7;">
+        Du får detta mejl eftersom du bad om en webbplatsanalys på johans-digital-forge.se.<br>
+        Vi skickar bara detta rapport-mejl och ett uppföljningsmejl om 3 dagar.<br>
+        <a href="https://www.johans-digital-forge.se/integritetspolicy/" style="color:#bbb;">Integritetspolicy</a>
+      </div>
+    </td>
+  </tr>
+
+</table>
+</td></tr>
+</table>
+
+</body>
+</html>

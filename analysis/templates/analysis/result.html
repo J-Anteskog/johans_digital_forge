@@ -781,6 +781,38 @@
     {% endif %}
 
 
+    {# ── E-post opt-in ────────────────────────────────────────────────── #}
+    {% if not obj.email_submitted %}
+    <div id="email-optin-block" class="rounded-4 p-4 p-md-5 mb-4"
+         style="background:rgba(212,163,86,.06);border:1px solid rgba(212,163,86,.25);">
+      <h2 class="h5 text-light fw-bold mb-1">{{ opt_in_heading }}</h2>
+      <p class="text-secondary mb-3" style="font-size:.9rem;max-width:480px;">{{ opt_in_subtext }}</p>
+
+      <form id="optin-form" class="d-flex flex-column flex-sm-row gap-2 align-items-start">
+        {% csrf_token %}
+        <input type="email" name="email" required placeholder="din@epost.se"
+               class="form-control form-control-sm" style="max-width:280px;">
+        <button type="submit" class="btn btn-warning btn-sm fw-bold flex-shrink-0">
+          {{ opt_in_button }}
+        </button>
+      </form>
+
+      <div class="form-check mt-3">
+        <input class="form-check-input" type="checkbox" name="marketing_consent" id="marketing_consent" value="1">
+        <label class="form-check-label text-secondary" style="font-size:.8rem;" for="marketing_consent">
+          {% if obj.language == 'en' %}
+            I accept that Johans Digital Forge may send me a follow-up email after 3 days.
+          {% else %}
+            Jag godkänner att Johans Digital Forge skickar mig ett uppföljningsmejl om 3 dagar.
+          {% endif %}
+        </label>
+      </div>
+
+      <div id="optin-msg" class="mt-2" style="display:none;"></div>
+    </div>
+    {% endif %}
+
+
     {# ── CTA ──────────────────────────────────────────────────────────── #}
     <div class="rounded-4 p-4 p-md-5 text-center"
          style="background:rgba(255,193,7,.06);border:1px solid rgba(255,193,7,.2);">
@@ -812,15 +844,53 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  // Copy link button
   var btn = document.getElementById('copy-link-btn');
-  if (!btn) return;
-  btn.addEventListener('click', function () {
-    var url = btn.dataset.url || window.location.href;
-    navigator.clipboard.writeText(url).then(function () {
-      btn.innerHTML = '<i class="fas fa-check me-1"></i>{% if obj.language == "en" %}Copied!{% else %}Kopierad!{% endif %}';
-      setTimeout(function () {
-        btn.innerHTML = '<i class="fas fa-link me-1"></i>{% if obj.language == "en" %}Copy link{% else %}Kopiera länk{% endif %}';
-      }, 2000);
+  if (btn) {
+    btn.addEventListener('click', function () {
+      var url = btn.dataset.url || window.location.href;
+      navigator.clipboard.writeText(url).then(function () {
+        btn.innerHTML = '<i class="fas fa-check me-1"></i>{% if obj.language == "en" %}Copied!{% else %}Kopierad!{% endif %}';
+        setTimeout(function () {
+          btn.innerHTML = '<i class="fas fa-link me-1"></i>{% if obj.language == "en" %}Copy link{% else %}Kopiera länk{% endif %}';
+        }, 2000);
+      });
+    });
+  }
+
+  // Email opt-in form
+  var form = document.getElementById('optin-form');
+  var msg  = document.getElementById('optin-msg');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = new FormData(form);
+    var params = new URLSearchParams();
+    params.set('email', data.get('email') || '');
+    params.set('marketing_consent', data.get('marketing_consent') === '1' ? '1' : '0');
+    params.set('csrfmiddlewaretoken', data.get('csrfmiddlewaretoken') || '');
+
+    fetch('{% url "analysis_send_report" obj.id %}', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: params.toString(),
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (json) {
+      if (json.ok) {
+        form.closest('#email-optin-block').innerHTML =
+          '<p class="text-success fw-semibold mb-0"><i class="fas fa-check-circle me-2"></i>{% if obj.language == "en" %}Report sent! Check your inbox.{% else %}Rapporten är skickad! Kolla din inkorg.{% endif %}</p>';
+      } else {
+        msg.style.display = '';
+        msg.className = 'mt-2 text-danger small';
+        msg.textContent = json.error || '{% if obj.language == "en" %}Something went wrong.{% else %}Något gick fel.{% endif %}';
+      }
+    })
+    .catch(function () {
+      msg.style.display = '';
+      msg.className = 'mt-2 text-danger small';
+      msg.textContent = '{% if obj.language == "en" %}Something went wrong.{% else %}Något gick fel.{% endif %}';
     });
   });
 });

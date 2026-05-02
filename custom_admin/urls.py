@@ -28,6 +28,7 @@ urlpatterns = [
 
     # Analysrapporter-URL:er
     path("analyses/", views.AnalysisListView.as_view(), name="admin_analyses"),
+    path("analyses/leads/", views.analysis_leads, name="admin_analysis_leads"),
     path("analyses/<uuid:pk>/", views.AnalysisDetailView.as_view(), name="admin_analysis_detail"),
     
     # Kalender

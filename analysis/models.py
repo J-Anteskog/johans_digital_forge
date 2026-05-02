@@ -34,10 +34,21 @@ class SiteAnalysis(models.Model):
 
     error_message = models.TextField(blank=True)
 
-    # Valfritt – skicka rapporten via e-post när klar
+    # E-post (fylls antingen i formuläret eller via post-resultat opt-in)
     email = models.EmailField(blank=True)
 
-    # För rate-limiting (5 analyser/IP/timme)
+    # GDPR-samtycke
+    marketing_consent = models.BooleanField(null=True, blank=True)
+    consent_timestamp = models.DateTimeField(null=True, blank=True)
+
+    # Tracking (konverteringsmätning)
+    email_form_shown = models.BooleanField(default=False)
+    email_submitted = models.BooleanField(default=False)
+
+    # Uppföljningsmejl dag 3
+    followup_sent = models.BooleanField(default=False)
+
+    # För rate-limiting (30 analyser/IP/timme)
     requester_ip = models.GenericIPAddressField(null=True, blank=True)
 
     language = models.CharField(

@@ -5,10 +5,17 @@ from django.core import signing
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
+from .email import send_report_email
 from .forms import AnalysisForm
 from .models import SiteAnalysis
 from .tasks import start_analysis
+
+# A/B-testbar copy för opt-in-formuläret
+_OPT_IN_HEADING = 'Få en handlingsplan i din inkorg'
+_OPT_IN_SUBTEXT = 'Vi skickar rapporten som PDF plus konkreta förslag på vad du bör fixa först, andra och tredje.'
+_OPT_IN_BUTTON  = 'Skicka rapporten'
 
 _RATE_LIMIT = 30      # analyser per IP per timme
 _CACHE_HOURS = 24     # återanvänd resultat om nyare än så
@@ -115,7 +122,37 @@ def analysis_result(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token)
     if obj.status in ('pending', 'running'):
         return render(request, 'analysis/pending.html', {'obj': obj})
-    return render(request, 'analysis/result.html', {'obj': obj})
+    if obj.status == 'complete' and not obj.email_submitted and not obj.email_form_shown:
+        SiteAnalysis.objects.filter(pk=obj.pk).update(email_form_shown=True)
+        obj.email_form_shown = True
+    return render(request, 'analysis/result.html', {
+        'obj': obj,
+        'opt_in_heading': _OPT_IN_HEADING,
+        'opt_in_subtext': _OPT_IN_SUBTEXT,
+        'opt_in_button': _OPT_IN_BUTTON,
+    })
+
+
+@require_POST
+def send_report(request, token):
+    obj = get_object_or_404(SiteAnalysis, pk=token, status='complete')
+    email = request.POST.get('email', '').strip()
+    consent = request.POST.get('marketing_consent') == '1'
+
+    if not email or '@' not in email:
+        return JsonResponse({'ok': False, 'error': 'Ogiltig e-postadress'}, status=400)
+
+    if obj.email_submitted:
+        return JsonResponse({'ok': False, 'error': 'Redan skickat'}, status=400)
+
+    obj.email = email
+    obj.marketing_consent = consent
+    obj.consent_timestamp = timezone.now()
+    obj.email_submitted = True
+    obj.save(update_fields=['email', 'marketing_consent', 'consent_timestamp', 'email_submitted'])
+
+    send_report_email(obj)
+    return JsonResponse({'ok': True})
 
 
 def analysis_status_json(request, token):

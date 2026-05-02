@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}E-post leads – Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex" style="min-height:100vh;">
+  {% include 'custom_admin/_sidebar.html' %}
+
+  <main class="flex-grow-1 bg-light p-5">
+    <div class="container-fluid">
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">E-post leads</h1>
+        <a href="?export=csv" class="btn btn-outline-success btn-sm">
+          <i class="fas fa-file-csv me-1"></i> Exportera CSV
+        </a>
+      </div>
+
+      <!-- Konverteringsstatistik -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-2 fw-bold text-primary">{{ shown }}</div>
+            <div class="text-muted small">Formulär visade</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-2 fw-bold text-success">{{ total }}</div>
+            <div class="text-muted small">Leads (opt-in)</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-2 fw-bold text-warning">{{ conversion }}%</div>
+            <div class="text-muted small">Konverteringsgrad</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-2 fw-bold text-info">{{ followup }}</div>
+            <div class="text-muted small">Uppföljning skickad</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leads-tabell -->
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>E-post</th>
+                  <th>Domän</th>
+                  <th class="text-center">Betyg</th>
+                  <th class="text-center">Score</th>
+                  <th class="text-center">Samtycke</th>
+                  <th class="text-center">Uppföljning</th>
+                  <th>Datum</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for lead in leads %}
+                <tr>
+                  <td>
+                    <a href="mailto:{{ lead.email }}">{{ lead.email }}</a>
+                  </td>
+                  <td>
+                    <span class="text-muted small">{{ lead.domain|default:lead.url|truncatechars:40 }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-{% if lead.grade == 'A' %}success{% elif lead.grade == 'B' %}info{% elif lead.grade == 'C' %}warning text-dark{% else %}danger{% endif %}">
+                      {{ lead.grade }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    {% if lead.score_overall is not None %}{{ lead.score_overall }}/100{% else %}–{% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if lead.marketing_consent %}
+                      <i class="fas fa-check-circle text-success"></i>
+                    {% else %}
+                      <i class="fas fa-times-circle text-muted"></i>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if lead.followup_sent %}
+                      <i class="fas fa-check-circle text-success"></i>
+                    {% else %}
+                      <span class="text-muted small">–</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-muted small">{{ lead.created_at|date:"Y-m-d H:i" }}</td>
+                  <td>
+                    <a href="{% url 'analysis_result' lead.id %}" target="_blank" rel="noopener"
+                       class="btn btn-outline-secondary btn-sm py-0">
+                      Rapport
+                    </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="8" class="text-center text-muted py-4">Inga leads ännu.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+{% endblock %}

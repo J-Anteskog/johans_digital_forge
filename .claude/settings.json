@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(python -X utf8 -c ' *)",
-      "Bash(python -X utf8 -c \"import weasyprint; print\\('OK', weasyprint.__version__\\)\")"
+      "Bash(python -X utf8 -c \"import weasyprint; print\\('OK', weasyprint.__version__\\)\")",
+      "Bash(python -X utf8 -c \"import analysis.views; import analysis.email; import analysis.admin; import custom_admin.views; print\\('OK'\\)\")",
+      "Bash(python -X utf8 -m py_compile analysis/views.py analysis/email.py analysis/admin.py custom_admin/views.py analysis/management/commands/send_followup_emails.py)"
     ]
   }
 }
