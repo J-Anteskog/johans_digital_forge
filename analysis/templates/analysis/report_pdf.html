@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="{{ obj.language|default:'sv' }}">
 <head>
@@ -6,11 +7,11 @@
 <style>
   @page {
     size: A4;
-    margin: 20mm 18mm 20mm 18mm;
+    margin: 18mm 18mm 18mm 18mm;
     @bottom-right {
       content: "Sida " counter(page) " av " counter(pages);
-      font-size: 9pt;
-      color: #888;
+      font-size: 8pt;
+      color: #aaa;
     }
   }
 
@@ -20,117 +21,104 @@
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 10pt;
     color: #1a1a2e;
-    line-height: 1.55;
+    line-height: 1.5;
     background: #fff;
   }
 
+  /* ── Print banner (screen only, hidden via JS before print) ── */
+  #print-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    background: #1a1a2e; color: #fff;
+    padding: 10px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: sans-serif; font-size: 13px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  }
+  #print-banner-spacer { height: 44px; }
+
   /* ── Cover ── */
   .cover {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-bottom: 16mm;
     page-break-after: always;
+    padding-bottom: 0;
   }
 
   .cover-header {
     background: #1a1a2e;
     color: #fff;
-    padding: 10mm 18mm;
-    margin: -20mm -18mm 0 -18mm;
+    padding: 8mm 18mm;
+    margin: -18mm -18mm 0 -18mm;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .brand { font-size: 14pt; font-weight: 700; color: #D4A356; }
-  .brand-sub { font-size: 8pt; color: #aaa; margin-top: 2pt; }
-
-  .cover-body { padding-top: 24mm; }
-  .cover-body h1 { font-size: 24pt; color: #1a1a2e; font-weight: 800; line-height: 1.2; margin-bottom: 4mm; }
-  .cover-url { font-size: 11pt; color: #555; word-break: break-all; margin-bottom: 10mm; }
-  .cover-date { font-size: 9pt; color: #888; }
+  .brand { font-size: 13pt; font-weight: 700; color: #D4A356; }
+  .brand-sub { font-size: 7.5pt; color: #aaa; margin-top: 1.5pt; }
 
   /* Grade circle */
   .grade-circle {
     display: inline-block;
-    width: 48mm;
-    height: 48mm;
+    width: 38mm; height: 38mm;
     border-radius: 50%;
-    text-align: center;
-    line-height: 48mm;
-    font-size: 28pt;
-    font-weight: 900;
-    color: #fff;
-    margin-bottom: 6mm;
+    text-align: center; line-height: 38mm;
+    font-size: 24pt; font-weight: 900; color: #fff;
+    margin-bottom: 3mm;
   }
   .bg-success { background: #198754; }
   .bg-info    { background: #0dcaf0; color: #000; }
   .bg-warning { background: #ffc107; color: #000; }
   .bg-danger  { background: #dc3545; }
 
-  /* ── Score overview table ── */
-  .score-table { width: 100%; border-collapse: collapse; margin-top: 8mm; }
-  .score-table th, .score-table td { padding: 4mm 3mm; border-bottom: 1px solid #e8e8e8; }
-  .score-table th { font-size: 8pt; text-transform: uppercase; color: #888; font-weight: 600; letter-spacing: .04em; }
-  .score-table td:last-child { text-align: right; font-weight: 700; font-size: 11pt; }
+  .cover-title { font-size: 20pt; font-weight: 800; color: #1a1a2e; margin-bottom: 2mm; }
+  .cover-url   { font-size: 10pt; color: #555; word-break: break-all; margin-bottom: 2mm; }
+  .cover-date  { font-size: 8.5pt; color: #888; margin-bottom: 6mm; }
 
-  .bar-wrap { background: #f0f0f0; border-radius: 4pt; height: 7pt; width: 60mm; display: inline-block; vertical-align: middle; }
-  .bar-fill  { height: 7pt; border-radius: 4pt; }
+  /* ── Score overview table ── */
+  .score-table { width: 100%; border-collapse: collapse; }
+  .score-table th, .score-table td { padding: 2mm 3mm; border-bottom: 1px solid #eee; }
+  .score-table th { font-size: 7.5pt; text-transform: uppercase; color: #aaa; font-weight: 600; letter-spacing: .04em; }
+  .score-table td:last-child { text-align: right; font-weight: 700; font-size: 10pt; }
+  .score-table { page-break-inside: avoid; }
+
+  .bar-wrap { background: #f0f0f0; border-radius: 3pt; height: 6pt; width: 55mm; display: inline-block; vertical-align: middle; }
+  .bar-fill  { height: 6pt; border-radius: 3pt; }
 
   /* ── Section cards ── */
-  .section { page-break-inside: avoid; margin-bottom: 8mm; }
+  .section { page-break-inside: avoid; margin-bottom: 6mm; }
   .section-header {
-    background: #1a1a2e;
-    color: #fff;
-    padding: 3mm 5mm;
+    background: #1a1a2e; color: #fff;
+    padding: 2.5mm 5mm;
     border-radius: 4pt 4pt 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
   }
   .section-header .title { font-size: 10pt; font-weight: 700; }
-  .section-header .score { font-size: 10pt; color: #aaa; }
+  .section-header .score { font-size: 9.5pt; color: #aaa; }
   .section-body { border: 1px solid #ddd; border-top: none; border-radius: 0 0 4pt 4pt; }
-  .section-row { padding: 3mm 5mm; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start; gap: 3mm; }
+  .section-row { padding: 2.5mm 5mm; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start; gap: 3mm; }
   .section-row:last-child { border-bottom: none; }
 
   .icon-ok   { color: #198754; font-weight: 900; }
   .icon-warn { color: #e6a817; font-weight: 900; }
   .icon-fail { color: #dc3545; font-weight: 900; }
 
-  .row-label { font-weight: 600; font-size: 9.5pt; }
+  .row-label  { font-weight: 600; font-size: 9.5pt; }
   .row-detail { font-size: 8.5pt; color: #555; margin-top: 1pt; }
 
   /* ── Footer strip ── */
   .doc-footer {
-    position: fixed;
-    bottom: 8mm;
-    left: 18mm;
-    right: 18mm;
-    font-size: 8pt;
-    color: #bbb;
-    border-top: 1px solid #eee;
-    padding-top: 3mm;
-    display: flex;
-    justify-content: space-between;
+    position: fixed; bottom: 5mm; left: 18mm; right: 18mm;
+    font-size: 7.5pt; color: #bbb;
+    border-top: 1px solid #eee; padding-top: 2.5mm;
+    display: flex; justify-content: space-between;
   }
 
   .page-break { page-break-before: always; }
-
-  @media print {
-    .no-print { display: none !important; }
-  }
 </style>
 </head>
 <body>
 
-{# ── Print banner (dold vid utskrift) ──────────────────────────────────────── #}
-<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#1a1a2e;color:#fff;
-            padding:10px 20px;display:flex;align-items:center;justify-content:space-between;
-            font-family:sans-serif;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.4);"
-     class="no-print">
+{# ── Print banner (dold via JS innan utskrift) ─────────────────────────────── #}
+<div id="print-banner">
   <span>Välj <strong>Spara som PDF</strong> i utskriftsdialogen → klicka Spara.</span>
   <button onclick="window.print()"
           style="background:#D4A356;border:none;color:#000;font-weight:700;padding:6px 16px;
@@ -138,29 +126,34 @@
     Skriv ut / Spara som PDF
   </button>
 </div>
-<div style="height:44px;" class="no-print"></div>
+<div id="print-banner-spacer"></div>
 
 {# ── COVER PAGE ───────────────────────────────────────────────────────────── #}
 <div class="cover">
   <div class="cover-header">
-    <div>
-      <div class="brand">Johans Digital Forge</div>
-      <div class="brand-sub">johans-digital-forge.se</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="{% static 'images/JDFbild-ny.png' %}"
+           alt="Johans Digital Forge" height="44"
+           style="filter:drop-shadow(0 0 6px rgba(0,191,255,.5));">
+      <div>
+        <div class="brand">Johans Digital Forge</div>
+        <div class="brand-sub">johans-digital-forge.se</div>
+      </div>
     </div>
     <div style="color:#aaa;font-size:8pt;">Webbplatsanalys</div>
   </div>
 
-  <div class="cover-body">
-    <div style="text-align:center;margin-bottom:8mm;">
-      <div class="grade-circle bg-{{ obj.grade_color }}">{{ obj.grade }}</div>
-      <div style="font-size:28pt;font-weight:800;color:#1a1a2e;">{{ obj.score_overall }}<span style="font-size:14pt;color:#888;">/100</span></div>
-      <div style="font-size:9pt;color:#888;margin-top:2mm;">Sammanlagt betyg</div>
+  <div style="text-align:center;margin:10mm 0 6mm;">
+    <div class="grade-circle bg-{{ obj.grade_color }}">{{ obj.grade }}</div>
+    <div style="font-size:24pt;font-weight:800;color:#1a1a2e;line-height:1.1;">
+      {{ obj.score_overall }}<span style="font-size:12pt;color:#888;">/100</span>
     </div>
-
-    <h1>Webbplatsanalys</h1>
-    <div class="cover-url">{{ obj.url }}</div>
-    <div class="cover-date">Analyserades: {{ obj.completed_at|date:"Y-m-d H:i" }}</div>
+    <div style="font-size:8.5pt;color:#888;margin-top:1.5mm;">Sammanlagt betyg</div>
   </div>
+
+  <div class="cover-title">Webbplatsanalys</div>
+  <div class="cover-url">{{ obj.url }}</div>
+  <div class="cover-date">Analyserades: {{ obj.completed_at|date:"Y-m-d H:i" }}</div>
 
   {# Score overview #}
   <table class="score-table">
@@ -442,6 +435,17 @@
 </div>
 
 <script>
+  var banner = document.getElementById('print-banner');
+  var spacer = document.getElementById('print-banner-spacer');
+
+  window.addEventListener('beforeprint', function () {
+    banner.style.display = 'none';
+    spacer.style.display = 'none';
+  });
+  window.addEventListener('afterprint', function () {
+    banner.style.display = 'flex';
+    spacer.style.display = 'block';
+  });
   window.addEventListener('load', function () {
     window.print();
   });
