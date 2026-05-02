@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -X utf8 -c ' *)"
+      "Bash(python -X utf8 -c ' *)",
+      "Bash(python -X utf8 -c \"import weasyprint; print\\('OK', weasyprint.__version__\\)\")"
     ]
   }
 }

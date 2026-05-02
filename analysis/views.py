@@ -2,9 +2,8 @@ import time
 from datetime import timedelta
 
 from django.core import signing
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
 from django.utils import timezone
 
 from .forms import AnalysisForm
@@ -169,24 +168,7 @@ def domain_history(request, domain):
 
 def analysis_pdf(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token, status='complete')
-    try:
-        import weasyprint
-        html = render_to_string(
-            'analysis/report_pdf.html',
-            {'obj': obj, 'r': obj.results or {}},
-            request=request,
-        )
-        pdf = weasyprint.HTML(
-            string=html,
-            base_url=request.build_absolute_uri('/'),
-        ).write_pdf()
-        response = HttpResponse(pdf, content_type='application/pdf')
-        filename = f"rapport-{obj.domain or 'analys'}.pdf"
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
-        return response
-    except ImportError:
-        return HttpResponse(
-            'WeasyPrint är inte installerat på servern.',
-            status=503,
-            content_type='text/plain; charset=utf-8',
-        )
+    return render(request, 'analysis/report_pdf.html', {
+        'obj': obj,
+        'r': obj.results or {},
+    })

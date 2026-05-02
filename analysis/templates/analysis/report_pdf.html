@@ -118,9 +118,27 @@
   }
 
   .page-break { page-break-before: always; }
+
+  @media print {
+    .no-print { display: none !important; }
+  }
 </style>
 </head>
 <body>
+
+{# ── Print banner (dold vid utskrift) ──────────────────────────────────────── #}
+<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#1a1a2e;color:#fff;
+            padding:10px 20px;display:flex;align-items:center;justify-content:space-between;
+            font-family:sans-serif;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.4);"
+     class="no-print">
+  <span>Välj <strong>Spara som PDF</strong> i utskriftsdialogen → klicka Spara.</span>
+  <button onclick="window.print()"
+          style="background:#D4A356;border:none;color:#000;font-weight:700;padding:6px 16px;
+                 border-radius:4px;cursor:pointer;font-size:13px;">
+    Skriv ut / Spara som PDF
+  </button>
+</div>
+<div style="height:44px;" class="no-print"></div>
 
 {# ── COVER PAGE ───────────────────────────────────────────────────────────── #}
 <div class="cover">
@@ -423,5 +441,10 @@
   <span>Rapporten genererades {{ obj.completed_at|date:"Y-m-d" }}</span>
 </div>
 
+<script>
+  window.addEventListener('load', function () {
+    window.print();
+  });
+</script>
 </body>
 </html>

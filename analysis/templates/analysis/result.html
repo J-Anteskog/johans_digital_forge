@@ -767,10 +767,10 @@
     {# ── Åtgärder: PDF + Historik ─────────────────────────────────────── #}
     {% if obj.domain %}
     <div class="d-flex flex-wrap gap-2 mb-4">
-      <a href="{% url 'analysis_pdf' obj.id %}"
+      <a href="{% url 'analysis_pdf' obj.id %}" target="_blank" rel="noopener"
          class="btn btn-outline-light btn-sm">
         <i class="fas fa-file-pdf me-1"></i>
-        {% if obj.language == 'en' %}Download PDF report{% else %}Ladda ned PDF-rapport{% endif %}
+        {% if obj.language == 'en' %}Print / Save as PDF{% else %}Skriv ut / Spara som PDF{% endif %}
       </a>
       <a href="{% url 'domain_history' obj.domain %}"
          class="btn btn-outline-secondary btn-sm">
