@@ -11,7 +11,7 @@ from .forms import AnalysisForm
 from .models import SiteAnalysis
 from .tasks import start_analysis
 
-_RATE_LIMIT = 5       # analyser per IP per timme
+_RATE_LIMIT = 30      # analyser per IP per timme
 _CACHE_HOURS = 24     # återanvänd resultat om nyare än så
 
 
