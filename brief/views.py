@@ -105,13 +105,14 @@ def _load_analysis_prefill(request):
         from analysis.models import SiteAnalysis
         from analysis.utils import build_brief_initial_from_analysis
         analysis = SiteAnalysis.objects.get(pk=analysis_id, status='complete')
-        initial = build_brief_initial_from_analysis(analysis)
+        initial, analysis_summary = build_brief_initial_from_analysis(analysis)
         prefill_ctx = {
             'from_analysis': True,
             'analyzed_url': analysis.url,
             'analysis_grade': analysis.grade,
             'analysis_score': analysis.score_overall,
             'analysis_id': str(analysis.id),
+            'analysis_summary': analysis_summary,
         }
         return initial, prefill_ctx
     except Exception:

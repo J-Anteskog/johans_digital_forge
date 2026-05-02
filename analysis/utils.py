@@ -28,10 +28,7 @@ def build_brief_initial_from_analysis(analysis) -> dict:
 
     lines = [
         f'Kommer från webbplatsanalys av {analysis.url}.',
-        (
-            f'Övergripande betyg: {analysis.grade}'
-            f' ({analysis.score_overall}/100).'
-        ),
+        f'Övergripande betyg: {analysis.grade} ({analysis.score_overall}/100).',
         (
             f'Säkerhet: {analysis.score_security}/100, '
             f'SEO: {analysis.score_seo}/100, '
@@ -40,8 +37,9 @@ def build_brief_initial_from_analysis(analysis) -> dict:
         ),
         report_line,
     ]
+    analysis_summary = '\n'.join(line for line in lines if line)
 
-    initial = {'notes': '\n'.join(line for line in lines if line)}
+    initial = {'analysis_summary': analysis_summary}
     if has_existing is not None:
         initial['has_existing_site'] = has_existing
-    return initial
+    return initial, analysis_summary

@@ -445,6 +445,22 @@
                   {% endif %}
                 </div>
 
+                <!-- Analysdata (readonly visningsruta) -->
+                {% if from_analysis and analysis_summary %}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">
+                    <i data-lucide="bar-chart-2" class="brief-icon"></i>
+                    {% if is_english %}From your website analysis{% else %}Från din webbplatsanalys{% endif %}
+                  </label>
+                  <div class="rounded-3 px-3 py-3 small"
+                       style="background:rgba(13,110,253,.07);border:1px solid rgba(13,110,253,.2);
+                              color:#cfe2ff;white-space:pre-line;font-family:inherit;line-height:1.6;">{{ analysis_summary }}</div>
+                  <div class="form-text" style="color:#8bb8ff;">
+                    {% if is_english %}This information is sent with your brief so Johan has full context.{% else %}Den här informationen skickas med din brief så Johan har full kontext.{% endif %}
+                  </div>
+                </div>
+                {% endif %}
+
                 <!-- Anteckningar -->
                 <div class="mb-4">
                   <label class="form-label fw-semibold" for="{{ form.notes.id_for_label }}">
@@ -453,6 +469,16 @@
                     <span class="fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
                   </label>
                   {{ form.notes }}
+                </div>
+
+                <!-- Rabattkod -->
+                <div class="mb-4">
+                  <label class="form-label fw-semibold" for="{{ form.promo_code.id_for_label }}">
+                    <i data-lucide="tag" class="brief-icon"></i>
+                    {% if is_english %}Promo code{% else %}Rabattkod{% endif %}
+                    <span class="fw-normal">({% if is_english %}optional{% else %}valfritt{% endif %})</span>
+                  </label>
+                  {{ form.promo_code }}
                 </div>
 
                 <hr class="my-4">

@@ -108,6 +108,22 @@
       <div class="notes-box">{{ brief.notes|linebreaksbr }}</div>
       {% endif %}
 
+      {% if brief.promo_code %}
+      <div class="section-heading">Rabattkod</div>
+      <div class="notes-box" style="background:#f0fff4;border-color:#198754;">
+        <strong>{{ brief.promo_code }}</strong>
+      </div>
+      {% endif %}
+
+      {% if brief.referrer and brief.referrer|slice:":9" == "analysis:" %}
+      <div class="section-heading">Webbplatsanalys</div>
+      <div class="notes-box" style="background:#eff6ff;border-color:#0d6efd;">
+        <a href="https://www.johans-digital-forge.se/analys/r/{{ brief.referrer|slice:"9:" }}/">
+          Öppna analysrapporten →
+        </a>
+      </div>
+      {% endif %}
+
     </div>
 
     <div class="footer">

@@ -95,6 +95,7 @@ class ProjectBrief(models.Model):
     has_material = models.CharField(max_length=10, choices=HAS_MATERIAL_CHOICES)
     style_preferences = models.JSONField(default=list)
     notes = models.TextField(blank=True)
+    promo_code = models.CharField(max_length=50, blank=True)
     contact_name = models.CharField(max_length=100)
     contact_email = models.EmailField()
     contact_phone = models.CharField(max_length=30, blank=True)
