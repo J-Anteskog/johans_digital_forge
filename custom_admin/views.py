@@ -2,7 +2,7 @@
 import csv
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, DetailView
@@ -18,6 +18,7 @@ from service.models import Service
 from portfolio.models import Project
 from brief.models import ProjectBrief
 from analysis.models import SiteAnalysis
+from analysis.tasks import start_analysis
 from .models import CalendarEvent
 
 
@@ -242,6 +243,21 @@ class AnalysisDetailView(DetailView):
     model = SiteAnalysis
     template_name = "custom_admin/analysis_detail.html"
     context_object_name = "analysis"
+
+
+# ---------------------------
+# 🔁 OMANALYSERA
+# ---------------------------
+@login_required
+def reanalyze(request, pk):
+    original = get_object_or_404(SiteAnalysis, pk=pk)
+    new_obj = SiteAnalysis.objects.create(
+        url=original.url,
+        language=original.language,
+    )
+    start_analysis(str(new_obj.id))
+    messages.success(request, f'Ny analys startad för {original.url}')
+    return redirect('admin_analysis_detail', pk=new_obj.pk)
 
 
 # ---------------------------

@@ -9,7 +9,15 @@
     <div class="container-fluid">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Analysrapport</h1>
-        <a href="{% url 'admin_analyses' %}" class="btn btn-outline-secondary">Tillbaka</a>
+        <div class="d-flex gap-2">
+          <form method="post" action="{% url 'admin_analysis_reanalyze' analysis.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning btn-sm">
+              <i class="fas fa-redo me-1"></i> Analysera om
+            </button>
+          </form>
+          <a href="{% url 'admin_analyses' %}" class="btn btn-outline-secondary btn-sm">Tillbaka</a>
+        </div>
       </div>
 
       <div class="card shadow-sm border-0 mb-4">
