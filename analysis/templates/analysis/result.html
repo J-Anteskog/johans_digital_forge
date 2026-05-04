@@ -938,11 +938,98 @@
     {% endif %}
 
 
+    {# ── Vägen till betyg A ───────────────────────────────────────────── #}
+    {% if obj.grade != 'A' %}
+    <div class="rounded-4 p-4 mb-4" style="background:rgba(212,163,86,.05);border:1px solid rgba(212,163,86,.2);">
+      <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center justify-content-center rounded-circle bg-{{ obj.grade_color }}"
+               style="width:42px;height:42px;flex-shrink:0;">
+            <span class="fw-bold text-dark" style="font-size:1.1rem;">{{ obj.grade }}</span>
+          </div>
+          <i class="fas fa-arrow-right text-secondary" style="font-size:.8rem;"></i>
+          <div class="d-flex align-items-center justify-content-center rounded-circle bg-success"
+               style="width:42px;height:42px;flex-shrink:0;">
+            <span class="fw-bold text-white" style="font-size:1.1rem;">A</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-warning fw-bold">{% if obj.language == 'en' %}Your road to grade A{% else %}Din väg till betyg A{% endif %}</div>
+          <div class="text-secondary" style="font-size:.8rem;">
+            {% if obj.language == 'en' %}{{ obj.score_overall }}/100 today — grade A requires 85+{% else %}{{ obj.score_overall }}/100 idag — betyg A kräver 85+{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-column gap-2">
+        {% if obj.score_security != None and obj.score_security < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Security{% else %}Säkerhet{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar bg-warning rounded-pill" style="width:{{ obj.score_security|default:0 }}%;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_security }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_seo != None and obj.score_seo < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">SEO</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar rounded-pill" style="width:{{ obj.score_seo|default:0 }}%;background:#6f42c1;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_seo }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_performance != None and obj.score_performance < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Performance{% else %}Prestanda{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar bg-primary rounded-pill" style="width:{{ obj.score_performance|default:0 }}%;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_performance }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_mobile != None and obj.score_mobile < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Mobile{% else %}Mobilanpassning{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar bg-success rounded-pill" style="width:{{ obj.score_mobile|default:0 }}%;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_mobile }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_headers != None and obj.score_headers < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Security headers{% else %}Säkerhetsheaders{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar rounded-pill" style="width:{{ obj.score_headers|default:0 }}%;background:#fd7e14;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_headers }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_accessibility != None and obj.score_accessibility < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Accessibility{% else %}Tillgänglighet{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar rounded-pill" style="width:{{ obj.score_accessibility|default:0 }}%;background:#0dcaf0;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_accessibility }} / 85</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
     {# ── CTA ──────────────────────────────────────────────────────────── #}
     <div class="rounded-4 p-4 p-md-5 text-center"
          style="background:rgba(255,193,7,.06);border:1px solid rgba(255,193,7,.2);">
       <h2 class="h4 text-light fw-bold mb-2">
-        {% if obj.language == 'en' %}Want Johan to fix these issues?{% else %}Vill du att Johan åtgärdar bristerna?{% endif %}
+        {% if obj.grade == 'A' %}
+          {% if obj.language == 'en' %}Keep your site at the top!{% else %}Håll sidan i toppskick!{% endif %}
+        {% elif obj.grade == 'B' %}
+          {% if obj.language == 'en' %}So close to grade A — shall we get you there?{% else %}Så nära betyg A — ska vi ta dig dit?{% endif %}
+        {% else %}
+          {% if obj.language == 'en' %}Want Johan to get your site to grade A?{% else %}Vill du att Johan tar sidan till betyg A?{% endif %}
+        {% endif %}
       </h2>
       <p class="text-secondary mb-4" style="max-width:480px;margin-inline:auto;">
         {% if obj.language == 'en' %}
