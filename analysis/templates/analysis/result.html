@@ -6,6 +6,12 @@
 {% endblock %}
 
 {% block content %}
+<style>
+  #analysis-container.simple-mode .tech-only{display:none!important}
+  #analysis-container:not(.simple-mode) .simple-only{display:none!important}
+  .cat-summary{font-size:.82rem;padding:.6rem 1rem .5rem;border-top:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.5)}
+  .action-badge{font-size:.65rem;padding:.2em .52em;border-radius:.3rem;font-weight:700;white-space:nowrap;align-self:flex-start;margin-top:.18rem}
+</style>
 {% with r=obj.results %}
 
 {% if not r and obj.status == 'error' %}
@@ -38,7 +44,7 @@
 
 {# ── Full result ───────────────────────────────────────────────────────── #}
 <section class="py-5" style="background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0a0a0a 100%);">
-  <div class="container" style="max-width:920px;">
+  <div id="analysis-container" class="container simple-mode" style="max-width:920px;">
 
     {# ── Back link ─────────────────────────────────────────────────────── #}
     <div class="mb-4">
@@ -151,6 +157,80 @@
 
     </div>{# /row #}
 
+    {# ── Åtgärdslista + vyväljare ──────────────────────────────────────── #}
+    {% if r %}
+    <div class="rounded-4 mb-4 p-4" style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.09);">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+        <h2 class="h6 text-light fw-bold mb-0">
+          <i class="fas fa-bolt text-warning me-2"></i>
+          {% if obj.language == 'en' %}Priority actions{% else %}Viktigast att åtgärda{% endif %}
+        </h2>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-secondary" style="font-size:.75rem;">{% if obj.language == 'en' %}View:{% else %}Vy:{% endif %}</span>
+          <div class="btn-group btn-group-sm">
+            <button id="btn-simple" onclick="setView('simple')" class="btn btn-warning" style="font-size:.78rem;padding:.25rem .7rem;">{% if obj.language == 'en' %}Simple{% else %}Enkel{% endif %}</button>
+            <button id="btn-tech" onclick="setView('tech')" class="btn btn-outline-secondary" style="font-size:.78rem;padding:.25rem .7rem;">{% if obj.language == 'en' %}Technical{% else %}Teknisk{% endif %}</button>
+          </div>
+        </div>
+      </div>
+      <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+        {% if r.http and not r.http.is_https %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}HTTPS missing — all visitor data is transmitted unencrypted{% else %}HTTPS saknas — all besökardata skickas okrypterat{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.ssl and not r.ssl.valid %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}SSL certificate invalid — browsers warn visitors "Not secure"{% else %}SSL-certifikatet är ogiltigt — webbläsare varnar besökarna "Osäker sida"{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.seo and r.seo.title and not r.seo.title.found %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Page title missing — search engines don't know what the page is about{% else %}Sidtitel saknas — sökmotorer vet inte vad sidan handlar om{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.seo and r.seo.meta_description and not r.seo.meta_description.found %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Meta description missing — Google has no snippet to show in search results{% else %}Meta-beskrivning saknas — Google saknar text att visa i sökresultaten{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if obj.score_performance < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Page loads too slowly — visitors lose patience and bounce{% else %}Sidan laddar för långsamt — besökare tappar tålamodet och lämnar{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if obj.score_mobile < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Poor mobile experience — over half of all visitors browse on mobile{% else %}Dålig mobilupplevelse — mer än hälften av besökarna surfar på mobil{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if obj.score_seo < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Low SEO score — the site is not visible enough in Google search{% else %}Lågt SEO-betyg — sidan syns inte tillräckligt bra i Google{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if obj.score_headers < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Several security headers missing — relatively easy to fix{% else %}Flera säkerhetsheaders saknas — relativt enkelt att åtgärda{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if obj.score_overall >= 85 and r.http.is_https %}
+        <li class="d-flex align-items-center gap-2">
+          <i class="fas fa-check-circle text-success flex-shrink-0"></i>
+          <span class="text-secondary" style="font-size:.85rem;">{% if obj.language == 'en' %}Great result! No major issues found.{% else %}Bra resultat! Inga allvarliga problem hittades.{% endif %}</span>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
 
     {# ════════════════════════════════════════════════════════════════════ #}
     {# SÄKERHET / SECURITY                                                  #}
@@ -167,6 +247,14 @@
         <span class="text-light fw-bold">{% if obj.language == 'en' %}Security{% else %}Säkerhet{% endif %}</span>
         <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_security|default:"–" }}/100</span>
       </div>
+      {% if obj.score_security != None %}
+      <div class="cat-summary">
+        {% if obj.score_security >= 85 %}{% if obj.language == 'en' %}Your site is well protected.{% else %}Din sida är välskyddad.{% endif %}
+        {% elif obj.score_security >= 50 %}{% if obj.language == 'en' %}There are security issues that should be addressed.{% else %}Det finns säkerhetsbrister som bör åtgärdas.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Serious security issues — fix these as soon as possible.{% else %}Allvarliga säkerhetsbrister — åtgärda snarast.{% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -273,6 +361,14 @@
         <span class="text-light fw-bold">SEO</span>
         <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_seo|default:"–" }}/100</span>
       </div>
+      {% if obj.score_seo != None %}
+      <div class="cat-summary">
+        {% if obj.score_seo >= 85 %}{% if obj.language == 'en' %}The page is well optimised for search engines.{% else %}Sidan är väl optimerad för sökmotorer.{% endif %}
+        {% elif obj.score_seo >= 50 %}{% if obj.language == 'en' %}SEO can be improved for better Google visibility.{% else %}SEO kan förbättras för bättre synlighet i Google.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Poor Google visibility — you're missing potential customers.{% else %}Dålig synlighet i Google — du missar potentiella kunder.{% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -438,6 +534,14 @@
         <span class="text-light fw-bold">{% if obj.language == 'en' %}Performance{% else %}Prestanda{% endif %}</span>
         <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_performance|default:"–" }}/100</span>
       </div>
+      {% if obj.score_performance != None %}
+      <div class="cat-summary">
+        {% if obj.score_performance >= 85 %}{% if obj.language == 'en' %}Page loads quickly — great experience for visitors.{% else %}Sidan laddar snabbt — bra upplevelse för besökarna.{% endif %}
+        {% elif obj.score_performance >= 50 %}{% if obj.language == 'en' %}Load time is acceptable but could be improved.{% else %}Laddningstiden är godkänd men kan förbättras.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Page loads too slowly — visitors will leave before it finishes.{% else %}Sidan laddar för långsamt — besökare lämnar innan den hinner laddas.{% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -455,21 +559,19 @@
               </span>
             </div>
             <div class="text-secondary" style="font-size:.8rem;">
-              {% if psp_d.lcp_ms %}
-              <span class="me-3">LCP&nbsp;<strong class="text-light">{{ psp_d.lcp_ms }}&thinsp;ms</strong></span>
-              {% endif %}
-              {% if psp_d.fcp_ms %}
-              <span class="me-3">FCP&nbsp;<strong class="text-light">{{ psp_d.fcp_ms }}&thinsp;ms</strong></span>
-              {% endif %}
-              {% if psp_d.tbt_ms %}
-              <span class="me-3">TBT&nbsp;<strong class="text-light">{{ psp_d.tbt_ms }}&thinsp;ms</strong></span>
-              {% endif %}
-              {% if psp_d.cls %}
-              <span class="me-3">CLS&nbsp;<strong class="text-light">{{ psp_d.cls }}</strong></span>
-              {% endif %}
-              {% if psp_d.inp_ms %}
-              <span class="me-3">INP&nbsp;<strong class="text-light">{{ psp_d.inp_ms }}&thinsp;ms</strong></span>
-              {% endif %}
+              <span class="simple-only">
+                {% if psp_d.score >= 90 %}{% if obj.language == 'en' %}Fast — great experience for visitors on desktop{% else %}Snabb — bra upplevelse för besökare på dator{% endif %}
+                {% elif psp_d.score >= 50 %}{% if obj.language == 'en' %}Average speed — room for improvement{% else %}Genomsnittlig hastighet — kan förbättras{% endif %}
+                {% else %}{% if obj.language == 'en' %}Slow — visitors may leave before the page loads{% else %}Långsam — besökare kan lämna innan sidan hinner ladda{% endif %}
+                {% endif %}
+              </span>
+              <span class="tech-only">
+                {% if psp_d.lcp_ms %}<span class="me-3">LCP&nbsp;<strong class="text-light">{{ psp_d.lcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_d.fcp_ms %}<span class="me-3">FCP&nbsp;<strong class="text-light">{{ psp_d.fcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_d.tbt_ms %}<span class="me-3">TBT&nbsp;<strong class="text-light">{{ psp_d.tbt_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_d.cls %}<span class="me-3">CLS&nbsp;<strong class="text-light">{{ psp_d.cls }}</strong></span>{% endif %}
+                {% if psp_d.inp_ms %}<span class="me-3">INP&nbsp;<strong class="text-light">{{ psp_d.inp_ms }}&thinsp;ms</strong></span>{% endif %}
+              </span>
             </div>
           </div>
         </li>
@@ -548,6 +650,14 @@
         <span class="text-light fw-bold">{% if obj.language == 'en' %}Mobile{% else %}Mobilanpassning{% endif %}</span>
         <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_mobile|default:"–" }}/100</span>
       </div>
+      {% if obj.score_mobile != None %}
+      <div class="cat-summary">
+        {% if obj.score_mobile >= 85 %}{% if obj.language == 'en' %}The page works well on mobile devices.{% else %}Sidan fungerar bra på mobila enheter.{% endif %}
+        {% elif obj.score_mobile >= 50 %}{% if obj.language == 'en' %}Mobile experience can be improved.{% else %}Mobilupplevelsen kan förbättras.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Poor mobile experience — you're losing more than half your visitors.{% else %}Dålig mobilupplevelse — du förlorar mer än hälften av dina besökare.{% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -565,21 +675,19 @@
               </span>
             </div>
             <div class="text-secondary" style="font-size:.8rem;">
-              {% if psp_m.lcp_ms %}
-              <span class="me-3">LCP&nbsp;<strong class="text-light">{{ psp_m.lcp_ms }}&thinsp;ms</strong></span>
-              {% endif %}
-              {% if psp_m.fcp_ms %}
-              <span class="me-3">FCP&nbsp;<strong class="text-light">{{ psp_m.fcp_ms }}&thinsp;ms</strong></span>
-              {% endif %}
-              {% if psp_m.tbt_ms %}
-              <span class="me-3">TBT&nbsp;<strong class="text-light">{{ psp_m.tbt_ms }}&thinsp;ms</strong></span>
-              {% endif %}
-              {% if psp_m.cls %}
-              <span class="me-3">CLS&nbsp;<strong class="text-light">{{ psp_m.cls }}</strong></span>
-              {% endif %}
-              {% if psp_m.inp_ms %}
-              <span class="me-3">INP&nbsp;<strong class="text-light">{{ psp_m.inp_ms }}&thinsp;ms</strong></span>
-              {% endif %}
+              <span class="simple-only">
+                {% if psp_m.score >= 90 %}{% if obj.language == 'en' %}Fast on mobile — great experience{% else %}Snabb på mobil — bra upplevelse{% endif %}
+                {% elif psp_m.score >= 50 %}{% if obj.language == 'en' %}Average mobile speed — room for improvement{% else %}Genomsnittlig mobilhastighet — kan förbättras{% endif %}
+                {% else %}{% if obj.language == 'en' %}Slow on mobile — visitors are likely to leave{% else %}Långsam på mobil — besökare lämnar troligtvis sidan{% endif %}
+                {% endif %}
+              </span>
+              <span class="tech-only">
+                {% if psp_m.lcp_ms %}<span class="me-3">LCP&nbsp;<strong class="text-light">{{ psp_m.lcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_m.fcp_ms %}<span class="me-3">FCP&nbsp;<strong class="text-light">{{ psp_m.fcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_m.tbt_ms %}<span class="me-3">TBT&nbsp;<strong class="text-light">{{ psp_m.tbt_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_m.cls %}<span class="me-3">CLS&nbsp;<strong class="text-light">{{ psp_m.cls }}</strong></span>{% endif %}
+                {% if psp_m.inp_ms %}<span class="me-3">INP&nbsp;<strong class="text-light">{{ psp_m.inp_ms }}&thinsp;ms</strong></span>{% endif %}
+              </span>
             </div>
           </div>
         </li>
@@ -623,6 +731,14 @@
         <span class="text-light fw-bold">{% if obj.language == 'en' %}Security Headers{% else %}Säkerhetsheaders{% endif %}</span>
         <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_headers|default:"–" }}/100</span>
       </div>
+      {% if obj.score_headers != None %}
+      <div class="cat-summary">
+        {% if obj.score_headers >= 85 %}{% if obj.language == 'en' %}Security headers are well configured.{% else %}Säkerhetsheaders är välkonfigurerade.{% endif %}
+        {% elif obj.score_headers >= 50 %}{% if obj.language == 'en' %}Some security headers are missing — worth fixing.{% else %}Några säkerhetsheaders saknas — värt att åtgärda.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Many security headers missing — the site is more vulnerable to attacks.{% else %}Många säkerhetsheaders saknas — sidan är mer sårbar för attacker.{% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
         {% for h in hdr.headers %}
@@ -672,6 +788,14 @@
         <span class="text-light fw-bold">{% if obj.language == 'en' %}Accessibility{% else %}Tillgänglighet{% endif %}</span>
         <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_accessibility|default:"–" }}/100</span>
       </div>
+      {% if obj.score_accessibility != None %}
+      <div class="cat-summary">
+        {% if obj.score_accessibility >= 85 %}{% if obj.language == 'en' %}The page is accessible to all users.{% else %}Sidan är tillgänglig för alla användare.{% endif %}
+        {% elif obj.score_accessibility >= 50 %}{% if obj.language == 'en' %}Accessibility can be improved.{% else %}Tillgängligheten kan förbättras.{% endif %}
+        {% else %}{% if obj.language == 'en' %}The page is difficult to use for people with disabilities.{% else %}Sidan är svår att använda för personer med funktionsnedsättning.{% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -844,7 +968,24 @@
 {% endwith %}{# r=obj.results #}
 
 <script>
+function setView(mode) {
+  var c = document.getElementById('analysis-container');
+  if (!c) return;
+  var btnSimple = document.getElementById('btn-simple');
+  var btnTech = document.getElementById('btn-tech');
+  if (mode === 'simple') {
+    c.classList.add('simple-mode');
+    if (btnSimple) { btnSimple.className = btnSimple.className.replace('btn-outline-secondary', 'btn-warning'); }
+    if (btnTech) { btnTech.className = btnTech.className.replace('btn-warning', 'btn-outline-secondary'); }
+  } else {
+    c.classList.remove('simple-mode');
+    if (btnTech) { btnTech.className = btnTech.className.replace('btn-outline-secondary', 'btn-warning'); }
+    if (btnSimple) { btnSimple.className = btnSimple.className.replace('btn-warning', 'btn-outline-secondary'); }
+  }
+  try { localStorage.setItem('analysis-view', mode); } catch(e) {}
+}
 document.addEventListener('DOMContentLoaded', function () {
+  try { var saved = localStorage.getItem('analysis-view'); if (saved === 'tech') setView('tech'); } catch(e) {}
   // Copy link button
   var btn = document.getElementById('copy-link-btn');
   if (btn) {
