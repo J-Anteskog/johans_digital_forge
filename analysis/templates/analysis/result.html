@@ -445,7 +445,9 @@
           <div>
             <span class="text-light small fw-semibold">Viewport meta</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
-              {% if seo.viewport.found %}{{ seo.viewport.value|default:"width=device-width, initial-scale=1" }}
+              {% if seo.viewport.found %}
+                <span class="simple-only">{% if obj.language == 'en' %}Configured correctly{% else %}Konfigurerad korrekt{% endif %}</span>
+                <span class="tech-only">{{ seo.viewport.value|default:"width=device-width, initial-scale=1" }}</span>
               {% else %}{% if obj.language == 'en' %}Missing — browser may not scale page correctly on mobile{% else %}Saknas — webbläsaren kan skalas fel på mobil{% endif %}{% endif %}
             </span>
           </div>
@@ -456,7 +458,7 @@
           {% if seo.og_title.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div class="overflow-hidden">
-            <span class="text-light small fw-semibold">Open Graph title</span><br>
+            <span class="text-light small fw-semibold"><span class="tech-only">Open Graph title</span><span class="simple-only">{% if obj.language == 'en' %}Social media title{% else %}Titel på sociala medier{% endif %}</span></span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if seo.og_title.found %}"{{ seo.og_title.value }}"
               {% else %}{% if obj.language == 'en' %}Missing — social media shares may look plain{% else %}Saknas — delning i sociala medier kan se intetsägande ut{% endif %}{% endif %}
@@ -469,7 +471,7 @@
           {% if seo.og_image.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div class="overflow-hidden">
-            <span class="text-light small fw-semibold">Open Graph image</span><br>
+            <span class="text-light small fw-semibold"><span class="tech-only">Open Graph image</span><span class="simple-only">{% if obj.language == 'en' %}Social media preview image{% else %}Förhandsvisningsbild på sociala medier{% endif %}</span></span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if seo.og_image.found %}<span style="word-break:break-all;">{{ seo.og_image.value|truncatechars:90 }}</span>
               {% else %}{% if obj.language == 'en' %}Missing — no preview image when sharing on social media{% else %}Saknas — ingen förhandsvisningsbild vid delning i sociala medier{% endif %}{% endif %}
@@ -482,7 +484,7 @@
           {% if seo.robots_txt.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">robots.txt</span><br>
+            <span class="text-light small fw-semibold"><span class="tech-only">robots.txt</span><span class="simple-only">{% if obj.language == 'en' %}Search engine instructions{% else %}Sökmotorinstruktioner{% endif %}</span></span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if seo.robots_txt.found %}
                 {% if obj.language == 'en' %}Found{% else %}Hittad{% endif %}
@@ -502,7 +504,7 @@
           {% if seo.sitemap.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">Sitemap</span><br>
+            <span class="text-light small fw-semibold">Sitemap<span class="simple-only"> ({% if obj.language == 'en' %}page map{% else %}sidöversikt{% endif %})</span></span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if seo.sitemap.found %}
                 {% if obj.language == 'en' %}Found at{% else %}Hittad på{% endif %}
@@ -740,7 +742,11 @@
       </div>
       {% endif %}
 
-      <ul class="list-unstyled mb-0">
+      <div class="simple-only px-4 py-3 text-secondary" style="font-size:.85rem;border-top:1px solid rgba(255,255,255,.06);">
+        {% if obj.language == 'en' %}Switch to <strong class="text-light">Technical view</strong> above to see individual header details.{% else %}Växla till <strong class="text-light">Teknisk vy</strong> ovan för att se detaljer om varje header.{% endif %}
+      </div>
+
+      <ul class="list-unstyled mb-0 tech-only">
         {% for h in hdr.headers %}
         <li class="px-4 py-3 d-flex align-items-start gap-3 {% if not forloop.last %}border-bottom border-dark{% endif %}">
           {% if h.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
@@ -821,20 +827,21 @@
           {% if a11y.landmarks.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Landmark regions{% else %}Landmärken{% endif %}</span><br>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Page structure{% else %}Sidstruktur{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if a11y.landmarks.found %}
-                {{ a11y.landmarks.count }} {% if obj.language == 'en' %}found{% else %}hittade{% endif %}:
-                {% for tag in a11y.landmarks.tags %}<code class="text-light">&lt;{{ tag }}&gt;</code>{% if not forloop.last %}, {% endif %}{% endfor %}
+                <span class="simple-only">{% if obj.language == 'en' %}Correct page structure found{% else %}Korrekt sidstruktur hittad{% endif %}</span>
+                <span class="tech-only">{{ a11y.landmarks.count }} {% if obj.language == 'en' %}found{% else %}hittade{% endif %}:
+                {% for tag in a11y.landmarks.tags %}<code class="text-light">&lt;{{ tag }}&gt;</code>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
               {% else %}
-                {% if obj.language == 'en' %}No semantic landmark elements (&lt;main&gt;, &lt;nav&gt;, etc.) found{% else %}Inga semantiska landmärkeselement (&lt;main&gt;, &lt;nav&gt; m.fl.) hittades{% endif %}
+                {% if obj.language == 'en' %}Missing — screen readers have trouble navigating the page{% else %}Saknas — skärmläsare har svårt att navigera sidan{% endif %}
               {% endif %}
             </span>
           </div>
         </li>
 
-        {# skip nav #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
+        {# skip nav — tech-only, confusing for non-technical users #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark tech-only">
           {% if a11y.skip_nav.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div>
@@ -867,7 +874,7 @@
         </li>
 
         {# interactive divs #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3">
+        <li class="px-4 py-3 d-flex align-items-start gap-3 tech-only">
           {% if a11y.interactive_divs.count == 0 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div>
@@ -1062,12 +1069,12 @@ function setView(mode) {
   var btnTech = document.getElementById('btn-tech');
   if (mode === 'simple') {
     c.classList.add('simple-mode');
-    if (btnSimple) { btnSimple.className = btnSimple.className.replace('btn-outline-secondary', 'btn-warning'); }
-    if (btnTech) { btnTech.className = btnTech.className.replace('btn-warning', 'btn-outline-secondary'); }
+    if (btnSimple) { btnSimple.classList.add('btn-warning'); btnSimple.classList.remove('btn-outline-secondary'); }
+    if (btnTech)   { btnTech.classList.add('btn-outline-secondary'); btnTech.classList.remove('btn-warning'); }
   } else {
     c.classList.remove('simple-mode');
-    if (btnTech) { btnTech.className = btnTech.className.replace('btn-outline-secondary', 'btn-warning'); }
-    if (btnSimple) { btnSimple.className = btnSimple.className.replace('btn-warning', 'btn-outline-secondary'); }
+    if (btnTech)   { btnTech.classList.add('btn-warning'); btnTech.classList.remove('btn-outline-secondary'); }
+    if (btnSimple) { btnSimple.classList.add('btn-outline-secondary'); btnSimple.classList.remove('btn-warning'); }
   }
   try { localStorage.setItem('analysis-view', mode); } catch(e) {}
 }
