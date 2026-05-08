@@ -225,6 +225,28 @@ class BriefDetailView(DetailView):
     template_name = "custom_admin/brief_detail.html"
     context_object_name = "brief"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
+
+
+# ---------------------------
+# 📅 UPPFÖLJNING BRIEF
+# ---------------------------
+@login_required
+def brief_set_followup(request, pk):
+    brief = get_object_or_404(ProjectBrief, pk=pk)
+    if request.method == 'POST':
+        followup_at = request.POST.get('followup_at', '').strip()
+        followup_note = request.POST.get('followup_note', '').strip()
+        from django.utils.dateparse import parse_datetime
+        brief.followup_at = parse_datetime(followup_at) if followup_at else None
+        brief.followup_note = followup_note
+        brief.save(update_fields=['followup_at', 'followup_note'])
+        messages.success(request, 'Uppföljning sparad.')
+    return redirect('admin_brief_detail', pk=pk)
+
 
 # ---------------------------
 # 🔎 ANALYSRAPPORTER ADMIN

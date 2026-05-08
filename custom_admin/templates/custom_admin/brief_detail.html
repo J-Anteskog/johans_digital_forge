@@ -20,6 +20,48 @@
         </div>
       </div>
 
+      <!-- Uppföljning -->
+      <div class="card shadow-sm border-0 mb-4 {% if brief.followup_at %}border-start border-4 {% if brief.followup_at < now %}border-danger{% else %}border-warning{% endif %}{% endif %}">
+        <div class="card-body">
+          <h5 class="mb-3">Uppföljning</h5>
+          {% if brief.followup_at %}
+          <p class="mb-2">
+            <strong>Inbokad:</strong>
+            <span class="{% if brief.followup_at < now %}text-danger fw-bold{% else %}text-warning fw-bold{% endif %}">
+              {{ brief.followup_at|date:"Y-m-d H:i" }}
+              {% if brief.followup_at < now %} — PASSERAD{% endif %}
+            </span>
+          </p>
+          {% if brief.followup_note %}
+          <p class="mb-3"><strong>Anteckning:</strong> {{ brief.followup_note }}</p>
+          {% endif %}
+          {% else %}
+          <p class="text-muted mb-3">Ingen uppföljning inbokad.</p>
+          {% endif %}
+          <form method="post" action="{% url 'admin_brief_followup' brief.pk %}" class="row g-2 align-items-end">
+            {% csrf_token %}
+            <div class="col-auto">
+              <label class="form-label small mb-1">Datum &amp; tid</label>
+              <input type="datetime-local" name="followup_at" class="form-control form-control-sm"
+                     value="{{ brief.followup_at|date:'Y-m-d\TH:i'|default:'' }}">
+            </div>
+            <div class="col">
+              <label class="form-label small mb-1">Anteckning</label>
+              <input type="text" name="followup_note" class="form-control form-control-sm"
+                     placeholder="T.ex. Ring för att följa upp offert" value="{{ brief.followup_note }}">
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-warning btn-sm">Spara</button>
+            </div>
+            {% if brief.followup_at %}
+            <div class="col-auto">
+              <button type="submit" name="followup_at" value="" class="btn btn-outline-secondary btn-sm">Ta bort</button>
+            </div>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+
       <div class="row g-4">
         <div class="col-lg-6">
           <div class="card shadow-sm border-0 h-100">

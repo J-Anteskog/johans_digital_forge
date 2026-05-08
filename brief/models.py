@@ -76,6 +76,8 @@ class ProjectBrief(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default='sv')
     referrer = models.CharField(max_length=255, blank=True)
+    followup_at = models.DateTimeField(null=True, blank=True)
+    followup_note = models.CharField(max_length=255, blank=True)
 
     # --- Steg 1: Mål, budget, tidslinje ---
     goals = models.JSONField(default=list)

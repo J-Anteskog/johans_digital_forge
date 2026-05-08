@@ -19,22 +19,36 @@
                   <th>Namn</th>
                   <th>E-post</th>
                   <th>Status</th>
+                  <th>Uppföljning</th>
                   <th>Skapad</th>
-                  <th>Info</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
+                {% now "Y-m-d H:i" as now_str %}
                 {% for brief in briefs %}
                 <tr>
                   <td><a href="{% url 'admin_brief_detail' brief.pk %}">#{{ brief.pk }}</a></td>
                   <td>{{ brief.contact_name }}</td>
                   <td>{{ brief.contact_email }}</td>
                   <td>{{ brief.get_status_display }}</td>
-                  <td>{{ brief.created_at|date:"Y-m-d H:i" }}</td>
                   <td>
-                    Genererat automatiskt av offertbriefs-formuläret &middot; ID #{{ brief.pk }} &middot;
-                    <a href="{% url 'admin_brief_detail' brief.pk %}">Öppna i admin</a>
+                    {% if brief.followup_at %}
+                      {% if brief.followup_at|date:"Y-m-d H:i" < now_str %}
+                        <span class="badge bg-danger" title="{{ brief.followup_note }}">
+                          <i class="fas fa-exclamation-circle me-1"></i>{{ brief.followup_at|date:"Y-m-d" }}
+                        </span>
+                      {% else %}
+                        <span class="badge bg-warning text-dark" title="{{ brief.followup_note }}">
+                          <i class="fas fa-clock me-1"></i>{{ brief.followup_at|date:"Y-m-d" }}
+                        </span>
+                      {% endif %}
+                    {% else %}
+                      <span class="text-muted">–</span>
+                    {% endif %}
                   </td>
+                  <td>{{ brief.created_at|date:"Y-m-d" }}</td>
+                  <td><a href="{% url 'admin_brief_detail' brief.pk %}">Öppna</a></td>
                 </tr>
                 {% empty %}
                 <tr>
