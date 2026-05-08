@@ -14,15 +14,6 @@ class AnalysisForm(forms.Form):
             'autofocus': True,
         }),
     )
-    email = forms.EmailField(
-        label='E-post (valfritt – få rapporten via mail)',
-        required=False,
-        widget=forms.EmailInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'din@epost.se',
-            'autocomplete': 'email',
-        }),
-    )
     # Honeypot
     website_name = forms.CharField(
         required=False,

@@ -58,7 +58,6 @@ def _analysis_view(request, language):
 
         if form.is_valid():
             url = form.cleaned_data['url']
-            email = form.cleaned_data.get('email', '')
             ip = _get_client_ip(request)
 
             one_hour_ago = timezone.now() - timedelta(hours=1)
@@ -86,7 +85,6 @@ def _analysis_view(request, language):
 
             obj = SiteAnalysis.objects.create(
                 url=url,
-                email=email,
                 requester_ip=ip,
                 language=language,
             )
