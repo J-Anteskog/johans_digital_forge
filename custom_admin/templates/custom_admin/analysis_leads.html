@@ -85,10 +85,16 @@
                     {% endif %}
                   </td>
                   <td class="text-center">
-                    {% if lead.followup_sent %}
-                      <i class="fas fa-check-circle text-success"></i>
+                    {% if lead.followup_status == 'sent' %}
+                      <span class="badge bg-success"><i class="fas fa-check me-1"></i>Skickat</span>
+                    {% elif lead.followup_status == 'today' %}
+                      <span class="badge bg-danger">Skickas idag</span>
+                    {% elif lead.followup_status == 'pending' %}
+                      <span class="badge bg-warning text-dark">
+                        <i class="fas fa-clock me-1"></i>Om {{ lead.followup_days }} dag{% if lead.followup_days != 1 %}ar{% endif %}
+                      </span>
                     {% else %}
-                      <span class="small">–</span>
+                      <span class="text-muted small">–</span>
                     {% endif %}
                   </td>
                   <td class="small">{{ lead.created_at|date:"Y-m-d H:i" }}</td>

@@ -295,6 +295,22 @@ def analysis_leads(request):
     shown     = SiteAnalysis.objects.filter(email_form_shown=True).count()
     conversion = round(total / shown * 100, 1) if shown else 0
 
+    from datetime import timedelta
+    now = timezone.now()
+    leads = list(qs)
+    for lead in leads:
+        if lead.followup_sent:
+            lead.followup_status = 'sent'
+        elif not lead.marketing_consent:
+            lead.followup_status = 'no_consent'
+        elif lead.completed_at:
+            delta = (lead.completed_at + timedelta(days=3)) - now
+            days = delta.days
+            lead.followup_days = max(days, 0)
+            lead.followup_status = 'today' if days <= 0 else 'pending'
+        else:
+            lead.followup_status = 'no_consent'
+
     if request.GET.get('export') == 'csv':
         response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
         response['Content-Disposition'] = (
@@ -316,7 +332,7 @@ def analysis_leads(request):
         return response
 
     return render(request, 'custom_admin/analysis_leads.html', {
-        'leads': qs,
+        'leads': leads,
         'total': total,
         'consent': consent,
         'followup': followup,
