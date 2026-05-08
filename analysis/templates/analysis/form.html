@@ -213,20 +213,6 @@
 
     </div>
 
-    <!-- ── CTA to brief ───────────────────────────────────────────────────── -->
-    <div class="text-center pt-3" style="border-top: 1px solid rgba(255,255,255,.08);">
-      <p class="text-secondary small mb-2">
-        {% if is_english %}
-          Want a professional evaluation and a quote?
-        {% else %}
-          Vill du ha en professionell genomgång och offert?
-        {% endif %}
-      </p>
-      <a href="{% if is_english %}{% url 'brief_en' %}{% else %}{% url 'brief' %}{% endif %}"
-         class="btn btn-outline-warning btn-sm">
-        {% if is_english %}Fill in a project brief{% else %}Fyll i en offertbrief{% endif %}
-      </a>
-    </div>
 
   </div>
 </section>
