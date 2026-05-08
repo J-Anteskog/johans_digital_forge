@@ -76,11 +76,19 @@
           {% if obj.language == 'en' %}Analysed{% else %}Analyserades{% endif %}
           {{ obj.completed_at|date:"Y-m-d H:i" }}
         </p>
-        <button id="copy-link-btn" class="btn btn-outline-secondary btn-sm"
-                data-url="{{ request.build_absolute_uri }}">
-          <i class="fas fa-link me-1"></i>
-          {% if obj.language == 'en' %}Copy link{% else %}Kopiera länk{% endif %}
-        </button>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <button id="copy-link-btn" class="btn btn-outline-secondary btn-sm"
+                  data-url="{{ request.build_absolute_uri }}">
+            <i class="fas fa-link me-1"></i>
+            {% if obj.language == 'en' %}Copy link{% else %}Kopiera länk{% endif %}
+          </button>
+          {% if r.pages %}
+          <span class="text-secondary small">
+            <i class="fas fa-sitemap me-1"></i>
+            {% if obj.language == 'en' %}{{ r.pages|length }} page{{ r.pages|length|pluralize }} checked{% else %}{{ r.pages|length }} sidor kontrollerade{% endif %}
+          </span>
+          {% endif %}
+        </div>
       </div>
 
       {# Category progress bars #}
