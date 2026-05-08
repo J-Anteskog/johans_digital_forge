@@ -138,6 +138,7 @@ def send_report(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token, status='complete')
     email = request.POST.get('email', '').strip()
     consent = request.POST.get('marketing_consent') == '1'
+    phone = request.POST.get('phone', '').strip()
 
     if not email or '@' not in email:
         return JsonResponse({'ok': False, 'error': 'Ogiltig e-postadress'}, status=400)
@@ -146,10 +147,11 @@ def send_report(request, token):
         return JsonResponse({'ok': False, 'error': 'Redan skickat'}, status=400)
 
     obj.email = email
+    obj.phone = phone
     obj.marketing_consent = consent
     obj.consent_timestamp = timezone.now()
     obj.email_submitted = True
-    obj.save(update_fields=['email', 'marketing_consent', 'consent_timestamp', 'email_submitted'])
+    obj.save(update_fields=['email', 'phone', 'marketing_consent', 'consent_timestamp', 'email_submitted'])
 
     send_report_email(obj)
     return JsonResponse({'ok': True})

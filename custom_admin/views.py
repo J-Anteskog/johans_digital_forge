@@ -318,12 +318,12 @@ def analysis_leads(request):
         )
         writer = csv.writer(response)
         writer.writerow([
-            'E-post', 'URL', 'Domän', 'Betyg', 'Score',
+            'E-post', 'Telefon', 'URL', 'Domän', 'Betyg', 'Score',
             'Marknadssamtycke', 'Uppföljning skickad', 'Datum',
         ])
         for obj in qs:
             writer.writerow([
-                obj.email, obj.url, obj.domain, obj.grade,
+                obj.email, obj.phone or '', obj.url, obj.domain, obj.grade,
                 obj.score_overall or '',
                 'Ja' if obj.marketing_consent else 'Nej',
                 'Ja' if obj.followup_sent else 'Nej',

@@ -930,11 +930,25 @@
       <form id="optin-form" class="d-flex flex-column gap-2 align-items-start">
         {% csrf_token %}
         <div class="d-flex flex-column flex-sm-row gap-2 align-items-start">
-          <input type="email" name="email" required placeholder="din@epost.se"
+          <input type="email" name="email" required placeholder="{% if obj.language == 'en' %}your@email.com{% else %}din@epost.se{% endif %}"
                  class="form-control form-control-sm" style="max-width:280px;">
           <button type="submit" class="btn btn-warning btn-sm fw-bold flex-shrink-0">
             {{ opt_in_button }}
           </button>
+        </div>
+        <div class="form-check mt-1">
+          <input class="form-check-input" type="checkbox" name="wants_callback" id="wants_callback" value="1">
+          <label class="form-check-label text-secondary" style="font-size:.8rem;" for="wants_callback">
+            {% if obj.language == 'en' %}
+              I'd like Johan to call me — enter your number below (optional)
+            {% else %}
+              Jag vill att Johan ringer mig — ange nummer nedan (frivilligt)
+            {% endif %}
+          </label>
+        </div>
+        <div id="phone-field" style="display:none;">
+          <input type="tel" name="phone" placeholder="{% if obj.language == 'en' %}Your phone number{% else %}Ditt telefonnummer{% endif %}"
+                 class="form-control form-control-sm" style="max-width:280px;">
         </div>
         <div class="form-check mt-1">
           <input class="form-check-input" type="checkbox" name="marketing_consent" id="marketing_consent" value="1">
@@ -1187,6 +1201,15 @@ function setView(mode) {
 }
 document.addEventListener('DOMContentLoaded', function () {
   try { var saved = localStorage.getItem('analysis-view'); if (saved === 'tech') setView('tech'); } catch(e) {}
+  // Visa/dölj telefonfält
+  var callbackBox = document.getElementById('wants_callback');
+  var phoneField  = document.getElementById('phone-field');
+  if (callbackBox && phoneField) {
+    callbackBox.addEventListener('change', function () {
+      phoneField.style.display = this.checked ? 'block' : 'none';
+    });
+  }
+
   // Copy link button
   var btn = document.getElementById('copy-link-btn');
   if (btn) {
@@ -1211,6 +1234,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var data = new FormData(form);
     var params = new URLSearchParams();
     params.set('email', data.get('email') || '');
+    params.set('phone', data.get('phone') || '');
     params.set('marketing_consent', data.get('marketing_consent') === '1' ? '1' : '0');
     params.set('csrfmiddlewaretoken', data.get('csrfmiddlewaretoken') || '');
 

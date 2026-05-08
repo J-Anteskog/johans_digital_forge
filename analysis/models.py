@@ -36,6 +36,7 @@ class SiteAnalysis(models.Model):
 
     # E-post (fylls antingen i formuläret eller via post-resultat opt-in)
     email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=30, blank=True)
 
     # GDPR-samtycke
     marketing_consent = models.BooleanField(null=True, blank=True)
