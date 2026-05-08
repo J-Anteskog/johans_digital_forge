@@ -19,6 +19,18 @@ def check_seo(base_url: str, soup) -> dict:
     }
 
 
+def check_seo_page(soup) -> dict:
+    """SEO-kontroll för en enskild undersida (utan domänövergripande robots/sitemap)."""
+    return {
+        'viewport':         _check_viewport(soup),
+        'title':            _check_title(soup),
+        'meta_description': _check_meta_description(soup),
+        'h1':               _check_h1(soup),
+        'og_title':         _check_og(soup, 'og:title'),
+        'og_image':         _check_og(soup, 'og:image'),
+    }
+
+
 def _check_viewport(soup):
     tag = soup.find('meta', attrs={'name': 'viewport'})
     return {

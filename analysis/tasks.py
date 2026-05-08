@@ -18,7 +18,7 @@ from django.utils import timezone
 from .models import SiteAnalysis
 from .validators import validate_target_url
 from .checks.http import check_http, check_ssl
-from .checks.seo import check_seo
+from .checks.seo import check_seo, check_seo_page
 from .checks.performance import check_performance
 from .checks.pagespeed import check_pagespeed
 from .checks.headers import check_headers
@@ -99,15 +99,17 @@ def run_analysis(analysis_id: str) -> None:
         except Exception as e:
             results['html_fetch_error'] = str(e)
 
-        # ── 4. SEO + prestanda + tillgänglighet (kräver HTML) ────────────
+        # ── 4. SEO + prestanda + tillgänglighet + crawl (kräver HTML) ──────
         if soup:
             results['seo']           = check_seo(final_url, soup)
             results['performance']   = check_performance(final_url, soup)
             results['accessibility'] = check_accessibility(soup)
+            results['pages']         = _crawl_internal_pages(final_url, soup)
         else:
             results['seo']           = {}
             results['performance']   = {}
             results['accessibility'] = {}
+            results['pages']         = []
 
         # ── 5. Säkerhetsheaders ──────────────────────────────────────────
         results['headers'] = check_headers(final_url)
@@ -134,6 +136,44 @@ def run_analysis(analysis_id: str) -> None:
         obj.status        = 'error'
         obj.error_message = traceback.format_exc()[-3000:]
         obj.save(update_fields=['status', 'error_message'])
+
+
+def _crawl_internal_pages(base_url: str, root_soup, max_pages: int = 20) -> list:
+    """Crawlar interna sidor och kör SEO + tillgänglighet på var och en."""
+    from urllib.parse import urlparse, urljoin
+
+    parsed = urlparse(base_url)
+    base_netloc = parsed.netloc
+
+    visited = {base_url.rstrip('/')}
+    to_visit = []
+
+    for a in root_soup.find_all('a', href=True):
+        href = a['href'].strip()
+        if not href or href.startswith(('#', 'mailto:', 'tel:', 'javascript:')):
+            continue
+        absolute = urljoin(base_url, href).split('#')[0].rstrip('/')
+        p = urlparse(absolute)
+        if (p.netloc == base_netloc
+                and p.scheme in ('http', 'https')
+                and absolute not in visited):
+            visited.add(absolute)
+            to_visit.append(absolute)
+
+    pages = []
+    for url in to_visit[:max_pages]:
+        try:
+            html = _fetch_html(url)
+            soup = BeautifulSoup(html, 'lxml')
+            pages.append({
+                'url': url,
+                'seo': check_seo_page(soup),
+                'accessibility': check_accessibility(soup),
+            })
+        except Exception as e:
+            pages.append({'url': url, 'error': str(e)})
+
+    return pages
 
 
 def start_analysis(analysis_id: str) -> threading.Thread:

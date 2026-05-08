@@ -1026,6 +1026,105 @@
     </div>
     {% endif %}
 
+    {# ── Crawlade undersidor ──────────────────────────────────────────── #}
+    {% if r.pages %}
+    <div class="rounded-4 mb-4 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
+      <div class="d-flex align-items-center gap-2 px-4 py-3" style="background:rgba(255,255,255,.05);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-secondary">
+          <path d="M10 13l4-4-4-4M4 7l-4 4 4 4"/></svg>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}All pages we checked{% else %}Alla sidor vi kontrollerade{% endif %}</span>
+        <span class="ms-auto text-secondary small">{{ r.pages|length }} {% if obj.language == 'en' %}pages{% else %}sidor{% endif %}</span>
+      </div>
+      <div class="px-4 py-3">
+        <div class="table-responsive">
+          <table class="table table-sm mb-0" style="color:rgba(255,255,255,.8);font-size:.82rem;">
+            <thead>
+              <tr style="color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.1);">
+                <th style="border-color:rgba(255,255,255,.1);">{% if obj.language == 'en' %}Page{% else %}Sida{% endif %}</th>
+                <th class="text-center" style="border-color:rgba(255,255,255,.1);">{% if obj.language == 'en' %}Title{% else %}Titel{% endif %}</th>
+                <th class="text-center" style="border-color:rgba(255,255,255,.1);">Meta</th>
+                <th class="text-center" style="border-color:rgba(255,255,255,.1);">H1</th>
+                <th class="text-center" style="border-color:rgba(255,255,255,.1);">OG</th>
+                <th class="text-center" style="border-color:rgba(255,255,255,.1);">{% if obj.language == 'en' %}Images{% else %}Bilder{% endif %}</th>
+                <th class="text-center" style="border-color:rgba(255,255,255,.1);">{% if obj.language == 'en' %}Accessibility{% else %}Tillgängl.{% endif %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for page in r.pages %}
+              <tr style="border-color:rgba(255,255,255,.07);">
+                <td style="border-color:rgba(255,255,255,.07);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  {% if page.error %}
+                    <span class="text-danger small">{{ page.url|truncatechars:50 }} — fel</span>
+                  {% else %}
+                    <a href="{{ page.url }}" target="_blank" rel="noopener"
+                       class="text-secondary small" title="{{ page.url }}">
+                      {{ page.url|truncatechars:50 }}
+                    </a>
+                  {% endif %}
+                </td>
+                {% if not page.error %}
+                <td class="text-center" style="border-color:rgba(255,255,255,.07);">
+                  {% if page.seo.title.found and page.seo.title.ok %}
+                    <span class="text-success">✓</span>
+                  {% elif page.seo.title.found %}
+                    <span class="text-warning" title="{% if obj.language == 'en' %}Found but length off{% else %}Finns men fel längd{% endif %}">~</span>
+                  {% else %}
+                    <span class="text-danger">✗</span>
+                  {% endif %}
+                </td>
+                <td class="text-center" style="border-color:rgba(255,255,255,.07);">
+                  {% if page.seo.meta_description.found and page.seo.meta_description.ok %}
+                    <span class="text-success">✓</span>
+                  {% elif page.seo.meta_description.found %}
+                    <span class="text-warning">~</span>
+                  {% else %}
+                    <span class="text-danger">✗</span>
+                  {% endif %}
+                </td>
+                <td class="text-center" style="border-color:rgba(255,255,255,.07);">
+                  {% if page.seo.h1.found and page.seo.h1.unique %}
+                    <span class="text-success">✓</span>
+                  {% elif page.seo.h1.found %}
+                    <span class="text-warning" title="{% if obj.language == 'en' %}Multiple H1{% else %}Flera H1{% endif %}">~</span>
+                  {% else %}
+                    <span class="text-danger">✗</span>
+                  {% endif %}
+                </td>
+                <td class="text-center" style="border-color:rgba(255,255,255,.07);">
+                  {% if page.seo.og_title.found %}
+                    <span class="text-success">✓</span>
+                  {% else %}
+                    <span class="text-danger">✗</span>
+                  {% endif %}
+                </td>
+                <td class="text-center" style="border-color:rgba(255,255,255,.07);">
+                  {% if page.accessibility.images_without_alt.count == 0 %}
+                    <span class="text-success">✓</span>
+                  {% else %}
+                    <span class="text-danger">{{ page.accessibility.images_without_alt.count }} ✗</span>
+                  {% endif %}
+                </td>
+                <td class="text-center" style="border-color:rgba(255,255,255,.07);">
+                  <span class="{% if page.accessibility.score >= 80 %}text-success{% elif page.accessibility.score >= 50 %}text-warning{% else %}text-danger{% endif %}">
+                    {{ page.accessibility.score }}/100
+                  </span>
+                </td>
+                {% else %}
+                <td colspan="6" class="text-danger small" style="border-color:rgba(255,255,255,.07);">{{ page.error|truncatechars:60 }}</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="text-secondary mt-2 mb-0" style="font-size:.75rem;">
+          ✓ = OK &nbsp;·&nbsp; ~ = {% if obj.language == 'en' %}exists but needs improvement{% else %}finns men behöver förbättras{% endif %} &nbsp;·&nbsp; ✗ = {% if obj.language == 'en' %}missing{% else %}saknas{% endif %}
+        </p>
+      </div>
+    </div>
+    {% endif %}
+
     {# ── CTA ──────────────────────────────────────────────────────────── #}
     <div class="rounded-4 p-4 p-md-5 text-center"
          style="background:rgba(255,193,7,.06);border:1px solid rgba(255,193,7,.2);">
