@@ -10,7 +10,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 
-_FROM = 'Johans Digital Forge <noreply@johans-digital-forge.se>'
+_FROM = 'Johan @ Johans Digital Forge <johan@johans-digital-forge.se>'
+_REPLY_TO = 'johans.digital.forge@gmail.com'
 
 
 def _send(to: str, subject: str, html: str, text: str) -> None:
@@ -20,6 +21,7 @@ def _send(to: str, subject: str, html: str, text: str) -> None:
         resend.Emails.send({
             'from': _FROM,
             'to': [to],
+            'reply_to': [_REPLY_TO],
             'subject': subject,
             'html': html,
             'text': text,
