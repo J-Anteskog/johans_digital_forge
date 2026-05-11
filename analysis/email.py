@@ -56,8 +56,8 @@ def send_report_email(analysis) -> None:
     ).start()
 
 
-def send_followup_email(analysis) -> None:
-    """Skickar uppföljningsmejl dag 3. Körs i bakgrundstråd."""
+def send_followup_email(analysis, sync=False) -> None:
+    """Skickar uppföljningsmejl dag 3. sync=True för management commands."""
     ctx = {'obj': analysis}
     html = render_to_string('analysis/email_followup.html', ctx)
 
@@ -73,8 +73,11 @@ def send_followup_email(analysis) -> None:
         f'– Johan\nJohans Digital Forge\njohans-digital-forge.se'
     )
 
-    threading.Thread(
-        target=_send,
-        args=(analysis.email, subject, html, text),
-        daemon=True,
-    ).start()
+    if sync:
+        _send(analysis.email, subject, html, text)
+    else:
+        threading.Thread(
+            target=_send,
+            args=(analysis.email, subject, html, text),
+            daemon=True,
+        ).start()

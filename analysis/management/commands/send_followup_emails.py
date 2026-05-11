@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
         count = 0
         for analysis in qs:
-            send_followup_email(analysis)
+            send_followup_email(analysis, sync=True)
             analysis.followup_sent = True
             analysis.save(update_fields=['followup_sent'])
             count += 1
