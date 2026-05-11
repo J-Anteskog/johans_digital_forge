@@ -15,14 +15,14 @@ class Command(BaseCommand):
     help = 'Skickar uppföljningsmejl till analyser som är 3 dagar gamla'
 
     def handle(self, *args, **options):
-        three_days_ago = timezone.now() - timedelta(days=3)
+        three_days_ago = (timezone.now() - timedelta(days=3)).date()
 
         qs = SiteAnalysis.objects.filter(
             status='complete',
             email_submitted=True,
             marketing_consent=True,
             followup_sent=False,
-            completed_at__lte=three_days_ago,
+            completed_at__date__lte=three_days_ago,
         )
 
         count = 0
