@@ -16,14 +16,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         three_days_ago = timezone.now() - timedelta(days=3)
-        four_days_ago  = timezone.now() - timedelta(days=4)
 
         qs = SiteAnalysis.objects.filter(
             status='complete',
             email_submitted=True,
             marketing_consent=True,
             followup_sent=False,
-            completed_at__gte=four_days_ago,
             completed_at__lte=three_days_ago,
         )
 
