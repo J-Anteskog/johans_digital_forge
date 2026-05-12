@@ -10,8 +10,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 
-_FROM = 'Johan @ Johans Digital Forge <johan@johans-digital-forge.se>'
-_REPLY_TO = 'johans.digital.forge@gmail.com'
+_FROM = 'Johan @ Johans Digital Forge <analys@johans-digital-forge.se>'
+_REPLY_TO = 'analys@johans-digital-forge.se'
 
 
 def _send(to: str, subject: str, html: str, text: str) -> None:
