@@ -88,10 +88,11 @@ def contact_view(request):
     else:
         initial_subject = f"🧾 Jag är intresserad av: {subject_text}" if subject_text else ""
 
-    form = ContactForm(initial={"subject": initial_subject})
+    lang = 'en' if is_english else 'sv'
+    form = ContactForm(language=lang, initial={"subject": initial_subject})
 
     if request.method == "POST":
-        form = ContactForm(request.POST)
+        form = ContactForm(request.POST, language=lang)
 
         if not check_spam_protection(request):
             return render(request, "contact/contact.html", {
@@ -159,7 +160,7 @@ def contact_view(request):
             thread_confirm.start()
 
             return render(request, "contact/contact.html", {
-                "form": ContactForm(),
+                "form": ContactForm(language=lang),
                 "success": True,
                 "is_english": is_english,
                 "form_token": generate_form_token(),

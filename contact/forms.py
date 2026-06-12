@@ -3,19 +3,34 @@ from .forms_base import BaseForm
 
 
 class ContactForm(BaseForm):
-    subject = forms.CharField(label="Ämne / Subject", max_length=100, required=True)
-    name = forms.CharField(label="Namn / Name", max_length=100, required=True)
-    email = forms.EmailField(label="E-post / Email", required=True)
-    message = forms.CharField(
-        label="Meddelande / Message",
-        widget=forms.Textarea,
-        required=True
-    )
-    discount_code = forms.CharField(
-        label="Rabattkod / Partnerkod (valfritt / optional)",
-        max_length=50,
-        required=False,
-    )
+    subject = forms.CharField(max_length=100, required=True)
+    name = forms.CharField(max_length=100, required=True)
+    email = forms.EmailField(required=True)
+    message = forms.CharField(widget=forms.Textarea, required=True)
+    discount_code = forms.CharField(max_length=50, required=False)
+
+    _LABELS = {
+        'sv': {
+            'subject': 'Ämne',
+            'name': 'Namn',
+            'email': 'E-post',
+            'message': 'Meddelande',
+            'discount_code': 'Rabattkod / Partnerkod (valfritt)',
+        },
+        'en': {
+            'subject': 'Subject',
+            'name': 'Name',
+            'email': 'Email',
+            'message': 'Message',
+            'discount_code': 'Discount code / Partner code (optional)',
+        },
+    }
+
+    def __init__(self, *args, language='sv', **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, label in self._LABELS.get(language, self._LABELS['sv']).items():
+            if field_name in self.fields:
+                self.fields[field_name].label = label
 
 
 class QuoteForm(BaseForm):
