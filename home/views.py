@@ -2,6 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.cache import cache_control
 from portfolio.models import Project
+from urllib.parse import urlparse
+
+# Pages with non-standard URL structures between languages
+_SV_TO_EN = {
+    '/': '/en/',
+    '/about/': '/en/about-us/',
+    '/integritetspolicy/': '/en/privacy-policy/',
+}
+_EN_TO_SV = {v: k for k, v in _SV_TO_EN.items()}
 
 
 @cache_control(max_age=86400)
@@ -45,7 +54,32 @@ def set_language(request):
     lang = request.GET.get('lang', 'sv')
     if lang not in ('sv', 'en'):
         lang = 'sv'
-    redirect_to = '/en/' if lang == 'en' else '/'
+
+    referer = request.META.get('HTTP_REFERER', '')
+    try:
+        path = urlparse(referer).path if referer else ''
+    except Exception:
+        path = ''
+
+    if lang == 'en':
+        if path in _SV_TO_EN:
+            redirect_to = _SV_TO_EN[path]
+        elif path.startswith('/en/'):
+            redirect_to = path  # already English
+        elif path.startswith('/analys/'):
+            redirect_to = '/en/analysis/' + path[len('/analys/'):]
+        else:
+            redirect_to = ('/en/' + path.lstrip('/')) if path else '/en/'
+    else:
+        if path in _EN_TO_SV:
+            redirect_to = _EN_TO_SV[path]
+        elif path.startswith('/en/analysis/'):
+            redirect_to = '/analys/' + path[len('/en/analysis/'):]
+        elif path.startswith('/en/'):
+            redirect_to = path[3:] or '/'  # strip /en prefix
+        else:
+            redirect_to = path or '/'
+
     response = HttpResponseRedirect(redirect_to)
     response.set_cookie('lang_pref', lang, max_age=365 * 24 * 60 * 60, samesite='Lax')
     return response
