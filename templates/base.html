@@ -1,14 +1,14 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{% if request.path|slice:":3" == "/en" %}en{% else %}sv{% endif %}">
 
 <head>
   {% block meta %}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{% block meta_description %}Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.{% endblock %}">
+  <meta name="description" content="{% block meta_description %}{% if request.path|slice:":3" == "/en" %}Professional websites, e-commerce solutions and web applications. We create digital solutions that drive your business forward.{% else %}Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.{% endif %}{% endblock %}">
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://www.johans-digital-forge.se{{ request.path }}">
@@ -23,9 +23,9 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.johans-digital-forge.se{{ request.path }}">
-  <meta property="og:title" content="Johan's Digital Forge - Webbutveckling & Design">
+  <meta property="og:title" content="Johan's Digital Forge - {% if request.path|slice:":3" == "/en" %}Web Development & Design{% else %}Webbutveckling & Design{% endif %}">
   <meta property="og:description"
-    content="Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.">
+    content="{% if request.path|slice:":3" == "/en" %}Professional websites, e-commerce solutions and web applications. We create digital solutions that drive your business forward.{% else %}Professionella webbplatser, e-handelslösningar och webbapplikationer. Vi skapar digitala lösningar som driver din verksamhet framåt.{% endif %}">
   <meta property="og:image" content="https://www.johans-digital-forge.se/static/images/preview-image.png">
   <meta property="og:image:width" content="1024">
   <meta property="og:image:height" content="1024">
@@ -34,8 +34,8 @@
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://www.johans-digital-forge.se{{ request.path }}">
-  <meta property="twitter:title" content="Johan's Digital Forge - Webbutveckling & Design">
-  <meta property="twitter:description" content="Professionella webbplatser, e-handelslösningar och webbapplikationer.">
+  <meta property="twitter:title" content="Johan's Digital Forge - {% if request.path|slice:":3" == "/en" %}Web Development & Design{% else %}Webbutveckling & Design{% endif %}">
+  <meta property="twitter:description" content="{% if request.path|slice:":3" == "/en" %}Professional websites, e-commerce solutions and web applications.{% else %}Professionella webbplatser, e-handelslösningar och webbapplikationer.{% endif %}">
   <meta property="twitter:image" content="https://www.johans-digital-forge.se/static/images/preview-image.png">
 
   <!-- Structured Data (JSON-LD) -->
@@ -141,12 +141,17 @@
     class="cookie-banner bg-dark text-white p-3 fixed-bottom hidden">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
-        🍪 Vi använder cookies för grundläggande funktioner på webbplatsen.
-        <a href="{% url 'privacy_policy_sv' %}" class="text-warning">Integritetspolicy</a>
+        {% if request.path|slice:":3" == "/en" %}
+          🍪 We use cookies for basic website functionality.
+          <a href="{% url 'privacy_policy_en' %}" class="text-warning">Privacy Policy</a>
+        {% else %}
+          🍪 Vi använder cookies för grundläggande funktioner på webbplatsen.
+          <a href="{% url 'privacy_policy_sv' %}" class="text-warning">Integritetspolicy</a>
+        {% endif %}
       </div>
       <div class="d-flex gap-2">
-        <button id="reject-cookies" class="btn btn-outline-light">Neka</button>
-        <button id="accept-cookies" class="btn btn-warning">Acceptera</button>
+        <button id="reject-cookies" class="btn btn-outline-light">{% if request.path|slice:":3" == "/en" %}Decline{% else %}Neka{% endif %}</button>
+        <button id="accept-cookies" class="btn btn-warning">{% if request.path|slice:":3" == "/en" %}Accept{% else %}Acceptera{% endif %}</button>
       </div>
     </div>
   </div>

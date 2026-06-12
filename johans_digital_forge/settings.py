@@ -131,6 +131,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'johans_digital_forge.middleware.WwwRedirectMiddleware',  # Omdirigera till www
     'johans_digital_forge.middleware.SecurityHeadersMiddleware',
+    'johans_digital_forge.middleware.LanguageDetectionMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

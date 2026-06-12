@@ -18,10 +18,10 @@
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         {% if request.path|slice:":3" == "/en" %}
           <li class="nav-item"><a class="nav-link" href="/en/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'service_list' %}">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'service_list_en' %}">Services</a></li>
           <li class="nav-item"><a class="nav-link" href="/en/about-us/">About Us</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'portfolio' %}">Portfolio</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contact_en' %}">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'portfolio_en' %}">Portfolio</a></li>
           <li class="nav-item"><a class="nav-link" href="https://portal.johans-digital-forge.se" target="_blank"><i class="bi bi-person-lock"></i> Client Portal
     </a></li>
         {% else %}
@@ -45,11 +45,11 @@
       <!-- Språkväxlare -->
       <div class="ms-3 text-end">
         {% if request.path|slice:":3" == "/en" %}
-          <a href="/" class="lang-switch" title="Svenska">
+          <a href="{% url 'set_language' %}?lang=sv" class="lang-switch" title="Svenska">
             <img src="{% static 'images/flag-sv.svg' %}" alt="Svenska" class="lang-flag">
           </a>
         {% else %}
-          <a href="/en/" class="lang-switch" title="English">
+          <a href="{% url 'set_language' %}?lang=en" class="lang-switch" title="English">
             <img src="{% static 'images/flag-en.svg' %}" alt="English" class="lang-flag">
           </a>
         {% endif %}

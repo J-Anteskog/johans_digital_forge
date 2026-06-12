@@ -81,12 +81,14 @@ def send_email_async(subject, message, from_email, recipient_list):
         print(f"❌ E-postfel via Resend API: {e}")
 
 def contact_view(request):
+    is_english = request.path.startswith('/en/')
     subject_text = request.GET.get("subject", "")
-    initial_data = {
-        "subject": f"🧾 Jag är intresserad av: {subject_text}" if subject_text else ""
-    }
+    if is_english:
+        initial_subject = f"🧾 I'm interested in: {subject_text}" if subject_text else ""
+    else:
+        initial_subject = f"🧾 Jag är intresserad av: {subject_text}" if subject_text else ""
 
-    form = ContactForm(initial=initial_data)
+    form = ContactForm(initial={"subject": initial_subject})
 
     if request.method == "POST":
         form = ContactForm(request.POST)
@@ -95,6 +97,7 @@ def contact_view(request):
             return render(request, "contact/contact.html", {
                 "form": form,
                 "spam_error": True,
+                "is_english": is_english,
                 "form_token": generate_form_token(),
             })
 
@@ -105,12 +108,10 @@ def contact_view(request):
 
             discount_code = form.cleaned_data.get("discount_code", "")
 
-            # Mejlets innehåll till dig
             full_message = f"Från: {sender}\n\n{message}"
             if discount_code:
                 full_message += f"\n\nRabattkod: {discount_code}"
 
-            # Skicka notis via Postal
             send_email_notification(
                 from_name=form.cleaned_data["name"] if "name" in form.cleaned_data else sender,
                 from_email=sender,
@@ -118,7 +119,6 @@ def contact_view(request):
                 body_text=full_message,
             )
 
-            # Skicka mejl till dig (Johan)
             thread = threading.Thread(
                 target=send_email_async,
                 args=(
@@ -131,13 +131,20 @@ def contact_view(request):
             thread.daemon = True
             thread.start()
 
-            # Skicka bekräftelse till kunden
-            confirm_subject = "Tack för ditt meddelande – Johans Digital Forge"
-            confirm_message = (
-                f"Hej!\n\nTack för att du kontaktade Johans Digital Forge.\n\n"
-                "Vi har tagit emot ditt meddelande och återkommer så snart vi kan.\n\n"
-                "Vänliga hälsningar,\nJohan Anteskog"
-            )
+            if is_english:
+                confirm_subject = "Thank you for your message – Johan's Digital Forge"
+                confirm_message = (
+                    "Hi!\n\nThank you for contacting Johan's Digital Forge.\n\n"
+                    "We have received your message and will get back to you as soon as possible.\n\n"
+                    "Best regards,\nJohan Anteskog"
+                )
+            else:
+                confirm_subject = "Tack för ditt meddelande – Johans Digital Forge"
+                confirm_message = (
+                    "Hej!\n\nTack för att du kontaktade Johans Digital Forge.\n\n"
+                    "Vi har tagit emot ditt meddelande och återkommer så snart vi kan.\n\n"
+                    "Vänliga hälsningar,\nJohan Anteskog"
+                )
 
             thread_confirm = threading.Thread(
                 target=send_email_async,
@@ -154,11 +161,13 @@ def contact_view(request):
             return render(request, "contact/contact.html", {
                 "form": ContactForm(),
                 "success": True,
+                "is_english": is_english,
                 "form_token": generate_form_token(),
             })
 
     return render(request, "contact/contact.html", {
         "form": form,
+        "is_english": is_english,
         "form_token": generate_form_token(),
     })
 

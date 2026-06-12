@@ -3,4 +3,5 @@ from .models import Service
 
 def service_list(request):
     services = Service.objects.filter(is_active=True)
-    return render(request, 'service/service_list.html', {'services': services})
+    is_english = request.path.startswith('/en/')
+    return render(request, 'service/service_list.html', {'services': services, 'is_english': is_english})

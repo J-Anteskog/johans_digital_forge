@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.cache import cache_control
 from portfolio.models import Project
 
@@ -40,6 +40,16 @@ def home_sv(request):
 def home_en(request):
     projects = Project.objects.filter(is_active=True)[:3]
     return render(request, 'en/home.html', {'projects': projects})
+
+def set_language(request):
+    lang = request.GET.get('lang', 'sv')
+    if lang not in ('sv', 'en'):
+        lang = 'sv'
+    redirect_to = '/en/' if lang == 'en' else '/'
+    response = HttpResponseRedirect(redirect_to)
+    response.set_cookie('lang_pref', lang, max_age=365 * 24 * 60 * 60, samesite='Lax')
+    return response
+
 
 def privacy_policy_sv(request):
     return render(request, "sv/privacy_policy.html")

@@ -2,9 +2,9 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block title %}Kontakt – Johan's Digital Forge{% endblock %}
+{% block title %}{% if is_english %}Contact – Johan's Digital Forge{% else %}Kontakt – Johan's Digital Forge{% endif %}{% endblock %}
 
-{% block meta_description %}Skicka en kort fråga eller säg hej. För konkreta offertförfrågningar, använd vår offertbrief.{% endblock %}
+{% block meta_description %}{% if is_english %}Send a quick question or say hello. For concrete quote requests, use our project brief.{% else %}Skicka en kort fråga eller säg hej. För konkreta offertförfrågningar, använd vår offertbrief.{% endif %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/contact.css' %}">
@@ -17,13 +17,22 @@
     
     <!-- Header -->
     <div class="section-header text-center mb-4">
-      <h2 class="display-4">✉️ Skicka ett meddelande</h2>
+      <h2 class="display-4">✉️ {% if is_english %}Send a message{% else %}Skicka ett meddelande{% endif %}</h2>
       <p class="lead">
-        Har du en kort fråga eller vill bara säga hej? Skriv några rader så återkommer jag inom kort.
+        {% if is_english %}
+          Have a quick question or just want to say hello? Write a few lines and I'll get back to you shortly.
+        {% else %}
+          Har du en kort fråga eller vill bara säga hej? Skriv några rader så återkommer jag inom kort.
+        {% endif %}
       </p>
       <p>
-        Söker du ett konkret pris eller förslag på hemsida? Då passar
-        <a href="{% url 'brief' %}">offertbriefen</a> bättre — där får jag den info jag behöver för att lämna ett skarpt förslag direkt.
+        {% if is_english %}
+          Looking for a concrete price or website proposal? The
+          <a href="{% url 'brief_en' %}">project brief</a> is better — it gives me what I need to send you a sharp proposal right away.
+        {% else %}
+          Söker du ett konkret pris eller förslag på hemsida? Då passar
+          <a href="{% url 'brief' %}">offertbriefen</a> bättre — där får jag den info jag behöver för att lämna ett skarpt förslag direkt.
+        {% endif %}
       </p>
     </div>
 
@@ -31,8 +40,7 @@
     {% if spam_error %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       <i class="fas fa-exclamation-triangle me-2"></i>
-      <strong>Verifieringen misslyckades.</strong> Försök igen.<br>
-      <small>Verification failed. Please try again.</small>
+      <strong>{% if is_english %}Verification failed.{% else %}Verifieringen misslyckades.{% endif %}</strong> {% if is_english %}Please try again.{% else %}Försök igen.{% endif %}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endif %}
@@ -41,8 +49,7 @@
     {% if success %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
       <i class="fas fa-check-circle me-2"></i>
-      <strong>Tack för ditt meddelande!</strong> Jag återkommer så snart jag kan.<br>
-      <small>Thank you for your message! I will get back to you as soon as I can.</small>
+      <strong>{% if is_english %}Thank you for your message!{% else %}Tack för ditt meddelande!{% endif %}</strong> {% if is_english %}I will get back to you as soon as I can.{% else %}Jag återkommer så snart jag kan.{% endif %}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endif %}
@@ -58,13 +65,13 @@
                  class="img-fluid rounded-circle mb-3"
                  style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #667eea;">
             <h4 class="fw-bold mb-2">Johan Anteskog</h4>
-            <p class="mb-3">Grundare & Webbutvecklare</p>
+            <p class="mb-3">{% if is_english %}Founder & Web Developer{% else %}Grundare & Webbutvecklare{% endif %}</p>
 
             <!-- Phone number with reveal -->
             <div class="phone-reveal-container">
               <button class="btn btn-outline-primary w-100" id="revealPhoneBtn" onclick="revealPhone()">
                 <i class="fas fa-phone me-2"></i>
-                Visa telefonnummer
+                {% if is_english %}Show phone number{% else %}Visa telefonnummer{% endif %}
               </button>
               <a href="tel:0720333420" class="btn btn-primary w-100 d-none" id="phoneNumber">
                 <i class="fas fa-phone me-2"></i>
@@ -75,7 +82,7 @@
             <hr class="my-3">
             <p class="small mb-0">
               <i class="fas fa-map-marker-alt me-2"></i>
-              Baserad i Fagersta
+              {% if is_english %}Based in Fagersta, Sweden{% else %}Baserad i Fagersta{% endif %}
             </p>
           </div>
         </div>
@@ -87,7 +94,7 @@
           <div class="card-body p-4 p-md-5">
             <p class="mb-4">
               <i class="fas fa-info-circle me-2"></i>
-              <small>* = Obligatoriskt fält / Required field</small>
+              <small>* = {% if is_english %}Required field{% else %}Obligatoriskt fält{% endif %}</small>
             </p>
 
             <form method="post" novalidate id="contactForm">
@@ -103,10 +110,14 @@
 
               <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
                 <i class="fas fa-paper-plane me-2"></i>
-                Skicka meddelande
+                {% if is_english %}Send message{% else %}Skicka meddelande{% endif %}
               </button>
               <p class="small text-center mt-3 mb-0">
-                Vill du ha ett konkret förslag istället? Fyll i <a href="{% url 'brief' %}">offertbriefen</a>.
+                {% if is_english %}
+                  Want a concrete proposal instead? Fill in the <a href="{% url 'brief_en' %}">project brief</a>.
+                {% else %}
+                  Vill du ha ett konkret förslag istället? Fyll i <a href="{% url 'brief' %}">offertbriefen</a>.
+                {% endif %}
               </p>
             </form>
           </div>

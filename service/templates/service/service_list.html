@@ -320,15 +320,15 @@
             <i class="fas fa-chevron-left" id="toggleIcon"></i>
         </button>
         
-        <div class="sidebar-title">Kategorier</div>
-        
+        <div class="sidebar-title">{% if is_english %}Categories{% else %}Kategorier{% endif %}</div>
+
         <ul class="sidebar-nav">
-            <li><a href="#" onclick="showAllServices()" class="active" id="nav-all">Alla Tjänster</a></li>
-            <li><a href="#" onclick="showCategory('website')" id="nav-website">Webbpaket</a></li>
-            <li><a href="#" onclick="showCategory('hosting')" id="nav-hosting">Webbhotell & Domäner</a></li>
-            <li><a href="#" onclick="showCategory('support')" id="nav-support">Support & Underhåll</a></li>
+            <li><a href="#" onclick="showAllServices()" class="active" id="nav-all">{% if is_english %}All Services{% else %}Alla Tjänster{% endif %}</a></li>
+            <li><a href="#" onclick="showCategory('website')" id="nav-website">{% if is_english %}Web Packages{% else %}Webbpaket{% endif %}</a></li>
+            <li><a href="#" onclick="showCategory('hosting')" id="nav-hosting">{% if is_english %}Hosting & Domains{% else %}Webbhotell & Domäner{% endif %}</a></li>
+            <li><a href="#" onclick="showCategory('support')" id="nav-support">{% if is_english %}Support & Maintenance{% else %}Support & Underhåll{% endif %}</a></li>
             <li><a href="#" onclick="showCategory('content')" id="nav-content">Content Manager</a></li>
-            <li><a href="#" onclick="showCategory('other')" id="nav-other">Övriga Tjänster</a></li>
+            <li><a href="#" onclick="showCategory('other')" id="nav-other">{% if is_english %}Other Services{% else %}Övriga Tjänster{% endif %}</a></li>
         </ul>
     </div>
 
@@ -337,15 +337,15 @@
         <!-- Header -->
         <div class="text-center mb-5">
             <h2 class="display-4">
-                🛠️ Tjänster / Services
+                🛠️ {% if is_english %}Services{% else %}Tjänster{% endif %}
             </h2>
-            <p class="lead text-light">Vad jag erbjuder – What I offer</p>
+            <p class="lead text-light">{% if is_english %}What I offer{% else %}Vad jag erbjuder{% endif %}</p>
         </div>
 
         <!-- Website Packages Category -->
         <div class="service-category" id="category-website">
             <h3 class="category-header">
-                <i class="fas fa-laptop-code me-3"></i>Webbpaket
+                <i class="fas fa-laptop-code me-3"></i>{% if is_english %}Web Packages{% else %}Webbpaket{% endif %}
             </h3>
             <div class="services-grid">
                 {% for service in services %}
@@ -377,31 +377,32 @@
                         </div>
                         {% endif %}
 
-                        <div class="service-title">{{ service.title_sv }}</div>
-                        <div class="service-subtitle">{{ service.title_en }}</div>
-                        
+                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
+                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
+
                         <div class="service-description">
-                            <div class="desc-swedish">{{ service.description_sv|default:"En professionell lösning anpassad efter dina behov." }}</div>
-                            {% if service.description_en %}
-                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% if is_english %}
+                            {{ service.description_en|default:service.description_sv }}
+                            {% else %}
+                            {{ service.description_sv|default:"En professionell lösning anpassad efter dina behov." }}
                             {% endif %}
                         </div>
-                        
+
                         <div class="service-price">
-                            Från {{ service.price|floatformat:0 }} SEK
+                            {% if is_english %}From {% else %}Från {% endif %}{{ service.price|floatformat:0 }} SEK
                         </div>
 
-                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
                         </a>
-                        
+
                         <div class="mt-2">
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>Offert
+                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
                             </button>
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
                                 <i class="fas fa-info me-1"></i>Info
@@ -416,7 +417,7 @@
         <!-- Hosting & Domains Category -->
         <div class="service-category" id="category-hosting">
             <h3 class="category-header">
-                <i class="fas fa-server me-3"></i>Webbhotell & Domäner
+                <i class="fas fa-server me-3"></i>{% if is_english %}Hosting & Domains{% else %}Webbhotell & Domäner{% endif %}
             </h3>
             <div class="services-grid">
                 {% for service in services %}
@@ -426,31 +427,32 @@
                             <i class="fas fa-server"></i>
                         </div>
 
-                        <div class="service-title">{{ service.title_sv }}</div>
-                        <div class="service-subtitle">{{ service.title_en }}</div>
-                        
+                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
+                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
+
                         <div class="service-description">
-                            <div class="desc-swedish">{{ service.description_sv|default:"Professionell hosting-lösning för din webbplats." }}</div>
-                            {% if service.description_en %}
-                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% if is_english %}
+                            {{ service.description_en|default:service.description_sv }}
+                            {% else %}
+                            {{ service.description_sv|default:"Professionell hosting-lösning för din webbplats." }}
                             {% endif %}
                         </div>
-                        
+
                         <div class="service-price">
-                            {{ service.price|floatformat:0 }} SEK/mån
+                            {{ service.price|floatformat:0 }} SEK/{% if is_english %}mo{% else %}mån{% endif %}
                         </div>
 
-                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
                         </a>
-                        
+
                         <div class="mt-2">
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>Offert
+                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
                             </button>
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
                                 <i class="fas fa-info me-1"></i>Info
@@ -465,7 +467,7 @@
         <!-- Support & Maintenance Category -->
         <div class="service-category" id="category-support">
             <h3 class="category-header">
-                <i class="fas fa-tools me-3"></i>Support & Underhåll
+                <i class="fas fa-tools me-3"></i>{% if is_english %}Support & Maintenance{% else %}Support & Underhåll{% endif %}
             </h3>
             <div class="services-grid">
                 {% for service in services %}
@@ -475,31 +477,32 @@
                             <i class="fas fa-headset"></i>
                         </div>
 
-                        <div class="service-title">{{ service.title_sv }}</div>
-                        <div class="service-subtitle">{{ service.title_en }}</div>
-                        
+                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
+                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
+
                         <div class="service-description">
-                            <div class="desc-swedish">{{ service.description_sv|default:"Professionell support och underhåll av din webbplats." }}</div>
-                            {% if service.description_en %}
-                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% if is_english %}
+                            {{ service.description_en|default:service.description_sv }}
+                            {% else %}
+                            {{ service.description_sv|default:"Professionell support och underhåll av din webbplats." }}
                             {% endif %}
                         </div>
-                        
+
                         <div class="service-price">
-                            {{ service.price|floatformat:0 }} SEK/mån
+                            {{ service.price|floatformat:0 }} SEK/{% if is_english %}mo{% else %}mån{% endif %}
                         </div>
 
-                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
                         </a>
-                        
+
                         <div class="mt-2">
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>Offert
+                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
                             </button>
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
                                 <i class="fas fa-info me-1"></i>Info
@@ -524,31 +527,32 @@
                             <i class="fas fa-edit"></i>
                         </div>
 
-                        <div class="service-title">{{ service.title_sv }}</div>
-                        <div class="service-subtitle">{{ service.title_en }}</div>
-                        
+                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
+                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
+
                         <div class="service-description">
-                            <div class="desc-swedish">{{ service.description_sv|default:"Content management och uppdateringar för din webbplats." }}</div>
-                            {% if service.description_en %}
-                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% if is_english %}
+                            {{ service.description_en|default:service.description_sv }}
+                            {% else %}
+                            {{ service.description_sv|default:"Content management och uppdateringar för din webbplats." }}
                             {% endif %}
                         </div>
-                        
+
                         <div class="service-price">
-                            {{ service.price|floatformat:0 }} SEK/mån
+                            {{ service.price|floatformat:0 }} SEK/{% if is_english %}mo{% else %}mån{% endif %}
                         </div>
 
-                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
                         </a>
-                        
+
                         <div class="mt-2">
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>Offert
+                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
                             </button>
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
                                 <i class="fas fa-info me-1"></i>Info
@@ -563,7 +567,7 @@
         <!-- Other Services Category -->
         <div class="service-category" id="category-other">
             <h3 class="category-header">
-                <i class="fas fa-plus-circle me-3"></i>Övriga Tjänster
+                <i class="fas fa-plus-circle me-3"></i>{% if is_english %}Other Services{% else %}Övriga Tjänster{% endif %}
             </h3>
             <div class="services-grid">
                 {% for service in services %}
@@ -573,31 +577,32 @@
                             <i class="fas fa-cog"></i>
                         </div>
 
-                        <div class="service-title">{{ service.title_sv }}</div>
-                        <div class="service-subtitle">{{ service.title_en }}</div>
-                        
+                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
+                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
+
                         <div class="service-description">
-                            <div class="desc-swedish">{{ service.description_sv|default:"Specialiserad tjänst anpassad efter dina behov." }}</div>
-                            {% if service.description_en %}
-                            <div class="desc-english">{{ service.description_en }}</div>
+                            {% if is_english %}
+                            {{ service.description_en|default:service.description_sv }}
+                            {% else %}
+                            {{ service.description_sv|default:"Specialiserad tjänst anpassad efter dina behov." }}
                             {% endif %}
                         </div>
-                        
+
                         <div class="service-price">
-                            Från {{ service.price|floatformat:0 }} SEK
+                            {% if is_english %}From {% else %}Från {% endif %}{{ service.price|floatformat:0 }} SEK
                         </div>
 
-                        <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
                         </a>
-                        
+
                         <div class="mt-2">
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>Offert
+                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
                             </button>
-                            <button class="btn-secondary-custom" 
+                            <button class="btn-secondary-custom"
                                     data-bs-toggle="modal"
                                     data-bs-target="#infoModal{{ service.id }}">
                                 <i class="fas fa-info me-1"></i>Info
@@ -625,16 +630,18 @@
             </div>
             <div class="modal-body">
                 <h6 class="text-info mb-3">
-                    <i class="fas fa-clipboard-list me-2"></i>Detaljerad Beskrivning
+                    <i class="fas fa-clipboard-list me-2"></i>{% if is_english %}Detailed Description{% else %}Detaljerad Beskrivning{% endif %}
                 </h6>
-                
-                <!-- Swedish description -->
+
+                {% if is_english %}
+                <div class="mb-4">
+                    <div class="mt-2">{{ service.extra_info_en|default:service.description_en|default:service.description_sv|safe }}</div>
+                </div>
+                {% else %}
                 <div class="mb-3">
                     <strong style="color: #00ffe1;">Svenska:</strong>
                     <div class="mt-2">{{ service.extra_info_sv|default:service.description_sv|safe }}</div>
                 </div>
-                
-                <!-- English description -->
                 {% if service.extra_info_en or service.description_en %}
                 <div class="mb-4">
                     <strong style="color: #00ffe1;">English:</strong>
@@ -643,22 +650,23 @@
                     </div>
                 </div>
                 {% endif %}
-                
+                {% endif %}
+
                 <div class="alert" style="background: rgba(0, 255, 225, 0.1); border: 1px solid rgba(0, 255, 225, 0.3); color: #00ffe1;">
-                    <strong><i class="fas fa-tag me-2"></i>Pris:</strong> 
+                    <strong><i class="fas fa-tag me-2"></i>{% if is_english %}Price{% else %}Pris{% endif %}:</strong>
                     {% if 'Hosting' in service.title_sv or 'Webbhotell' in service.title_sv or 'Support' in service.title_sv or 'Content' in service.title_sv %}
-                        {{ service.price|floatformat:0 }} SEK/månad
+                        {{ service.price|floatformat:0 }} SEK/{% if is_english %}month{% else %}månad{% endif %}
                     {% else %}
-                        Från {{ service.price|floatformat:0 }} SEK
+                        {% if is_english %}From {% else %}Från {% endif %}{{ service.price|floatformat:0 }} SEK
                     {% endif %}
                 </div>
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Stäng
+                    <i class="fas fa-times me-2"></i>{% if is_english %}Close{% else %}Stäng{% endif %}
                 </button>
-                <a href="{% url 'contact' %}?subject={{ service.title_sv }}" class="btn btn-primary">
-                    <i class="fas fa-paper-plane me-2"></i>Kontakta mig
+                <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn btn-primary">
+                    <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
                 </a>
             </div>
         </div>
