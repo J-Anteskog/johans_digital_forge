@@ -124,9 +124,9 @@ def llms_txt(request):
 
 > Freelance webbutvecklingsstudio baserad i Sverige som bygger professionella webbplatser, e-handelslösningar och webbapplikationer. / Freelance web development studio based in Sweden building professional websites, e-commerce solutions, and web applications.
 
-Johan's Digital Forge drivs av Johan Anteskog, en webbutvecklare baserad i Sverige. Vi skapar digitala lösningar som driver verksamheter framåt – från enkla presentationssajter till komplexa webbapplikationer.
+Johan's Digital Forge drivs av Johan Anteskog, en webbutvecklare baserad i Fagersta, Västmanland, Sverige. Vi skapar digitala lösningar som driver verksamheter framåt – från enkla presentationssajter till komplexa webbapplikationer.
 
-Johan's Digital Forge is run by Johan Anteskog, a web developer based in Sweden. We create digital solutions that drive businesses forward – from simple presentation sites to complex web applications.
+Johan's Digital Forge is run by Johan Anteskog, a web developer based in Fagersta, Västmanland, Sweden. We create digital solutions that drive businesses forward – from simple presentation sites to complex web applications.
 
 ## Tjänster / Services
 
