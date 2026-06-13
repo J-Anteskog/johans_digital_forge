@@ -13,7 +13,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from .sitemaps import StaticViewSitemap  # <- VIKTIGT: Med punkt före sitemaps!
-from home.views import robots_txt
+from home.views import robots_txt, llms_txt
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -21,6 +21,7 @@ sitemaps = {
 
 urlpatterns = [
     path("robots.txt", robots_txt, name="robots_txt"),
+    path("llms.txt", llms_txt, name="llms_txt"),
     path("admin/", include("custom_admin.urls")),
     path("login/", auth_views.LoginView.as_view(template_name="account/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
