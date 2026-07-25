@@ -5,7 +5,7 @@ charset-normalizer==3.4.9
 cloudinary==1.45.0
 crispy-bootstrap5==2026.3
 dj-database-url==3.1.2
-Django==5.2.1
+Django==6.0.7
 django-allauth==65.18.0
 django-cloudinary-storage==0.3.0
 django-crispy-forms==2.6
