@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block title %}{% if is_english %}Services & Pricing – Web Developer{% else %}Tjänster & Priser – Webbutvecklare{% endif %} | Johan's Digital Forge{% endblock %}
+
+{% block meta_description %}{% if is_english %}Web developer offering websites, e-commerce and web applications for small businesses in Fagersta and Västmanland. Clear packages and pricing.{% else %}Webbutvecklare med paket för hemsidor, e-handel och webbapplikationer till småföretag i Fagersta och Västmanland. Tydliga priser.{% endif %}{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/service.css' %}">
 {% endblock %}
@@ -336,9 +341,9 @@
     <div class="services-content" id="servicesContent">
         <!-- Header -->
         <div class="text-center mb-5">
-            <h2 class="display-4">
-                🛠️ {% if is_english %}Services{% else %}Tjänster{% endif %}
-            </h2>
+            <h1 class="display-4">
+                🛠️ {% if is_english %}Web Developer – Services & Pricing{% else %}Webbutvecklare – Tjänster & Priser{% endif %}
+            </h1>
             <p class="lead text-light">{% if is_english %}What I offer{% else %}Vad jag erbjuder{% endif %}</p>
         </div>
 

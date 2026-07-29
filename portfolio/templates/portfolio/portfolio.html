@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}{% if is_english %}Portfolio – Web Developer{% else %}Portfölj – Webbutvecklare{% endif %} | Johan's Digital Forge{% endblock %}
+
+{% block meta_description %}{% if is_english %}Examples of websites and web applications built by web developer Johan's Digital Forge for small businesses in Fagersta and Västmanland.{% else %}Exempel på hemsidor och webbapplikationer byggda av webbutvecklare Johan's Digital Forge åt småföretag i Fagersta och Västmanland.{% endif %}{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/portfolio.css' %}">
 {% endblock %}
@@ -11,7 +15,7 @@
     
     <!-- Header -->
     <div class="section-header text-center mb-5">
-      <h2 class="display-4">📂 {% if is_english %}Portfolio{% else %}Portfölj{% endif %}</h2>
+      <h1 class="display-4">📂 {% if is_english %}Portfolio{% else %}Portfölj{% endif %}</h1>
       <p class="lead">{% if is_english %}My previous projects{% else %}Mina tidigare projekt{% endif %}</p>
     </div>
 
