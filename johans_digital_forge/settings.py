@@ -308,29 +308,6 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-# -----------------------------------------------------------
-# FIXA SITES FÖR SITEMAP (kör vid startup)
-# -----------------------------------------------------------
-def setup_site():
-    """Uppdatera Site-objektet med rätt domän (med www för SEO)"""
-    try:
-        from django.contrib.sites.models import Site
-        site, created = Site.objects.get_or_create(pk=1)
-        if site.domain != 'www.johans-digital-forge.se':
-            site.domain = 'www.johans-digital-forge.se'
-            site.name = 'Johans Digital Forge'
-            site.save()
-            print(f"✅ Site updated: {site.domain}")
-    except Exception as e:
-        print(f"⚠️ Could not update Site: {e}")
-
-# FIX: Säkrare sätt att köra setup
-import sys
-if any(cmd in sys.argv for cmd in ['runserver', 'migrate', 'collectstatic']) or 'gunicorn' in sys.argv[0]:
-    try:
-        setup_site()
-    except Exception as e:
-        print(f"⚠️ Site setup failed: {e}")
 
 # -----------------------------------------------------------
 # DEBUG INFORMATION
