@@ -20,7 +20,7 @@ class StaticViewSitemap(Sitemap):
             'portfolio',
             'service_list',
             'contact',
-            'about_us',
+            'about:about_us',
             'about_us_en',
             'analysis',
             'analysis_en',
