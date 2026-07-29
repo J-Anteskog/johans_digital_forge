@@ -1,5 +1,18 @@
+import re
+
 from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.conf import settings
+
+# Search engine / social crawlers must always get the canonical Swedish
+# homepage at "/" - redirecting them based on Accept-Language causes
+# Google to index the wrong language version under the root URL.
+_BOT_UA_RE = re.compile(
+    r'bot|crawl|spider|slurp|googlebot|bingbot|duckduckbot|baiduspider|'
+    r'yandex|facebookexternalhit|linkedinbot|embedly|quora link preview|'
+    r'showyoubot|outbrain|pinterest|slackbot|vkshare|whatsapp|telegrambot|'
+    r'applebot|semrushbot|ahrefsbot|mj12bot',
+    re.IGNORECASE,
+)
 
 
 class WwwRedirectMiddleware:
@@ -34,7 +47,11 @@ class LanguageDetectionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if 'lang_pref' not in request.COOKIES and request.path == '/':
+        if (
+            'lang_pref' not in request.COOKIES
+            and request.path == '/'
+            and not _BOT_UA_RE.search(request.META.get('HTTP_USER_AGENT', ''))
+        ):
             accept_lang = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
             if self._prefers_english(accept_lang):
                 response = HttpResponseRedirect('/en/')
