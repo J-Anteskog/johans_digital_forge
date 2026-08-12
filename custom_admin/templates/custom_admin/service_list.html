@@ -4,6 +4,13 @@
 {% block title %}Tjänster - Admin{% endblock %}
 
 {% block content %}
+<div class="d-flex" style="min-height: 100vh;">
+
+  <!-- SIDOPANEL -->
+  {% include 'custom_admin/_sidebar.html' %}
+
+  <!-- HUVUDINNEHÅLL -->
+  <main class="flex-grow-1 bg-light p-5">
 <div class="container-fluid">
     <!-- Header med statistik -->
     <div class="row mb-4">
@@ -170,6 +177,8 @@
         </ul>
     </nav>
     {% endif %}
+</div>
+  </main>
 </div>
 
 <script>

@@ -2,6 +2,13 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+<div class="d-flex" style="min-height: 100vh;">
+
+  <!-- SIDOPANEL -->
+  {% include 'custom_admin/_sidebar.html' %}
+
+  <!-- HUVUDINNEHÅLL -->
+  <main class="flex-grow-1 bg-light p-5">
 <div class="container py-5">
   <h1 class="mb-4">{% if form.instance.pk %}✏️ Redigera tjänst{% else %}➕ Ny tjänst{% endif %}</h1>
 
@@ -13,5 +20,7 @@
       <a href="{% url 'admin_services' %}" class="btn btn-outline-light">Avbryt</a>
     </div>
   </form>
+</div>
+  </main>
 </div>
 {% endblock %}
