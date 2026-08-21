@@ -4,7 +4,6 @@ from django.conf import settings
 from django.core import signing
 from .forms import ContactForm, QuoteForm
 import threading
-import resend
 import time
 import requests
 import os
@@ -65,20 +64,18 @@ def send_email_notification(from_name, from_email, subject, body_text, body_html
 
 
 def send_email_async(subject, message, from_email, recipient_list):
-    """Skicka e-post via Resend API"""
+    """Skicka e-post via AhaSend SMTP"""
     try:
-        resend.api_key = settings.EMAIL_HOST_PASSWORD  # din Resend API-nyckel
-
         for recipient in recipient_list:
-            resend.Emails.send({
-                "from": f"Johans Digital Forge <{from_email}>",
-                "to": [recipient],
-                "subject": subject,
-                "text": message,
-            })
-        print(f"✅ E-post skickad via Resend API: {subject}")
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=f"Johans Digital Forge <{from_email}>",
+                recipient_list=[recipient],
+            )
+        print(f"✅ E-post skickad via AhaSend: {subject}")
     except Exception as e:
-        print(f"❌ E-postfel via Resend API: {e}")
+        print(f"❌ E-postfel via AhaSend: {e}")
 
 def contact_view(request):
     is_english = request.path.startswith('/en/')

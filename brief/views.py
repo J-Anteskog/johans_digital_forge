@@ -2,9 +2,9 @@ import threading
 import time
 
 import requests as http_requests
-import resend
 from django.conf import settings
 from django.core import signing
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 
@@ -50,16 +50,16 @@ def _verify_turnstile(token, remote_ip=''):
 
 
 def _send_html_email(subject, html, text, recipient):
-    """Skicka HTML-e-post via Resend API (körs i bakgrundstråd)."""
+    """Skicka HTML-e-post via AhaSend SMTP (körs i bakgrundstråd)."""
     try:
-        resend.api_key = settings.EMAIL_HOST_PASSWORD
-        resend.Emails.send({
-            'from': f'Johans Digital Forge <{settings.DEFAULT_FROM_EMAIL}>',
-            'to': [recipient],
-            'subject': subject,
-            'html': html,
-            'text': text,
-        })
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text,
+            from_email=f'Johans Digital Forge <{settings.DEFAULT_FROM_EMAIL}>',
+            to=[recipient],
+        )
+        msg.attach_alternative(html, 'text/html')
+        msg.send()
     except Exception as e:
         print(f'[brief] E-postfel: {e}')
 

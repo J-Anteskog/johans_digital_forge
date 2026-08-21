@@ -1,12 +1,10 @@
 """
 E-postfunktioner för analysmodulen.
-Använder Resend API (samma mönster som brief/views.py).
 """
 
 import threading
 
-import resend
-from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 
@@ -15,17 +13,17 @@ _REPLY_TO = 'analys@johans-digital-forge.se'
 
 
 def _send(to: str, subject: str, html: str, text: str) -> None:
-    """Skickar e-post via Resend. Körs alltid i bakgrundstråd."""
+    """Skickar e-post via AhaSend SMTP. Körs alltid i bakgrundstråd."""
     try:
-        resend.api_key = settings.EMAIL_HOST_PASSWORD
-        resend.Emails.send({
-            'from': _FROM,
-            'to': [to],
-            'reply_to': [_REPLY_TO],
-            'subject': subject,
-            'html': html,
-            'text': text,
-        })
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text,
+            from_email=_FROM,
+            to=[to],
+            reply_to=[_REPLY_TO],
+        )
+        msg.attach_alternative(html, 'text/html')
+        msg.send()
     except Exception as e:
         print(f'[analysis] E-postfel: {e}')
 
