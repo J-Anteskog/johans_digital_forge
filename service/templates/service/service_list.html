@@ -112,7 +112,7 @@
     white-space: nowrap;
   }
   .pkg-card__name { font-family: var(--font-body); font-weight: 600; font-size: 1.05rem; text-transform: uppercase; margin: 0; }
-  .pkg-card__price { color: var(--accent-light); font-weight: 700; font-size: 1.3rem; margin: -0.6rem 0 0; }
+  .pkg-card__price { color: var(--accent); font-weight: 700; font-size: 1.3rem; margin: -0.6rem 0 0; }
   .pkg-card__features { list-style: none; padding: 0; margin: 0; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
   .pkg-card__features li { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 0.5rem; }
   .pkg-card__features li::before { content: '\2713'; color: var(--success); flex-shrink: 0; }
@@ -157,11 +157,11 @@
     font-weight: 600;
     cursor: pointer;
   }
-  .calc-radio-row label:has(input:checked) { border-color: var(--accent); color: var(--accent-light); }
+  .calc-radio-row label:has(input:checked) { border-color: var(--accent); color: var(--accent); }
   .calc-radio-row input[type="radio"] { accent-color: var(--accent); }
   .calc-option__name { flex-grow: 1; font-size: 0.9rem; font-weight: 600; }
   .calc-option__name small { display: block; color: var(--text-muted); font-weight: 400; font-size: 0.72rem; }
-  .calc-option__price { color: var(--accent-light); font-weight: 700; font-size: 0.87rem; white-space: nowrap; }
+  .calc-option__price { color: var(--accent); font-weight: 700; font-size: 0.87rem; white-space: nowrap; }
 
   .calc-stepper { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
   .calc-stepper button {
@@ -196,7 +196,7 @@
   }
   .calc-total-block { flex: 1 1 180px; }
   .calc-total__label { display: block; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.2rem; }
-  .calc-total__amount { font-family: var(--font-display); font-size: 1.7rem; color: var(--accent-light); }
+  .calc-total__amount { font-family: var(--font-display); font-size: 1.7rem; color: var(--accent); }
   .calc-note { width: 100%; font-size: 0.75rem; color: var(--text-muted) !important; margin: 0.75rem 0 0; }
   .calc-cta { width: 100%; margin-top: 0.75rem; }
 
@@ -210,7 +210,7 @@
     padding: 1.5rem 1.75rem;
   }
   .hosting-card__name { font-family: var(--font-body); font-weight: 600; font-size: 1rem; text-transform: uppercase; margin: 0 0 0.3rem; }
-  .hosting-card__price { color: var(--accent-light); font-weight: 700; font-size: 1.15rem; margin-bottom: 0.75rem; }
+  .hosting-card__price { color: var(--accent); font-weight: 700; font-size: 1.15rem; margin-bottom: 0.75rem; }
   .hosting-card__desc { color: var(--text-muted) !important; font-size: 0.85rem; margin: 0; }
 
   /* ===== Support & Underhåll ===== */
@@ -222,12 +222,12 @@
     border-radius: 12px;
     padding: 1.5rem 1.75rem;
   }
-  .support-card__name { color: var(--accent-light); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 1rem; }
+  .support-card__name { color: var(--accent) !important; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 1rem; }
   .support-card__row { display: flex; justify-content: space-between; gap: 0.75rem; font-size: 0.87rem; padding: 0.5rem 0; border-bottom: 1px solid var(--panel-border); }
   .support-card__row:last-child { border-bottom: none; }
   .support-card__row span:first-child { color: var(--text-muted); }
   .support-card__row span:last-child { font-weight: 700; white-space: nowrap; }
-  .support-card__big-price { font-family: var(--font-display); font-size: 1.8rem; color: var(--accent-light); margin-bottom: 0.25rem; }
+  .support-card__big-price { font-family: var(--font-display); font-size: 1.8rem; color: var(--accent); margin-bottom: 0.25rem; }
   .support-card__big-price small { font-family: var(--font-body); font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
   .support-card__desc { color: var(--text-muted) !important; font-size: 0.85rem; margin: 0; }
 
@@ -242,14 +242,14 @@
     padding: 1.1rem 1.25rem;
   }
   .misc-card__name { font-size: 0.87rem; font-weight: 600; margin-bottom: 0.3rem; }
-  .misc-card__price { color: var(--accent-light); font-weight: 700; font-size: 0.95rem; }
+  .misc-card__price { color: var(--accent); font-weight: 700; font-size: 0.95rem; }
 
   /* ===== CTA-banner ===== */
   .service-cta-banner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; padding: 2.5rem; }
   .service-cta-banner p { color: var(--text-muted) !important; margin: 0.4rem 0 0; }
   .service-cta-banner__actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
-  .modal-title { color: var(--accent-light) !important; }
+  .modal-title { color: var(--accent) !important; }
 </style>
 
 <!-- Header -->
@@ -479,7 +479,7 @@
       </div>
       <div class="support-card">
         <p class="support-card__name">{% if is_english %}Ongoing agreement{% else %}Löpande avtal{% endif %}</p>
-        <div class="support-card__big-price">400 kr <small>/ {% if is_english %}h{% else %}tim{% endif %}</small></div>
+        <div class="support-card__big-price">600 kr <small>/ {% if is_english %}h{% else %}tim{% endif %}</small></div>
         <p class="support-card__desc">{% if is_english %}Security updates, backup checks and minor changes. A free period is included with new packages (1–2 months).{% else %}Säkerhetsuppdateringar, backupkontroller och mindre ändringar. Gratis period ingår vid nya paket (1–2 månader).{% endif %}</p>
       </div>
     </div>
@@ -494,8 +494,8 @@
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</div><div class="misc-card__price">2 500–3 500 kr</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}3 000 kr</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}SEO optimization{% else %}SEO-optimering{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}3 500 kr</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Consultation (30–60 min){% else %}Konsultation (30–60 min){% endif %}</div><div class="misc-card__price">400 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Web design{% else %}Webbdesign{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}300 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Consultation (30–60 min){% else %}Konsultation (30–60 min){% endif %}</div><div class="misc-card__price">600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Web design{% else %}Webbdesign{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Design & UI help{% else %}Design & UI-hjälp{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
     </div>
   </div>

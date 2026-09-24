@@ -9,8 +9,15 @@
 {% endblock %}
 
 {% block content %}
+<style>
+  .legal-page h3 { color: var(--accent-light); font-size: 1.05rem; margin-top: 2rem; }
+  .legal-page h3:first-of-type { margin-top: 0; }
+  .legal-page a { color: var(--accent-light); }
+</style>
 <div class="container py-5">
-  <h1 class="mb-4">Privacy Policy – Johans Digital Forge</h1>
+  <div class="panel-card panel-card--rivets legal-page" style="padding: 2.5rem;">
+  <p class="section-eyebrow">Privacy Policy</p>
+  <h1 class="hero-heading h2 mb-4">Privacy Policy – Johans Digital Forge</h1>
 
   <h3>1. Introduction</h3>
   <p>
@@ -96,5 +103,6 @@
     Johans Digital Forge reserves the right to update this policy when necessary.
     Last updated: <em>2026-04-27</em>
   </p>
+  </div>
 </div>
 {% endblock %}

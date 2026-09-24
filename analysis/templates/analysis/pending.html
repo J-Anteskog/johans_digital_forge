@@ -6,40 +6,40 @@
 {% block content %}
 
 <section class="py-5 min-vh-100 d-flex align-items-start"
-         style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);">
+         style="background: radial-gradient(ellipse 1000px 500px at 50% -20%, rgba(255,122,26,0.16), transparent 60%), linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);">
   <div class="container text-center" style="max-width: 640px; padding-top: 4rem;">
 
     <!-- Spinner -->
     <div class="mb-4" id="spinner-wrap">
-      <div class="spinner-border text-warning"
-           style="width: 4.5rem; height: 4.5rem; border-width: .35rem;" role="status">
+      <div class="spinner-border"
+           style="width: 4.5rem; height: 4.5rem; border-width: .35rem; color: var(--accent);" role="status">
         <span class="visually-hidden">{% if obj.language == 'en' %}Loading…{% else %}Laddar…{% endif %}</span>
       </div>
     </div>
 
-    <h1 class="h3 text-light fw-bold mb-2">
+    <h1 class="h3 mb-2">
       {% if obj.language == 'en' %}Analysing your website…{% else %}Analyserar din webbplats…{% endif %}
     </h1>
 
-    <p class="text-secondary mb-1" style="font-size:.95rem; word-break: break-all;">
+    <p class="mb-1" style="font-size:.95rem; word-break: break-all; color: var(--text-muted);">
       {{ obj.url }}
     </p>
 
-    <p id="status-msg" class="text-warning small mb-4" style="min-height: 1.4em;">
+    <p id="status-msg" class="small mb-4" style="min-height: 1.4em; color: var(--accent-light);">
       {% if obj.language == 'en' %}Checking HTTP…{% else %}Kontrollerar HTTP…{% endif %}
     </p>
 
     <!-- Progress dots -->
     <div class="d-flex justify-content-center gap-2 mb-5" id="dots">
-      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.9;display:inline-block;"></span>
-      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
-      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
-      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
-      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
-      <span class="dot rounded-circle" style="width:10px;height:10px;background:#ffc107;opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.9;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.4;display:inline-block;"></span>
+      <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.4;display:inline-block;"></span>
     </div>
 
-    <p class="text-secondary" style="font-size:.8rem;">
+    <p style="font-size:.8rem; color: var(--text-muted);">
       {% if obj.language == 'en' %}
         This usually takes 1–2 minutes as we check all pages on your site. The page updates automatically.
       {% else %}
@@ -47,9 +47,9 @@
       {% endif %}
     </p>
 
-    <p class="text-secondary mt-2" style="font-size:.8rem;">
+    <p class="mt-2" style="font-size:.8rem; color: var(--text-muted);">
       {% if obj.language == 'en' %}Elapsed:{% else %}Förfluten tid:{% endif %}
-      <span id="elapsed" class="text-light">0s</span>
+      <span id="elapsed" style="color: var(--text-primary);">0s</span>
     </p>
 
     <!-- Visas bara om analysen avbryts medan man väntar -->

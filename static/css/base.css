@@ -95,6 +95,20 @@ p {
     font-family: var(--font-body);
 }
 
+/* Delad överallt (tidigare bara definierad lokalt på startsidan, och även
+   där slog "p { color !important }" ovan igenom eftersom den regeln saknade
+   !important). Ligger nu på ett ställe för alla sidor, med !important så
+   den garanterat vinner. */
+.section-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+    color: var(--accent) !important;
+    font-weight: 600;
+    font-family: var(--font-body);
+    margin-bottom: 0.5rem;
+}
+
 /* ========== DARK THEME OVERRIDES (Bootstrap) ========== */
 
 .bg-light,
@@ -326,7 +340,7 @@ footer {
 .badge-forging {
     background: rgba(255, 122, 26, 0.12);
     border: 1px solid rgba(255, 122, 26, 0.5);
-    color: var(--accent-light);
+    color: var(--accent);
     animation: badge-pulse 2.2s ease-in-out infinite;
 }
 
@@ -441,7 +455,7 @@ form .form-control::placeholder {
   background: linear-gradient(135deg, rgba(255, 122, 26, 0.1) 0%, rgba(255, 179, 92, 0.1) 100%);
   border: 1px solid rgba(255, 122, 26, 0.3);
   border-radius: 0.75rem;
-  color: var(--accent-light);
+  color: var(--accent);
 }
 
 /* Bootstraps default .btn-primary är blå (#0d6efd) — sidor vi inte har

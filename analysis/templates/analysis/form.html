@@ -10,23 +10,48 @@
 {% endblock %}
 
 {% block content %}
+<style>
+  .analysis-hero {
+    padding: 4rem 0;
+    background:
+      radial-gradient(ellipse 1000px 500px at 50% -20%, rgba(255, 122, 26, 0.16), transparent 60%),
+      linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);
+  }
+  .analysis-hero .lead { color: var(--text-muted) !important; }
 
-<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
-<section class="py-5" style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);">
+  .analysis-form-card { padding: 2rem 2.5rem; margin: 2.5rem 0; }
+  .analysis-form-card label { color: var(--text-primary); font-weight: 600; }
+  .analysis-form-card .form-control {
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-border);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+  }
+  .analysis-form-card .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 0.2rem rgba(255,122,26,0.2); }
+  .analysis-form-card .form-text { color: var(--text-muted) !important; }
+
+  .cat-chip {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 0.9rem 0.4rem;
+    text-align: center;
+    height: 100%;
+  }
+  .cat-chip svg { color: var(--accent); margin-bottom: 0.4rem; }
+  .cat-chip__name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+  .cat-chip__desc { font-size: 0.75rem; color: var(--text-muted); }
+</style>
+
+<section class="analysis-hero">
   <div class="container" style="max-width: 780px;">
 
     <div class="text-center mb-5">
-      <p class="text-warning fw-semibold text-uppercase mb-2" style="letter-spacing:.12em; font-size:.85rem;">
-        {% if is_english %}Free tool{% else %}Kostnadsfritt verktyg{% endif %}
-      </p>
-      <h1 class="display-5 fw-bold text-light mb-3">
-        {% if is_english %}
-          Analyse your entire website — free
-        {% else %}
-          Analysera hela din webbplats — gratis
-        {% endif %}
+      <p class="section-eyebrow">{% if is_english %}Free tool{% else %}Kostnadsfritt verktyg{% endif %}</p>
+      <h1 class="display-5 hero-heading mb-3">
+        {% if is_english %}Analyse your entire website — free{% else %}Analysera hela din webbplats — gratis{% endif %}
       </h1>
-      <p class="text-secondary fs-5" style="max-width: 600px; margin: 0 auto;">
+      <p class="lead" style="max-width: 600px; margin: 0 auto;">
         {% if is_english %}
           Get an instant report on SEO, security, performance, mobile-friendliness, security headers, and accessibility.
           No registration required.
@@ -37,42 +62,29 @@
       </p>
     </div>
 
-    <!-- ── Errors ─────────────────────────────────────────────────────────── -->
     {% if spam_error %}
     <div class="alert alert-danger border-0 rounded-3 mb-4" role="alert">
-      {% if is_english %}
-        Something went wrong. Please try again.
-      {% else %}
-        Något gick fel. Försök igen.
-      {% endif %}
+      {% if is_english %}Something went wrong. Please try again.{% else %}Något gick fel. Försök igen.{% endif %}
     </div>
     {% endif %}
 
     {% if rate_limit_error %}
     <div class="alert alert-warning border-0 rounded-3 mb-4" role="alert">
-      {% if is_english %}
-        You have reached the limit of 5 analyses per hour. Please try again later.
-      {% else %}
-        Du har nått gränsen på 5 analyser per timme. Försök igen om en stund.
-      {% endif %}
+      {% if is_english %}You have reached the limit of 5 analyses per hour. Please try again later.{% else %}Du har nått gränsen på 5 analyser per timme. Försök igen om en stund.{% endif %}
     </div>
     {% endif %}
 
-    <!-- ── Form card ──────────────────────────────────────────────────────── -->
-    <div class="rounded-4 p-4 p-md-5 mb-5" style="background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);">
-
+    <div class="panel-card panel-card--rivets analysis-form-card">
       <form method="post" novalidate>
         {% csrf_token %}
         <input type="hidden" name="form_token" value="{{ form_token }}">
 
-        <!-- Honeypot -->
         <div style="display:none;" aria-hidden="true">
           {{ form.website_name }}
         </div>
 
-        <!-- URL field -->
         <div class="mb-4">
-          <label for="{{ form.url.id_for_label }}" class="form-label text-light fw-semibold fs-5">
+          <label for="{{ form.url.id_for_label }}" class="form-label fs-5">
             {% if is_english %}Website address{% else %}Webbplatsens adress{% endif %}
           </label>
           {{ form.url }}
@@ -81,140 +93,106 @@
             {% for e in form.url.errors %}{{ e }}{% endfor %}
           </div>
           {% endif %}
-          <div class="form-text text-secondary" style="font-size:.85rem;">
+          <div class="form-text" style="font-size:.85rem;">
             {% if is_english %}
-              Enter the full address, e.g. <span class="text-light">https://example.com</span>
+              Enter the full address, e.g. <span style="color: var(--text-primary);">https://example.com</span>
             {% else %}
-              Ange hela adressen, t.ex. <span class="text-light">https://example.com</span>
+              Ange hela adressen, t.ex. <span style="color: var(--text-primary);">https://example.com</span>
             {% endif %}
           </div>
         </div>
 
-        <!-- Non-field errors -->
         {% if form.non_field_errors %}
         <div class="alert alert-danger border-0 rounded-3 mb-4">
           {% for e in form.non_field_errors %}{{ e }}{% endfor %}
         </div>
         {% endif %}
 
-        <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold py-3">
-          {% if is_english %}
-            <span class="me-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                   fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-            </span>
-            Analyse now
-          {% else %}
-            <span class="me-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                   fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-            </span>
-            Analysera nu
-          {% endif %}
+        <button type="submit" class="btn-forge w-100 py-3" style="font-size: 1rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          {% if is_english %}Analyse now{% else %}Analysera nu{% endif %}
         </button>
       </form>
     </div>
 
-    <!-- ── What we check ──────────────────────────────────────────────────── -->
     <div class="row g-3 text-center mb-5">
 
-      <!-- Säkerhet / Security -->
       <div class="col-6 col-md-4">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#ffc107;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">{% if is_english %}Security{% else %}Säkerhet{% endif %}</div>
-          <div class="text-secondary" style="font-size:.75rem;">HTTPS &amp; SSL</div>
+        <div class="cat-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <div class="cat-chip__name">{% if is_english %}Security{% else %}Säkerhet{% endif %}</div>
+          <div class="cat-chip__desc">HTTPS &amp; SSL</div>
         </div>
       </div>
 
-      <!-- Prestanda / Performance -->
       <div class="col-6 col-md-4">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#00d4ff;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">{% if is_english %}Performance{% else %}Prestanda{% endif %}</div>
-          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}Speed &amp; PageSpeed{% else %}Hastighet &amp; PageSpeed{% endif %}</div>
+        <div class="cat-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <div class="cat-chip__name">{% if is_english %}Performance{% else %}Prestanda{% endif %}</div>
+          <div class="cat-chip__desc">{% if is_english %}Speed &amp; PageSpeed{% else %}Hastighet &amp; PageSpeed{% endif %}</div>
         </div>
       </div>
 
-      <!-- SEO -->
       <div class="col-6 col-md-4">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#6f42c1;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">SEO</div>
-          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}Title, meta, sitemap{% else %}Titel, meta, sitemap{% endif %}</div>
+        <div class="cat-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <div class="cat-chip__name">SEO</div>
+          <div class="cat-chip__desc">{% if is_english %}Title, meta, sitemap{% else %}Titel, meta, sitemap{% endif %}</div>
         </div>
       </div>
 
-      <!-- Mobil / Mobile -->
       <div class="col-6 col-md-4">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#20c997;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-              <line x1="12" y1="18" x2="12.01" y2="18"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">{% if is_english %}Mobile{% else %}Mobil{% endif %}</div>
-          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}Responsive &amp; viewport{% else %}Responsiv &amp; viewport{% endif %}</div>
+        <div class="cat-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+          <div class="cat-chip__name">{% if is_english %}Mobile{% else %}Mobil{% endif %}</div>
+          <div class="cat-chip__desc">{% if is_english %}Responsive &amp; viewport{% else %}Responsiv &amp; viewport{% endif %}</div>
         </div>
       </div>
 
-      <!-- Säkerhetsheaders / Security Headers -->
       <div class="col-6 col-md-4">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#fd7e14;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">{% if is_english %}Security Headers{% else %}Säkerhetsheaders{% endif %}</div>
-          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}CSP, HSTS, X-Frame{% else %}CSP, HSTS, X-Frame{% endif %}</div>
+        <div class="cat-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <div class="cat-chip__name">{% if is_english %}Security Headers{% else %}Säkerhetsheaders{% endif %}</div>
+          <div class="cat-chip__desc">CSP, HSTS, X-Frame</div>
         </div>
       </div>
 
-      <!-- Tillgänglighet / Accessibility -->
       <div class="col-6 col-md-4">
-        <div class="rounded-3 py-3 px-2" style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);">
-          <div class="mb-2" style="color:#0dcaf0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="4" r="2"/>
-              <path d="M12 6v6l3 3M8.5 9.5C9.5 8.5 11 8 12 8s2.5.5 3.5 1.5"/>
-              <path d="M6 15l2-3M18 15l-2-3"/>
-              <path d="M8 21l2-5M16 21l-2-5"/>
-            </svg>
-          </div>
-          <div class="text-light fw-semibold small">{% if is_english %}Accessibility{% else %}Tillgänglighet{% endif %}</div>
-          <div class="text-secondary" style="font-size:.75rem;">{% if is_english %}WCAG, lang, landmarks{% else %}WCAG, lang, landmärken{% endif %}</div>
+        <div class="cat-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="4" r="2"/>
+            <path d="M12 6v6l3 3M8.5 9.5C9.5 8.5 11 8 12 8s2.5.5 3.5 1.5"/>
+            <path d="M6 15l2-3M18 15l-2-3"/>
+            <path d="M8 21l2-5M16 21l-2-5"/>
+          </svg>
+          <div class="cat-chip__name">{% if is_english %}Accessibility{% else %}Tillgänglighet{% endif %}</div>
+          <div class="cat-chip__desc">{% if is_english %}WCAG, lang, landmarks{% else %}WCAG, lang, landmärken{% endif %}</div>
         </div>
       </div>
 
     </div>
 
-
   </div>
 </section>
-
 {% endblock %}

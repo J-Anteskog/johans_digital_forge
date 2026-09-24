@@ -31,7 +31,7 @@
     max-width: 300px;
     height: auto;
     margin: 0 auto 1.5rem;
-    opacity: 0.4;
+    opacity: 0.7;
     pointer-events: none;
     user-select: none;
   }
@@ -60,7 +60,7 @@
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--accent-light);
+    color: var(--accent);
     margin-bottom: 1.25rem;
   }
   .hero-eyebrow::before {
@@ -126,9 +126,42 @@
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--accent-light);
+    color: var(--accent);
     margin-bottom: 8px;
     font-weight: 600;
+  }
+
+  .mockup-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+  .mockup-stat {
+    background: rgba(255,255,255,0.03);
+    border-radius: 4px;
+    padding: 5px 7px;
+  }
+  .mockup-stat__label {
+    display: block;
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+  .mockup-stat__value {
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .mockup-table-label {
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 5px;
   }
 
   .mockup-row {
@@ -151,7 +184,7 @@
     border-radius: 999px;
   }
   .mockup-pill--paid { background: rgba(88,214,141,0.15); color: var(--success); }
-  .mockup-pill--pending { background: rgba(255,122,26,0.15); color: var(--accent-light); }
+  .mockup-pill--pending { background: rgba(255,122,26,0.15); color: var(--accent); }
   .mockup-pill--sent { background: rgba(169,175,182,0.15); color: var(--text-muted); }
 
   .mockup-laptop__base {
@@ -180,42 +213,46 @@
     padding: 10px 7px;
   }
 
-  .mockup-phone__clock {
-    width: 34px; height: 34px;
+  .mockup-phone__clockface {
+    width: 58px; height: 58px;
     border-radius: 50%;
-    border: 2px solid var(--accent);
     margin: 0 auto 8px;
     position: relative;
+    background: conic-gradient(#FFB35C 0deg 90deg, #6FA8DC 90deg 180deg, #58D68D 180deg 270deg, #8878C3 270deg 360deg);
   }
-  .mockup-phone__clock::before,
-  .mockup-phone__clock::after {
-    content: '';
+  .mockup-phone__clockface-hole {
     position: absolute;
-    background: var(--accent-light);
-    top: 50%; left: 50%;
-    transform-origin: 0 0;
+    inset: 9px;
+    border-radius: 50%;
+    background: var(--panel-dark);
   }
-  .mockup-phone__clock::before { width: 9px; height: 1.5px; transform: rotate(-40deg); }
-  .mockup-phone__clock::after { width: 6px; height: 1.5px; transform: rotate(120deg); }
+  .mockup-phone__hand {
+    position: absolute;
+    top: 50%; left: 50%;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transform-origin: bottom center;
+  }
+  .mockup-phone__hand--hour { width: 2px; height: 11px; transform: translate(-50%, -100%) rotate(50deg); }
+  .mockup-phone__hand--minute { width: 1.5px; height: 15px; background: var(--accent-light); transform: translate(-50%, -100%) rotate(160deg); }
 
-  .mockup-phone__item {
+  .mockup-phone__legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 6px;
+  }
+  .mockup-phone__legend span {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 0.55rem;
+    gap: 3px;
+    font-size: 0.48rem;
     color: var(--text-muted);
-    margin-bottom: 5px;
   }
-  .mockup-phone__item i { color: var(--success); font-size: 0.6rem; }
-  .mockup-phone__item.is-pending i { color: var(--accent-light); }
-
-  .forge-hero__mockup-note {
-    font-size: 0.72rem;
-    font-style: italic;
-    color: var(--text-muted) !important;
-    text-align: center;
-    margin: 0.9rem 0 0;
-    opacity: 0.75;
+  .mockup-phone__dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
   }
 
   @media (max-width: 991px) {
@@ -225,16 +262,7 @@
     .forge-hero__desk { margin-top: 3rem; }
   }
 
-  /* ===== Sektionsrubrik ===== */
-  .section-eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 0.8rem;
-    color: var(--accent-light);
-    font-weight: 600;
-    font-family: var(--font-body);
-    margin-bottom: 0.5rem;
-  }
+  /* .section-eyebrow ligger nu i base.css (delas av alla sidor) */
 
   .section-heading-row {
     display: flex;
@@ -246,7 +274,7 @@
   }
 
   .section-heading-row a {
-    color: var(--accent-light);
+    color: var(--accent);
     text-decoration: none;
     font-weight: 600;
     white-space: nowrap;
@@ -287,7 +315,7 @@
     border-radius: 10px;
     background: rgba(255,122,26,0.12);
     display: flex; align-items: center; justify-content: center;
-    color: var(--accent-light);
+    color: var(--accent);
     font-size: 1.2rem;
     flex-shrink: 0;
   }
@@ -331,7 +359,7 @@
     font-size: 0.87rem;
   }
   .bento-cta a {
-    color: var(--accent-light);
+    color: var(--accent);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.87rem;
@@ -359,7 +387,7 @@
     padding: 0.9rem 0.4rem;
     text-align: center;
   }
-  .cat-chip i { color: var(--accent-light); font-size: 1.3rem; margin-bottom: 0.4rem; display: block; }
+  .cat-chip i { color: var(--accent); font-size: 1.3rem; margin-bottom: 0.4rem; display: block; }
   .cat-chip span { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); }
 
   /* ===== Pris-teaser ===== */
@@ -417,7 +445,7 @@
     text-transform: uppercase;
     margin-bottom: 0.4rem;
   }
-  .price-chip__price { color: var(--accent-light); font-weight: 700; font-size: 1.1rem; }
+  .price-chip__price { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
 
   /* ===== Processen ===== */
   .process-row {
@@ -469,7 +497,7 @@
     margin-bottom: 0.75rem;
   }
   .contact-panel__links a:hover { color: var(--accent-light) !important; }
-  .contact-panel__links i { color: var(--accent-light); width: 18px; text-align: center; }
+  .contact-panel__links i { color: var(--accent); width: 18px; text-align: center; }
 
   .chat-window {
     background: var(--panel-dark);
@@ -519,22 +547,35 @@
             <div class="mockup-laptop__bar"><span></span><span></span><span></span></div>
             <div class="mockup-laptop__screen">
               <div class="mockup-laptop__title">Fakturering</div>
-              <div class="mockup-row"><span>Get Pumped AB</span><span class="mockup-pill mockup-pill--paid">Betald</span></div>
-              <div class="mockup-row"><span>Ludvika Specialsök</span><span class="mockup-pill mockup-pill--pending">Väntar</span></div>
-              <div class="mockup-row"><span>Make it Go AB</span><span class="mockup-pill mockup-pill--sent">Skickad</span></div>
+              <div class="mockup-stats">
+                <div class="mockup-stat"><span class="mockup-stat__label">Obetalt</span><span class="mockup-stat__value">8 200 kr</span></div>
+                <div class="mockup-stat"><span class="mockup-stat__label">Förfallet</span><span class="mockup-stat__value">0 kr</span></div>
+                <div class="mockup-stat"><span class="mockup-stat__label">Fakturerat i år</span><span class="mockup-stat__value">142 000 kr</span></div>
+                <div class="mockup-stat"><span class="mockup-stat__label">Kunder</span><span class="mockup-stat__value">11</span></div>
+              </div>
+              <div class="mockup-table-label">Senaste fakturor</div>
+              <div class="mockup-row"><span>#1042 — Exempel Bygg AB</span><span class="mockup-pill mockup-pill--paid">Betald</span></div>
+              <div class="mockup-row"><span>#1043 — Nordic Konsult AB</span><span class="mockup-pill mockup-pill--paid">Betald</span></div>
+              <div class="mockup-row"><span>#1044 — Demo Handel &amp; Co</span><span class="mockup-pill mockup-pill--sent">Skickad</span></div>
             </div>
             <div class="mockup-laptop__base"></div>
           </div>
           <div class="mockup-phone">
             <div class="mockup-phone__screen">
-              <div class="mockup-phone__clock"></div>
-              <div class="mockup-phone__item"><i class="fas fa-check-circle"></i> Skicka fakturor</div>
-              <div class="mockup-phone__item"><i class="fas fa-check-circle"></i> Vattna växter</div>
-              <div class="mockup-phone__item is-pending"><i class="fas fa-circle"></i> Uppdatera CRM</div>
+              <div class="mockup-phone__clockface">
+                <div class="mockup-phone__clockface-hole"></div>
+                <div class="mockup-phone__hand mockup-phone__hand--hour"></div>
+                <div class="mockup-phone__hand mockup-phone__hand--minute"></div>
+              </div>
+              <div class="mockup-phone__legend">
+                <span><i class="mockup-phone__dot" style="background:#FFB35C;"></i>Frukost</span>
+                <span><i class="mockup-phone__dot" style="background:#6FA8DC;"></i>Skola</span>
+                <span><i class="mockup-phone__dot" style="background:#58D68D;"></i>Lek</span>
+                <span><i class="mockup-phone__dot" style="background:#8878C3;"></i>Läggdags</span>
+              </div>
             </div>
           </div>
         </div>
-        <p class="forge-hero__mockup-note">[Skärmarna är platshållare – ersätt med riktiga skärmdumpar från Fakturering &amp; Rutinklockan när de finns]</p>
       </div>
     </div>
   </div>
@@ -548,7 +589,7 @@
         <p class="section-eyebrow">Egna produkter</p>
         <h2 class="display-6 mb-0">Smitt i verkstaden</h2>
       </div>
-      <a href="{% url 'portfolio' %}">Se hela portföljen →</a>
+      <a href="{% url 'smedjan' %}">Se hela Smedjan →</a>
     </div>
 
     <div class="bento-grid">

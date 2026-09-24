@@ -16,7 +16,7 @@
 
 {% if not r and obj.status == 'error' %}
 {# ── Error (no results captured) ──────────────────────────────────────── #}
-<section class="py-5 min-vh-100" style="background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0a0a0a 100%);">
+<section class="py-5 min-vh-100" style="background:radial-gradient(ellipse 1000px 500px at 50% -20%, rgba(255,122,26,0.16), transparent 60%), linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);">
   <div class="container text-center" style="max-width:640px;padding-top:4rem;">
     <i class="fas fa-exclamation-circle text-danger mb-3" style="font-size:3.5rem;"></i>
     <h1 class="h3 text-light fw-bold mb-2">
@@ -34,7 +34,7 @@
     </details>
     {% endif %}
     <a href="{% if obj.language == 'en' %}{% url 'analysis_en' %}{% else %}{% url 'analysis' %}{% endif %}"
-       class="btn btn-warning fw-bold">
+       class="btn-forge">
       {% if obj.language == 'en' %}Try again{% else %}Försök igen{% endif %}
     </a>
   </div>
@@ -43,7 +43,7 @@
 {% else %}
 
 {# ── Full result ───────────────────────────────────────────────────────── #}
-<section class="py-5" style="background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0a0a0a 100%);">
+<section class="py-5" style="background:radial-gradient(ellipse 1000px 500px at 50% -20%, rgba(255,122,26,0.16), transparent 60%), linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);">
   <div id="analysis-container" class="container simple-mode" style="max-width:920px;">
 
     {# ── Back link ─────────────────────────────────────────────────────── #}
