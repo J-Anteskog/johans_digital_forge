@@ -64,7 +64,6 @@
   .case-content h2 { margin-bottom: 0.75rem; }
   .case-content p.desc { color: var(--text-muted) !important; margin-bottom: 1.5rem; }
 
-  .portfolio-note { color: var(--text-muted) !important; font-size: 0.8rem; font-style: italic; margin: -1rem 0 3rem; }
 
   .portfolio-cta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; padding: 2.5rem; }
   .portfolio-cta p { color: var(--text-muted) !important; margin: 0.4rem 0 0; }
@@ -128,8 +127,6 @@
   {% empty %}
   <p style="color: var(--text-muted);">{% if is_english %}No projects to display yet.{% else %}Inga projekt att visa ännu.{% endif %}</p>
   {% endfor %}
-
-  <p class="portfolio-note">{% if is_english %}[Placeholders — replaced with real screenshots from each client project]{% else %}[Platshållare — ersätt med riktiga skärmdumpar från respektive kundprojekt]{% endif %}</p>
 
   <!-- CTA banner -->
   <div class="panel-card portfolio-cta">
