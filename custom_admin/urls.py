@@ -22,6 +22,18 @@ urlpatterns = [
     path("projects/<int:pk>/edit/", views.ProjectUpdateView.as_view(), name="edit_project"),
     path("projects/<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete_project"),
 
+    # Smedjan — verktygskort
+    path("smedjan/tools/", views.ToolCardListView.as_view(), name="admin_toolcards"),
+    path("smedjan/tools/add/", views.ToolCardCreateView.as_view(), name="admin_toolcard_add"),
+    path("smedjan/tools/<int:pk>/edit/", views.ToolCardUpdateView.as_view(), name="admin_toolcard_edit"),
+    path("smedjan/tools/<int:pk>/delete/", views.ToolCardDeleteView.as_view(), name="admin_toolcard_delete"),
+
+    # Smedjan — byggloggen
+    path("smedjan/log/", views.BuildLogListView.as_view(), name="admin_buildlog"),
+    path("smedjan/log/add/", views.BuildLogCreateView.as_view(), name="admin_buildlog_add"),
+    path("smedjan/log/<int:pk>/edit/", views.BuildLogUpdateView.as_view(), name="admin_buildlog_edit"),
+    path("smedjan/log/<int:pk>/delete/", views.BuildLogDeleteView.as_view(), name="admin_buildlog_delete"),
+
     # Offertbrief-URL:er
     path("briefs/", views.BriefListView.as_view(), name="admin_briefs"),
     path("briefs/<int:pk>/", views.BriefDetailView.as_view(), name="admin_brief_detail"),

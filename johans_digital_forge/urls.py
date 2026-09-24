@@ -41,4 +41,6 @@ urlpatterns = [
     path('en/brief/', include('brief.en_urls')),
     path('analys/', include('analysis.urls')),
     path('en/analysis/', include('analysis.en_urls')),
+    path('smedjan/', include('smedjan.urls')),
+    path('en/smedjan/', include('smedjan.en_urls')),
 ]

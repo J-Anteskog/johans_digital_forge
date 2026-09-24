@@ -19,6 +19,7 @@
         {% if request.path|slice:":3" == "/en" %}
           <li class="nav-item"><a class="nav-link" href="/en/">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'service_list_en' %}">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'smedjan_en' %}">Smedjan</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'portfolio_en' %}">Portfolio</a></li>
           <li class="nav-item"><a class="nav-link" href="/en/about-us/">About Us</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'contact_en' %}">Contact</a></li>
@@ -27,6 +28,7 @@
         {% else %}
           <li class="nav-item"><a class="nav-link" href="/">Hem</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'service_list' %}">Tjänster</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'smedjan' %}">Smedjan</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'portfolio' %}">Portfölj</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'about:about_us' %}">Om oss</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Kontakt</a></li>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Radera loggpost - Admin{% endblock %}
+{% block content %}
+<div class="d-flex" style="min-height: 100vh;">
+  {% include 'custom_admin/_sidebar.html' %}
+
+  <main class="flex-grow-1 bg-light p-5">
+    <div class="container py-5">
+      <h1 class="mb-4">🗑 Radera loggpost</h1>
+
+      <div class="card">
+        <div class="card-body">
+          <p>Är du säker på att du vill radera loggposten <strong>{{ object.title_sv }} ({{ object.date|date:"Y-m" }})</strong>?</p>
+          <p class="text-danger">Detta går inte att ångra.</p>
+
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">🗑 Ja, radera</button>
+            <a href="{% url 'admin_buildlog' %}" class="btn btn-outline-secondary">Avbryt</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -268,6 +268,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+    text-decoration: none;
+    color: inherit;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .tool-card:hover { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(255,122,26,0.15); }
@@ -550,39 +552,39 @@
     </div>
 
     <div class="bento-grid">
-      <div class="tool-card tool-card--wide">
+      <a href="{% url 'smedjan' %}" class="tool-card tool-card--wide">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-comments"></i></div>
           <span class="badge-pill-forge badge-live">Live</span>
         </div>
         <h3 class="tool-card__title">Skräddarsydd live-chatt &amp; svars-app</h3>
         <p class="tool-card__desc">Lättviktigt chattskript för hemsidan, kopplat till en mobilapp för snabba svar var du än är.</p>
-      </div>
-      <div class="tool-card">
+      </a>
+      <a href="{% url 'smedjan' %}" class="tool-card">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-file-invoice-dollar"></i></div>
           <span class="badge-pill-forge badge-live">Live</span>
         </div>
         <h3 class="tool-card__title">Automatiserad fakturering</h3>
         <p class="tool-card__desc">Statusspårning, automatiska påminnelser, kopplat till kundregister.</p>
-      </div>
-      <div class="tool-card">
+      </a>
+      <a href="{% url 'smedjan' %}" class="tool-card">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-users-gear"></i></div>
           <span class="badge-pill-forge badge-forging">I smedjan</span>
         </div>
         <h3 class="tool-card__title">Nästa generations CRM</h3>
         <p class="tool-card__desc">Kundvy &amp; grundflöde klart, fakturaintegration pågår.</p>
-      </div>
+      </a>
 
-      <div class="tool-card tool-card--wide">
+      <a href="{% url 'smedjan' %}" class="tool-card tool-card--wide">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-clock-rotate-left"></i></div>
           <span class="badge-pill-forge badge-forging">Under utveckling</span>
         </div>
         <h3 class="tool-card__title">Rutinklockan</h3>
         <p class="tool-card__desc">Mobilapp för struktur och tidsoptimering i vardagen — lanseras för utvald testgrupp inom kort.</p>
-      </div>
+      </a>
       <div class="bento-cta">
         <h3>Har du en idé i åtanke?</h3>
         <p>Boka ett kostnadsfritt samtal så pratar vi igenom den.</p>

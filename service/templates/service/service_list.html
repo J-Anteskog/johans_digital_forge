@@ -5,745 +5,596 @@
 
 {% block meta_description %}{% if is_english %}Web developer offering websites, e-commerce and web applications for small businesses in Fagersta and Västmanland. Clear packages and pricing.{% else %}Webbutvecklare med paket för hemsidor, e-handel och webbapplikationer till småföretag i Fagersta och Västmanland. Tydliga priser.{% endif %}{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/service.css' %}">
-{% endblock %}
-
 {% block content %}
 <style>
-/* Vertikal kortdesign som matchar bilden */
-.service-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(0, 255, 225, 0.3);
-    border-radius: 20px;
-    padding: 1.5rem 1.2rem;
-    transition: all 0.3s ease;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    width: 220px;
-    min-height: 380px;
-    text-align: center;
+  .service-hero {
     position: relative;
     overflow: hidden;
-    box-sizing: border-box;
-}
-
-.service-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(0, 255, 225, 0.8);
-    box-shadow: 0 15px 40px rgba(0, 255, 225, 0.3);
-}
-
-/* Icon styling */
-.service-icon {
-    color: #00ffe1;
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-/* Service title */
-.service-title {
-    color: #00ffe1;
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    line-height: 1.2;
-}
-
-/* English subtitle */
-.service-subtitle {
-    color: #888;
-    font-size: 0.8rem;
-    margin-bottom: 1.5rem;
-    font-style: italic;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    line-height: 1.2;
-    font-weight: normal;
-}
-
-/* Description text */
-.service-description {
-    color: #ccc;
-    font-size: 0.8rem;
-    line-height: 1.5;
-    margin-bottom: 1.2rem;
-    flex-grow: 1;
-    text-align: left;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Swedish description */
-.desc-swedish {
-    margin-bottom: 0.8rem;
-    color: #ccc;
-}
-
-/* English description */
-.desc-english {
-    font-style: italic;
-    color: #999;
-    font-size: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 0.5rem;
-}
-
-/* Price styling */
-.service-price {
-    color: #00ffe1;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 1.2rem;
-    padding: 0.4rem 0;
-    border-top: 1px solid rgba(0, 255, 225, 0.3);
-    border-bottom: 1px solid rgba(0, 255, 225, 0.3);
-}
-
-/* Button styling */
-.btn-primary-custom {
-    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-    border: none;
-    border-radius: 20px;
-    padding: 10px 25px;
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-    margin-bottom: 0.8rem;
-    transition: all 0.3s ease;
-    display: inline-block;
-    font-size: 0.9rem;
-}
-
-.btn-primary-custom:hover {
-    background: linear-gradient(135deg, #0099cc 0%, #007399 100%);
-    transform: translateY(-2px);
-    color: white;
-}
-
-.btn-secondary-custom {
-    background: transparent;
-    border: 1px solid #666;
-    border-radius: 20px;
-    padding: 6px 15px;
-    color: #ccc;
-    text-decoration: none;
-    margin: 0 3px;
-    transition: all 0.3s ease;
-    display: inline-block;
-    font-size: 0.8rem;
-}
-
-.btn-secondary-custom:hover {
-    border-color: #00ffe1;
-    color: #00ffe1;
-}
-
-/* Sidebar Navigation */
-.services-sidebar {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 200px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(0, 255, 225, 0.3);
-    border-radius: 0 15px 15px 0;
-    padding: 1.5rem 1rem;
-    z-index: 1000;
-    transition: all 0.3s ease;
-}
-
-.services-sidebar.collapsed {
-    left: -180px;
-}
-
-.sidebar-toggle {
-    position: absolute;
-    right: -40px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 60px;
-    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-    border: none;
-    border-radius: 0 10px 10px 0;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
+    padding: 4rem 0;
+    background:
+      radial-gradient(ellipse 1000px 500px at 80% -20%, rgba(255, 122, 26, 0.16), transparent 60%),
+      linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);
+  }
+  .service-hero__row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
+    justify-content: space-between;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .service-hero__logo {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    opacity: 0.4;
+    pointer-events: none;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .service-hero__content { flex: 1 1 480px; max-width: 640px; }
+  .service-hero p.lead { color: var(--text-muted) !important; }
+  @media (max-width: 767px) {
+    .service-hero__row { justify-content: center; text-align: center; }
+    .service-hero__logo { width: 160px; order: -1; }
+    .category-tabs { justify-content: center; }
+  }
 
-.sidebar-toggle:hover {
-    background: linear-gradient(135deg, #0099cc 0%, #007399 100%);
-}
+  /* ===== Kategoriflikar ===== */
+  .category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 2rem 0 3rem;
+  }
+  .category-tab {
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--text-muted);
+    padding: 0.55rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .category-tab:hover { border-color: var(--accent-light); color: var(--accent-light); }
+  .category-tab.active { background: var(--accent); border-color: var(--accent); color: var(--btn-text-on-accent); }
 
-.sidebar-title {
-    color: #00ffe1;
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    text-align: center;
+  .service-category { margin-bottom: 4rem; }
+  .service-category.hidden { display: none; }
+
+  .category-header {
+    margin-bottom: 1.75rem;
+    font-size: 1.1rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-}
+    letter-spacing: 0.06em;
+  }
 
-.sidebar-nav {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+  /* ===== Webbpaket ===== */
+  .pkg-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  @media (max-width: 900px) { .pkg-grid { grid-template-columns: 1fr; } }
 
-.sidebar-nav li {
-    margin-bottom: 0.5rem;
-}
+  .pkg-card {
+    background: linear-gradient(145deg, var(--panel-light) 0%, var(--panel) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    position: relative;
+  }
+  .pkg-card::before, .pkg-card::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffd9a8, var(--accent-dark) 75%);
+  }
+  .pkg-card::before { left: 10px; }
+  .pkg-card::after { right: 10px; }
+  .pkg-card--featured { border-color: var(--accent); }
+  .pkg-card--featured::after { content: none; }
+  .pkg-card__ribbon {
+    position: absolute;
+    top: -11px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--btn-text-on-accent);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pkg-card__name { font-family: var(--font-body); font-weight: 600; font-size: 1.05rem; text-transform: uppercase; margin: 0; }
+  .pkg-card__price { color: var(--accent-light); font-weight: 700; font-size: 1.3rem; margin: -0.6rem 0 0; }
+  .pkg-card__features { list-style: none; padding: 0; margin: 0; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+  .pkg-card__features li { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 0.5rem; }
+  .pkg-card__features li::before { content: '\2713'; color: var(--success); flex-shrink: 0; }
 
-.sidebar-nav a {
-    display: block;
-    color: #ccc;
-    text-decoration: none;
-    padding: 0.7rem 0.5rem;
+  .price-note { color: var(--text-muted) !important; font-size: 0.8rem; font-style: italic; margin: 1.25rem 0 0; }
+
+  /* ===== Priskalkylator ===== */
+  .calc-panel { padding: 2.5rem; margin: 3rem 0 4rem; }
+  .calc-panel__body { display: flex; flex-wrap: wrap; gap: 2.5rem; }
+  .calc-panel__intro { flex: 1 1 280px; }
+  .calc-panel__intro h2 { margin-bottom: 0.75rem; }
+  .calc-panel__intro p { color: var(--text-muted) !important; margin: 0; }
+  .calc-options { flex: 2 1 380px; display: flex; flex-direction: column; gap: 0.65rem; }
+
+  .calc-option {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .calc-option:has(input:checked) { border-color: var(--accent); background: rgba(255, 122, 26, 0.08); }
+  .calc-option input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; }
+  .calc-option--locked { cursor: default; }
+  .calc-option--locked, .calc-option--locked:has(input) { background: rgba(255, 122, 26, 0.08); border-color: var(--accent); }
+  .calc-option--stepper { cursor: default; }
+  .calc-option--radio-group { flex-direction: column; align-items: flex-start; cursor: default; }
+  .calc-radio-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.6rem; width: 100%; }
+  .calc-radio-row label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
     border-radius: 8px;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-    border-left: 3px solid transparent;
-}
+    padding: 0.4rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .calc-radio-row label:has(input:checked) { border-color: var(--accent); color: var(--accent-light); }
+  .calc-radio-row input[type="radio"] { accent-color: var(--accent); }
+  .calc-option__name { flex-grow: 1; font-size: 0.9rem; font-weight: 600; }
+  .calc-option__name small { display: block; color: var(--text-muted); font-weight: 400; font-size: 0.72rem; }
+  .calc-option__price { color: var(--accent-light); font-weight: 700; font-size: 0.87rem; white-space: nowrap; }
 
-.sidebar-nav a:hover {
-    background: rgba(0, 255, 225, 0.1);
-    color: #00ffe1;
-    border-left-color: #00ffe1;
-    padding-left: 1rem;
-}
+  .calc-stepper { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
+  .calc-stepper button {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .calc-stepper button:hover { border-color: var(--accent-light); color: var(--accent-light); }
 
-.sidebar-nav a.active {
-    background: rgba(0, 255, 225, 0.2);
-    color: #00ffe1;
-    border-left-color: #00ffe1;
-}
+  .calc-option select {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text-primary);
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+  }
 
-/* Adjust main content for sidebar */
-.services-content {
-    margin-left: 220px;
-    transition: all 0.3s ease;
-}
-
-.services-content.sidebar-collapsed {
-    margin-left: 20px;
-}
-
-/* Category sections */
-.service-category {
-    margin-bottom: 4rem;
-    padding-top: 2rem;
-}
-
-.category-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #00ffe1;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    border-bottom: 2px solid rgba(0, 255, 225, 0.3);
-    padding-bottom: 1rem;
-}
-
-/* Show all by default */
-.service-category.hidden {
-    display: none;
-}
-
-/* Grid layout - 4 kort per rad */
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+  .calc-totals {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--panel-border);
+    display: flex;
+    flex-wrap: wrap;
     gap: 1.5rem;
-    margin-top: 2rem;
-    justify-items: center;
-    padding: 0 1rem;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-}
+  }
+  .calc-total-block { flex: 1 1 180px; }
+  .calc-total__label { display: block; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.2rem; }
+  .calc-total__amount { font-family: var(--font-display); font-size: 1.7rem; color: var(--accent-light); }
+  .calc-note { width: 100%; font-size: 0.75rem; color: var(--text-muted) !important; margin: 0.75rem 0 0; }
+  .calc-cta { width: 100%; margin-top: 0.75rem; }
 
-/* Responsiv design */
-@media (max-width: 1400px) {
-    .services-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
+  /* ===== Webbhotell ===== */
+  .hosting-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  @media (max-width: 900px) { .hosting-grid { grid-template-columns: 1fr; } }
+  .hosting-card {
+    background: linear-gradient(145deg, var(--panel-light) 0%, var(--panel) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+  }
+  .hosting-card__name { font-family: var(--font-body); font-weight: 600; font-size: 1rem; text-transform: uppercase; margin: 0 0 0.3rem; }
+  .hosting-card__price { color: var(--accent-light); font-weight: 700; font-size: 1.15rem; margin-bottom: 0.75rem; }
+  .hosting-card__desc { color: var(--text-muted) !important; font-size: 0.85rem; margin: 0; }
 
-@media (max-width: 1100px) {
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
+  /* ===== Support & Underhåll ===== */
+  .support-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  @media (max-width: 900px) { .support-grid { grid-template-columns: 1fr; } }
+  .support-card {
+    background: linear-gradient(145deg, var(--panel-light) 0%, var(--panel) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+  }
+  .support-card__name { color: var(--accent-light); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 1rem; }
+  .support-card__row { display: flex; justify-content: space-between; gap: 0.75rem; font-size: 0.87rem; padding: 0.5rem 0; border-bottom: 1px solid var(--panel-border); }
+  .support-card__row:last-child { border-bottom: none; }
+  .support-card__row span:first-child { color: var(--text-muted); }
+  .support-card__row span:last-child { font-weight: 700; white-space: nowrap; }
+  .support-card__big-price { font-family: var(--font-display); font-size: 1.8rem; color: var(--accent-light); margin-bottom: 0.25rem; }
+  .support-card__big-price small { font-family: var(--font-body); font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+  .support-card__desc { color: var(--text-muted) !important; font-size: 0.85rem; margin: 0; }
 
-@media (max-width: 768px) {
-    .services-sidebar {
-        display: none;
-    }
-    
-    .services-content {
-        margin-left: 0;
-    }
-    
-    .services-content.sidebar-collapsed {
-        margin-left: 0;
-    }
-    
-    .services-grid {
-        grid-template-columns: 1fr;
-    }
-}
+  /* ===== Övriga tjänster ===== */
+  .misc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+  @media (max-width: 900px) { .misc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 500px) { .misc-grid { grid-template-columns: 1fr; } }
+  .misc-card {
+    background: linear-gradient(145deg, var(--panel-light) 0%, var(--panel) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+  }
+  .misc-card__name { font-size: 0.87rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .misc-card__price { color: var(--accent-light); font-weight: 700; font-size: 0.95rem; }
 
-/* Modal styling överensstämmelse */
-.modal-content {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(0, 255, 225, 0.3);
-}
+  /* ===== CTA-banner ===== */
+  .service-cta-banner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; padding: 2.5rem; }
+  .service-cta-banner p { color: var(--text-muted) !important; margin: 0.4rem 0 0; }
+  .service-cta-banner__actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+  .modal-title { color: var(--accent-light) !important; }
 </style>
 
-<div class="container-fluid py-5">
-    <!-- Sidebar Navigation -->
-    <div class="services-sidebar" id="servicesSidebar">
-        <button class="sidebar-toggle" onclick="toggleSidebar()">
-            <i class="fas fa-chevron-left" id="toggleIcon"></i>
-        </button>
-        
-        <div class="sidebar-title">{% if is_english %}Categories{% else %}Kategorier{% endif %}</div>
+<!-- Header -->
+<section class="service-hero">
+  <div class="container">
+    <div class="service-hero__row">
+    <div class="service-hero__content">
+    <p class="section-eyebrow">{% if is_english %}Services & Pricing{% else %}Tjänster & Priser{% endif %}</p>
+    <h1 class="display-5 hero-heading">{% if is_english %}What it costs to forge your solution{% else %}Vad det kostar att smida din lösning{% endif %}</h1>
+    <p class="lead">
+      {% if is_english %}
+        Clear prices, no surprises. Everything below is an approximate price — the final price is always set after a short needs assessment. If what you need isn't listed, just ask.
+      {% else %}
+        Tydliga priser, inga överraskningar. Allt nedan är ungefärliga priser — slutpriset fastställs alltid efter en kort behovsanalys. Om det du vill ha inte finns med så är det bara att ställa frågan.
+      {% endif %}
+    </p>
 
-        <ul class="sidebar-nav">
-            <li><a href="#" onclick="showAllServices()" class="active" id="nav-all">{% if is_english %}All Services{% else %}Alla Tjänster{% endif %}</a></li>
-            <li><a href="#" onclick="showCategory('website')" id="nav-website">{% if is_english %}Web Packages{% else %}Webbpaket{% endif %}</a></li>
-            <li><a href="#" onclick="showCategory('hosting')" id="nav-hosting">{% if is_english %}Hosting & Domains{% else %}Webbhotell & Domäner{% endif %}</a></li>
-            <li><a href="#" onclick="showCategory('support')" id="nav-support">{% if is_english %}Support & Maintenance{% else %}Support & Underhåll{% endif %}</a></li>
-            <li><a href="#" onclick="showCategory('content')" id="nav-content">Content Manager</a></li>
-            <li><a href="#" onclick="showCategory('other')" id="nav-other">{% if is_english %}Other Services{% else %}Övriga Tjänster{% endif %}</a></li>
+    <div class="category-tabs">
+      <button class="category-tab active" onclick="showAllServices()" id="nav-all">{% if is_english %}All Services{% else %}Alla tjänster{% endif %}</button>
+      <button class="category-tab" onclick="showCategory('website')" id="nav-website">{% if is_english %}Web Packages{% else %}Webbpaket{% endif %}</button>
+      <button class="category-tab" onclick="showCategory('hosting')" id="nav-hosting">{% if is_english %}Hosting & Domains{% else %}Webbhotell & Domäner{% endif %}</button>
+      <button class="category-tab" onclick="showCategory('support')" id="nav-support">{% if is_english %}Support & Maintenance{% else %}Support & Underhåll{% endif %}</button>
+      <button class="category-tab" onclick="showCategory('other')" id="nav-other">{% if is_english %}Other Services{% else %}Övriga tjänster{% endif %}</button>
+    </div>
+    </div>
+    <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="service-hero__logo" aria-hidden="true">
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  <!-- Webbpaket -->
+  <div class="service-category" id="category-website">
+    <h2 class="category-header"><i class="fas fa-laptop-code me-2"></i>{% if is_english %}Web Packages{% else %}Webbpaket{% endif %}</h2>
+    <div class="pkg-grid">
+      <div class="pkg-card">
+        <h3 class="pkg-card__name">{% if is_english %}Business package{% else %}Företagspaket{% endif %}</h3>
+        <div class="pkg-card__price">{% if is_english %}From 9,500 SEK{% else %}Från 9 500 kr{% endif %}</div>
+        <ul class="pkg-card__features">
+          {% if is_english %}
+          <li>5–10 pages (homepage, services, blog, contact)</li>
+          <li>Custom design &amp; layout</li>
+          <li>SEO optimization</li>
+          <li>Social media integration</li>
+          <li>Blog functionality</li>
+          <li>Client portal – follow the build in real time</li>
+          <li>1 month of free support</li>
+          {% else %}
+          <li>5–10 sidor (startsida, tjänster, blogg, kontakt)</li>
+          <li>Anpassad design &amp; layout</li>
+          <li>SEO-optimering</li>
+          <li>Koppling till sociala medier</li>
+          <li>Bloggfunktion</li>
+          <li>Kundportal – följ bygget i realtid</li>
+          <li>1 månads fri support</li>
+          {% endif %}
         </ul>
+        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}Business+package{% else %}F%C3%B6retagspaket{% endif %}" class="btn-forge-outline">{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}</a>
+      </div>
+
+      <div class="pkg-card pkg-card--featured">
+        <span class="pkg-card__ribbon">{% if is_english %}Most popular{% else %}Populärast{% endif %}</span>
+        <h3 class="pkg-card__name">Premium</h3>
+        <div class="pkg-card__price">{% if is_english %}From 16,500 SEK{% else %}Från 16 500 kr{% endif %}</div>
+        <ul class="pkg-card__features">
+          {% if is_english %}
+          <li>Custom design &amp; branding</li>
+          <li>10–30 pages depending on your needs</li>
+          <li>Advanced SEO</li>
+          <li>Client portal – follow the build in real time</li>
+          <li>Integrations (booking, payments, external systems)</li>
+          <li>2 months of free support</li>
+          <li>Training in managing the site</li>
+          {% else %}
+          <li>Skräddarsydd design &amp; branding</li>
+          <li>10–30 sidor beroende på behov</li>
+          <li>Avancerad SEO</li>
+          <li>Kundportal – följ bygget i realtid</li>
+          <li>Integrationer (bokning, betalning, externa system)</li>
+          <li>2 månaders fri support</li>
+          <li>Utbildning i hur du hanterar sidan</li>
+          {% endif %}
+        </ul>
+        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject=Premium" class="btn-forge">{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}</a>
+      </div>
+
+      <div class="pkg-card">
+        <h3 class="pkg-card__name">{% if is_english %}Webshop package{% else %}Webshop-paket{% endif %}</h3>
+        <div class="pkg-card__price">{% if is_english %}From 17,500 SEK{% else %}Från 17 500 kr{% endif %}</div>
+        <ul class="pkg-card__features">
+          {% if is_english %}
+          <li>Complete e-commerce solution</li>
+          <li>Unlimited product catalog</li>
+          <li>Payment solutions (Stripe, Klarna, etc.)</li>
+          <li>Inventory management</li>
+          <li>SEO for e-commerce</li>
+          <li>Client portal – follow the build in real time</li>
+          <li>2 months of free support</li>
+          {% else %}
+          <li>Komplett e-handelslösning</li>
+          <li>Obegränsad produktkatalog</li>
+          <li>Betalningslösningar (Stripe, Klarna m.fl.)</li>
+          <li>Lagerhantering</li>
+          <li>SEO för e-handel</li>
+          <li>Kundportal – följ bygget i realtid</li>
+          <li>2 månaders fri support</li>
+          {% endif %}
+        </ul>
+        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}Webshop+package{% else %}Webshop-paket{% endif %}" class="btn-forge-outline">{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}</a>
+      </div>
     </div>
+    <p class="price-note">{% if is_english %}Prices are approximate and may vary depending on features and scope. The final price is set after a needs assessment.{% else %}Priserna är ungefärliga och kan variera beroende på funktioner och omfattning. Slutpriset fastställs efter behovsanalys.{% endif %}</p>
 
-    <!-- Main Content -->
-    <div class="services-content" id="servicesContent">
-        <!-- Header -->
-        <div class="text-center mb-5">
-            <h1 class="display-4">
-                🛠️ {% if is_english %}Web Developer – Services & Pricing{% else %}Webbutvecklare – Tjänster & Priser{% endif %}
-            </h1>
-            <p class="lead text-light">{% if is_english %}What I offer{% else %}Vad jag erbjuder{% endif %}</p>
+    <!-- Priskalkylator -->
+    <div class="panel-card calc-panel">
+      <div class="calc-panel__body">
+        <div class="calc-panel__intro">
+          <h2 class="h4 mb-0">{% if is_english %}Build your own package{% else %}Bygg ditt eget paket{% endif %}</h2>
+          <p>{% if is_english %}Check what you need — the price is calculated live.{% else %}Klicka i det du behöver — priset räknas upp live.{% endif %}</p>
         </div>
+        <div class="calc-options">
 
-        <!-- Website Packages Category -->
-        <div class="service-category" id="category-website">
-            <h3 class="category-header">
-                <i class="fas fa-laptop-code me-3"></i>{% if is_english %}Web Packages{% else %}Webbpaket{% endif %}
-            </h3>
-            <div class="services-grid">
-                {% for service in services %}
-                    {% if 'paket' in service.title_sv|lower or 'Premium' in service.title_sv or 'Webshop' in service.title_sv or 'Website' in service.title_en %}
-                    <div class="service-card">
-                        {% if service.icon %}
-                        <div class="service-icon">
-                            <i class="{{ service.icon }}"></i>
-                        </div>
-                        {% elif 'Startpaket' in service.title_sv %}
-                        <div class="service-icon">
-                            <i class="fas fa-laptop-code"></i>
-                        </div>
-                        {% elif 'Företagspaket' in service.title_sv %}
-                        <div class="service-icon">
-                            <i class="fas fa-building"></i>
-                        </div>
-                        {% elif 'Premium' in service.title_sv %}
-                        <div class="service-icon">
-                            <i class="fas fa-rocket"></i>
-                        </div>
-                        {% elif 'Webshop' in service.title_sv %}
-                        <div class="service-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        {% else %}
-                        <div class="service-icon">
-                            <i class="fas fa-laptop-code"></i>
-                        </div>
-                        {% endif %}
-
-                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
-                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
-
-                        <div class="service-description">
-                            {% if is_english %}
-                            {{ service.description_en|default:service.description_sv }}
-                            {% else %}
-                            {{ service.description_sv|default:"En professionell lösning anpassad efter dina behov." }}
-                            {% endif %}
-                        </div>
-
-                        <div class="service-price">
-                            {% if is_english %}From {% else %}Från {% endif %}{{ service.price|floatformat:0 }} SEK
-                        </div>
-
-                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
-                        </a>
-
-                        <div class="mt-2">
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
-                            </button>
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info me-1"></i>Info
-                            </button>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+          <div class="calc-page" data-page="1">
+            <div class="calc-option calc-option--radio-group">
+              <span class="calc-option__name">{% if is_english %}Choose package{% else %}Välj paket{% endif %}</span>
+              <div class="calc-radio-row">
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" checked> {% if is_english %}Base (9,500 kr){% else %}Grundpaket (9 500 kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="16500"> Premium (16 500 kr)</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="17500"> {% if is_english %}Webshop package (17,500 kr){% else %}Webshop-paket (17 500 kr){% endif %}</label>
+              </div>
             </div>
-        </div>
-
-        <!-- Hosting & Domains Category -->
-        <div class="service-category" id="category-hosting">
-            <h3 class="category-header">
-                <i class="fas fa-server me-3"></i>{% if is_english %}Hosting & Domains{% else %}Webbhotell & Domäner{% endif %}
-            </h3>
-            <div class="services-grid">
-                {% for service in services %}
-                    {% if 'Hosting' in service.title_sv or 'Webbhotell' in service.title_sv %}
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-server"></i>
-                        </div>
-
-                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
-                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
-
-                        <div class="service-description">
-                            {% if is_english %}
-                            {{ service.description_en|default:service.description_sv }}
-                            {% else %}
-                            {{ service.description_sv|default:"Professionell hosting-lösning för din webbplats." }}
-                            {% endif %}
-                        </div>
-
-                        <div class="service-price">
-                            {{ service.price|floatformat:0 }} SEK/{% if is_english %}mo{% else %}mån{% endif %}
-                        </div>
-
-                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
-                        </a>
-
-                        <div class="mt-2">
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
-                            </button>
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info me-1"></i>Info
-                            </button>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+            <label class="calc-option">
+              <input type="checkbox" class="calc-input" data-price="3000">
+              <span class="calc-option__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</span>
+              <span class="calc-option__price">+ 2 500–3 500 kr</span>
+            </label>
+            <label class="calc-option">
+              <input type="checkbox" class="calc-input" data-price="3500">
+              <span class="calc-option__name">{% if is_english %}SEO optimization{% else %}SEO-optimering{% endif %}</span>
+              <span class="calc-option__price">+ 3 500 kr</span>
+            </label>
+            <label class="calc-option">
+              <input type="checkbox" class="calc-input" data-price-monthly="200">
+              <span class="calc-option__name">{% if is_english %}Chat feature{% else %}Chatt-funktion{% endif %}</span>
+              <span class="calc-option__price">+ 200 kr/{% if is_english %}mo{% else %}mån{% endif %}</span>
+            </label>
+            <label class="calc-option">
+              <input type="checkbox" class="calc-input" data-price="1250">
+              <span class="calc-option__name">{% if is_english %}Social media integration{% else %}Sociala medier-koppling{% endif %}</span>
+              <span class="calc-option__price">+ 1 000–1 500 kr</span>
+            </label>
+            <label class="calc-option">
+              <input type="checkbox" class="calc-input" data-price="3000">
+              <span class="calc-option__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</span>
+              <span class="calc-option__price">+ {% if is_english %}from {% else %}från {% endif %}3 000 kr</span>
+            </label>
+            <div class="calc-option">
+              <span class="calc-option__name">{% if is_english %}Hosting level{% else %}Webbhotell-nivå{% endif %}</span>
+              <select class="calc-hosting-select">
+                <option value="0">{% if is_english %}None{% else %}Ingen{% endif %}</option>
+                <option value="200">{% if is_english %}Small (200/mo){% else %}Liten (200/mån){% endif %}</option>
+                <option value="300">{% if is_english %}Medium (300/mo){% else %}Medium (300/mån){% endif %}</option>
+                <option value="500">{% if is_english %}Large (500/mo){% else %}Stor (500/mån){% endif %}</option>
+              </select>
             </div>
-        </div>
+          </div>
 
-        <!-- Support & Maintenance Category -->
-        <div class="service-category" id="category-support">
-            <h3 class="category-header">
-                <i class="fas fa-tools me-3"></i>{% if is_english %}Support & Maintenance{% else %}Support & Underhåll{% endif %}
-            </h3>
-            <div class="services-grid">
-                {% for service in services %}
-                    {% if 'Support' in service.title_sv and 'Content' not in service.title_sv %}
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-headset"></i>
-                        </div>
-
-                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
-                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
-
-                        <div class="service-description">
-                            {% if is_english %}
-                            {{ service.description_en|default:service.description_sv }}
-                            {% else %}
-                            {{ service.description_sv|default:"Professionell support och underhåll av din webbplats." }}
-                            {% endif %}
-                        </div>
-
-                        <div class="service-price">
-                            {{ service.price|floatformat:0 }} SEK/{% if is_english %}mo{% else %}mån{% endif %}
-                        </div>
-
-                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
-                        </a>
-
-                        <div class="mt-2">
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
-                            </button>
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info me-1"></i>Info
-                            </button>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+          <div class="calc-totals">
+            <div class="calc-total-block">
+              <span class="calc-total__label">{% if is_english %}One-time cost{% else %}Engångskostnad{% endif %}</span>
+              <span class="calc-total__amount" id="calc-total-onetime">9 500 kr</span>
             </div>
-        </div>
-
-        <!-- Content Manager Category -->
-        <div class="service-category" id="category-content">
-            <h3 class="category-header">
-                <i class="fas fa-edit me-3"></i>Content Manager
-            </h3>
-            <div class="services-grid">
-                {% for service in services %}
-                    {% if 'Content' in service.title_sv %}
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-edit"></i>
-                        </div>
-
-                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
-                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
-
-                        <div class="service-description">
-                            {% if is_english %}
-                            {{ service.description_en|default:service.description_sv }}
-                            {% else %}
-                            {{ service.description_sv|default:"Content management och uppdateringar för din webbplats." }}
-                            {% endif %}
-                        </div>
-
-                        <div class="service-price">
-                            {{ service.price|floatformat:0 }} SEK/{% if is_english %}mo{% else %}mån{% endif %}
-                        </div>
-
-                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
-                        </a>
-
-                        <div class="mt-2">
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
-                            </button>
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info me-1"></i>Info
-                            </button>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+            <div class="calc-total-block">
+              <span class="calc-total__label">{% if is_english %}Ongoing cost / month{% else %}Löpande kostnad / mån{% endif %}</span>
+              <span class="calc-total__amount" id="calc-total-monthly">0 kr</span>
             </div>
+          </div>
+          <p class="calc-note">{% if is_english %}Estimate only — final price after a needs assessment.{% else %}Uppskattning — slutpris fastställs efter behovsanalys.{% endif %}</p>
+          {% if is_english %}
+          <a href="{% url 'brief_en' %}" class="btn-forge calc-cta">Request a quote for this</a>
+          {% else %}
+          <a href="{% url 'brief' %}" class="btn-forge calc-cta">Begär offert på detta</a>
+          {% endif %}
         </div>
-
-        <!-- Other Services Category -->
-        <div class="service-category" id="category-other">
-            <h3 class="category-header">
-                <i class="fas fa-plus-circle me-3"></i>{% if is_english %}Other Services{% else %}Övriga Tjänster{% endif %}
-            </h3>
-            <div class="services-grid">
-                {% for service in services %}
-                    {% if 'Konsultation' in service.title_sv or 'Design' in service.title_sv or 'Tillägg' in service.title_sv or 'Teknisk' in service.title_sv %}
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-cog"></i>
-                        </div>
-
-                        <div class="service-title">{% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}</div>
-                        {% if not is_english %}<div class="service-subtitle">{{ service.title_en }}</div>{% endif %}
-
-                        <div class="service-description">
-                            {% if is_english %}
-                            {{ service.description_en|default:service.description_sv }}
-                            {% else %}
-                            {{ service.description_sv|default:"Specialiserad tjänst anpassad efter dina behov." }}
-                            {% endif %}
-                        </div>
-
-                        <div class="service-price">
-                            {% if is_english %}From {% else %}Från {% endif %}{{ service.price|floatformat:0 }} SEK
-                        </div>
-
-                        <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn-primary-custom">
-                            <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
-                        </a>
-
-                        <div class="mt-2">
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info-circle me-1"></i>{% if is_english %}Quote{% else %}Offert{% endif %}
-                            </button>
-                            <button class="btn-secondary-custom"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#infoModal{{ service.id }}">
-                                <i class="fas fa-info me-1"></i>Info
-                            </button>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-
+      </div>
     </div>
+  </div>
+
+  <!-- Webbhotell & Domäner -->
+  <div class="service-category" id="category-hosting">
+    <h2 class="category-header"><i class="fas fa-server me-2"></i>{% if is_english %}Hosting & Domains{% else %}Webbhotell & Domäner{% endif %}</h2>
+    <div class="hosting-grid">
+      <div class="hosting-card">
+        <h3 class="hosting-card__name">{% if is_english %}Small{% else %}Webbhotell Liten{% endif %}</h3>
+        <div class="hosting-card__price">200 kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
+        <p class="hosting-card__desc">{% if is_english %}5 GB storage · 1 domain included · SSL · Daily backup · Email support (24h){% else %}5 GB lagring · 1 domän ingår · SSL · Daglig backup · E-postsupport (24h){% endif %}</p>
+      </div>
+      <div class="hosting-card">
+        <h3 class="hosting-card__name">{% if is_english %}Medium{% else %}Webbhotell Medium{% endif %}</h3>
+        <div class="hosting-card__price">300 kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
+        <p class="hosting-card__desc">{% if is_english %}20 GB storage · Chat feature · Hourly backup · Priority support (4h){% else %}20 GB lagring · Chatt-funktion · Timvis backup · Prioriterad support (4h){% endif %}</p>
+      </div>
+      <div class="hosting-card">
+        <h3 class="hosting-card__name">{% if is_english %}Large{% else %}Webbhotell Stor{% endif %}</h3>
+        <div class="hosting-card__price">500 kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
+        <p class="hosting-card__desc">{% if is_english %}50 GB storage · Phone support · Dedicated resources · 99.9% SLA{% else %}50 GB lagring · Telefonsupport · Dedikerade resurser · SLA 99,9%{% endif %}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Support & Underhåll -->
+  <div class="service-category" id="category-support">
+    <h2 class="category-header"><i class="fas fa-headset me-2"></i>{% if is_english %}Support & Maintenance{% else %}Support & Underhåll{% endif %}</h2>
+    <div class="support-grid">
+      <div class="support-card">
+        <p class="support-card__name">{% if is_english %}Troubleshooting / Bugfix{% else %}Felsökning / Bugfix{% endif %}</p>
+        <div class="support-card__row"><span>{% if is_english %}Simple{% else %}Enkel felsökning{% endif %}</span><span>1 000 kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Medium complexity{% else %}Medelkomplex felsökning{% endif %}</span><span>{% if is_english %}from {% else %}från {% endif %}3 000 kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Advanced{% else %}Avancerad felsökning{% endif %}</span><span>{% if is_english %}from {% else %}från {% endif %}7 000 kr</span></div>
+      </div>
+      <div class="support-card">
+        <p class="support-card__name">{% if is_english %}Ad-hoc support{% else %}Ad-hoc supportinsats{% endif %}</p>
+        <div class="support-card__row"><span>{% if is_english %}Simple{% else %}Enkel support{% endif %}</span><span>1 000 kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Medium{% else %}Medel support{% endif %}</span><span>3 000 kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Advanced{% else %}Avancerad support{% endif %}</span><span>7 000 kr</span></div>
+      </div>
+      <div class="support-card">
+        <p class="support-card__name">{% if is_english %}Ongoing agreement{% else %}Löpande avtal{% endif %}</p>
+        <div class="support-card__big-price">400 kr <small>/ {% if is_english %}h{% else %}tim{% endif %}</small></div>
+        <p class="support-card__desc">{% if is_english %}Security updates, backup checks and minor changes. A free period is included with new packages (1–2 months).{% else %}Säkerhetsuppdateringar, backupkontroller och mindre ändringar. Gratis period ingår vid nya paket (1–2 månader).{% endif %}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Övriga tjänster -->
+  <div class="service-category" id="category-other">
+    <h2 class="category-header"><i class="fas fa-plus-circle me-2"></i>{% if is_english %}Other Services{% else %}Övriga tjänster{% endif %}</h2>
+    <div class="misc-grid">
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Chat feature{% else %}Chatt-funktion{% endif %}</div><div class="misc-card__price">200 kr/{% if is_english %}mo{% else %}mån{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Social media integration{% else %}Sociala medier-koppling{% endif %}</div><div class="misc-card__price">1 000–1 500 kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</div><div class="misc-card__price">2 500–3 500 kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}3 000 kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}SEO optimization{% else %}SEO-optimering{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}3 500 kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Consultation (30–60 min){% else %}Konsultation (30–60 min){% endif %}</div><div class="misc-card__price">400 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Web design{% else %}Webbdesign{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}300 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Design & UI help{% else %}Design & UI-hjälp{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+    </div>
+  </div>
+
+  <!-- CTA banner -->
+  <div class="panel-card service-cta-banner">
+    <div>
+      <h2 class="h3 mb-0">{% if is_english %}Not sure which package?{% else %}Osäker på vilket paket?{% endif %}</h2>
+      <p>{% if is_english %}Book a free consultation and we'll find the right solution together.{% else %}Boka en kostnadsfri konsultation så hittar vi rätt lösning tillsammans.{% endif %}</p>
+    </div>
+    <div class="service-cta-banner__actions">
+      {% if is_english %}
+      <a href="{% url 'brief_en' %}" class="btn-forge">Get a quote</a>
+      <a href="{% url 'contact_en' %}" class="btn-forge-outline">Free consultation</a>
+      {% else %}
+      <a href="{% url 'brief' %}" class="btn-forge">Begär offert</a>
+      <a href="{% url 'contact' %}" class="btn-forge-outline">Gratis konsultation</a>
+      {% endif %}
+    </div>
+  </div>
+
 </div>
-
-<!-- Modals -->
-{% for service in services %}
-<div class="modal fade" id="infoModal{{ service.id }}" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-dark text-light" style="border: 1px solid rgba(0, 255, 225, 0.3);">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title" style="color: #00ffe1;">
-                    <i class="fas fa-info-circle me-2"></i>{{ service.title_sv }}
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <h6 class="text-info mb-3">
-                    <i class="fas fa-clipboard-list me-2"></i>{% if is_english %}Detailed Description{% else %}Detaljerad Beskrivning{% endif %}
-                </h6>
-
-                {% if is_english %}
-                <div class="mb-4">
-                    <div class="mt-2">{{ service.extra_info_en|default:service.description_en|default:service.description_sv|safe }}</div>
-                </div>
-                {% else %}
-                <div class="mb-3">
-                    <strong style="color: #00ffe1;">Svenska:</strong>
-                    <div class="mt-2">{{ service.extra_info_sv|default:service.description_sv|safe }}</div>
-                </div>
-                {% if service.extra_info_en or service.description_en %}
-                <div class="mb-4">
-                    <strong style="color: #00ffe1;">English:</strong>
-                    <div class="mt-2" style="font-style: italic; color: #bbb;">
-                        {{ service.extra_info_en|default:service.description_en|safe }}
-                    </div>
-                </div>
-                {% endif %}
-                {% endif %}
-
-                <div class="alert" style="background: rgba(0, 255, 225, 0.1); border: 1px solid rgba(0, 255, 225, 0.3); color: #00ffe1;">
-                    <strong><i class="fas fa-tag me-2"></i>{% if is_english %}Price{% else %}Pris{% endif %}:</strong>
-                    {% if 'Hosting' in service.title_sv or 'Webbhotell' in service.title_sv or 'Support' in service.title_sv or 'Content' in service.title_sv %}
-                        {{ service.price|floatformat:0 }} SEK/{% if is_english %}month{% else %}månad{% endif %}
-                    {% else %}
-                        {% if is_english %}From {% else %}Från {% endif %}{{ service.price|floatformat:0 }} SEK
-                    {% endif %}
-                </div>
-            </div>
-            <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>{% if is_english %}Close{% else %}Stäng{% endif %}
-                </button>
-                <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}{{ service.title_en }}{% else %}{{ service.title_sv }}{% endif %}" class="btn btn-primary">
-                    <i class="fas fa-paper-plane me-2"></i>{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
 
 <script>
-function toggleSidebar() {
-    const sidebar = document.getElementById('servicesSidebar');
-    const content = document.getElementById('servicesContent');
-    const icon = document.getElementById('toggleIcon');
-    
-    sidebar.classList.toggle('collapsed');
-    content.classList.toggle('sidebar-collapsed');
-    
-    if (sidebar.classList.contains('collapsed')) {
-        icon.className = 'fas fa-chevron-right';
-    } else {
-        icon.className = 'fas fa-chevron-left';
-    }
-}
-
 function showAllServices() {
-    // Show all categories
-    const categories = document.querySelectorAll('.service-category');
-    categories.forEach(category => {
-        category.classList.remove('hidden');
-    });
-    
-    // Update active nav
-    updateActiveNav('nav-all');
+  document.querySelectorAll('.service-category').forEach(c => c.classList.remove('hidden'));
+  setActiveTab('nav-all');
 }
 
-function showCategory(categoryName) {
-    // Hide all categories first
-    const categories = document.querySelectorAll('.service-category');
-    categories.forEach(category => {
-        category.classList.add('hidden');
-    });
-    
-    // Show selected category
-    const selectedCategory = document.getElementById('category-' + categoryName);
-    if (selectedCategory) {
-        selectedCategory.classList.remove('hidden');
-    }
-    
-    // Update active nav
-    updateActiveNav('nav-' + categoryName);
-    
-    // Scroll to top of content
-    document.getElementById('servicesContent').scrollIntoView({ behavior: 'smooth' });
+function showCategory(name) {
+  document.querySelectorAll('.service-category').forEach(c => c.classList.add('hidden'));
+  const target = document.getElementById('category-' + name);
+  if (target) target.classList.remove('hidden');
+  setActiveTab('nav-' + name);
+  document.querySelector('.service-hero').scrollIntoView({ behavior: 'smooth' });
 }
 
-function updateActiveNav(activeId) {
-    // Remove active class from all nav items
-    const navItems = document.querySelectorAll('.sidebar-nav a');
-    navItems.forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Add active class to selected item
-    const activeItem = document.getElementById(activeId);
-    if (activeItem) {
-        activeItem.classList.add('active');
-    }
+function setActiveTab(activeId) {
+  document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById(activeId);
+  if (el) el.classList.add('active');
 }
 
-// Initialize - show all services by default
-document.addEventListener('DOMContentLoaded', function() {
-    showAllServices();
+document.addEventListener('DOMContentLoaded', function () {
+  showAllServices();
+
+  // ----- Priskalkylator: totalsumma -----
+  const totalOnetimeEl = document.getElementById('calc-total-onetime');
+  const totalMonthlyEl = document.getElementById('calc-total-monthly');
+  const checkboxes = document.querySelectorAll('.calc-input');
+  const hostingSelect = document.querySelector('.calc-hosting-select');
+  const steppers = document.querySelectorAll('.calc-option--stepper');
+  const baseRadios = document.querySelectorAll('.calc-base-input');
+
+  function formatSEK(n) {
+    return n.toLocaleString('sv-SE') + ' kr';
+  }
+
+  function updateTotal() {
+    let onetime = 0;
+    let monthly = 0;
+
+    baseRadios.forEach(r => { if (r.checked) onetime += parseInt(r.value, 10); });
+
+    checkboxes.forEach(cb => {
+      if (!cb.checked) return;
+      if (cb.dataset.price) onetime += parseInt(cb.dataset.price, 10);
+      if (cb.dataset.priceMonthly) monthly += parseInt(cb.dataset.priceMonthly, 10);
+    });
+
+    if (hostingSelect) monthly += parseInt(hostingSelect.value, 10) || 0;
+
+    steppers.forEach(stepper => {
+      const qty = parseInt(stepper.querySelector('.calc-stepper__qty').textContent, 10) || 0;
+      const rate = parseInt(stepper.querySelector('.calc-option__price').dataset.rate, 10) || 0;
+      onetime += qty * rate;
+    });
+
+    totalOnetimeEl.textContent = formatSEK(onetime);
+    totalMonthlyEl.textContent = formatSEK(monthly);
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
+  baseRadios.forEach(r => r.addEventListener('change', updateTotal));
+  if (hostingSelect) hostingSelect.addEventListener('change', updateTotal);
+
+  steppers.forEach(stepper => {
+    const qtyEl = stepper.querySelector('.calc-stepper__qty');
+    stepper.querySelector('.calc-stepper__plus').addEventListener('click', function () {
+      qtyEl.textContent = parseInt(qtyEl.textContent, 10) + 1;
+      updateTotal();
+    });
+    stepper.querySelector('.calc-stepper__minus').addEventListener('click', function () {
+      qtyEl.textContent = Math.max(0, parseInt(qtyEl.textContent, 10) - 1);
+      updateTotal();
+    });
+  });
+
+  updateTotal();
 });
 </script>
-
 {% endblock content %}

@@ -268,6 +268,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+    text-decoration: none;
+    color: inherit;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .tool-card:hover { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(255,122,26,0.15); }
@@ -550,39 +552,39 @@
     </div>
 
     <div class="bento-grid">
-      <div class="tool-card tool-card--wide">
+      <a href="{% url 'smedjan_en' %}" class="tool-card tool-card--wide">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-comments"></i></div>
           <span class="badge-pill-forge badge-live">Live</span>
         </div>
         <h3 class="tool-card__title">Custom live chat &amp; response app</h3>
         <p class="tool-card__desc">A lightweight chat script for the site, connected to a mobile app for quick replies wherever you are.</p>
-      </div>
-      <div class="tool-card">
+      </a>
+      <a href="{% url 'smedjan_en' %}" class="tool-card">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-file-invoice-dollar"></i></div>
           <span class="badge-pill-forge badge-live">Live</span>
         </div>
         <h3 class="tool-card__title">Automated invoicing</h3>
         <p class="tool-card__desc">Status tracking, automatic reminders, connected to the customer registry.</p>
-      </div>
-      <div class="tool-card">
+      </a>
+      <a href="{% url 'smedjan_en' %}" class="tool-card">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-users-gear"></i></div>
           <span class="badge-pill-forge badge-forging">In the forge</span>
         </div>
         <h3 class="tool-card__title">Next-gen CRM</h3>
         <p class="tool-card__desc">Customer view &amp; core flow ready, invoice integration in progress.</p>
-      </div>
+      </a>
 
-      <div class="tool-card tool-card--wide">
+      <a href="{% url 'smedjan_en' %}" class="tool-card tool-card--wide">
         <div class="tool-card__top">
           <div class="tool-card__icon"><i class="fas fa-clock-rotate-left"></i></div>
           <span class="badge-pill-forge badge-forging">In development</span>
         </div>
         <h3 class="tool-card__title">Rutinklockan</h3>
         <p class="tool-card__desc">A mobile app for daily structure and routines — launching for a select test group soon.</p>
-      </div>
+      </a>
       <div class="bento-cta">
         <h3>Got an idea in mind?</h3>
         <p>Book a free call and let's talk it through.</p>

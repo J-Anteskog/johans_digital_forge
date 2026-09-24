@@ -19,6 +19,7 @@ from portfolio.models import Project
 from brief.models import ProjectBrief
 from analysis.models import SiteAnalysis
 from analysis.tasks import start_analysis
+from smedjan.models import ToolCard, BuildLogEntry
 from .models import CalendarEvent
 
 
@@ -205,6 +206,86 @@ class ProjectDeleteView(DeleteView):
     model = Project
     template_name = "custom_admin/project_confirm_delete.html"
     success_url = reverse_lazy("admin_projects")
+
+
+# ---------------------------
+# 🔨 SMEDJAN ADMIN — verktygskort
+# ---------------------------
+@method_decorator(login_required, name="dispatch")
+class ToolCardListView(ListView):
+    model = ToolCard
+    template_name = "custom_admin/toolcard_list.html"
+    context_object_name = "tools"
+    ordering = ['order', 'id']
+
+
+@method_decorator(login_required, name="dispatch")
+class ToolCardCreateView(CreateView):
+    model = ToolCard
+    template_name = "custom_admin/toolcard_form.html"
+    fields = [
+        "title_sv", "title_en",
+        "description_sv", "description_en",
+        "icon", "status", "progress_percent",
+        "features_sv", "features_en",
+        "link_url", "is_active", "order",
+    ]
+    success_url = reverse_lazy("admin_toolcards")
+
+
+@method_decorator(login_required, name="dispatch")
+class ToolCardUpdateView(UpdateView):
+    model = ToolCard
+    template_name = "custom_admin/toolcard_form.html"
+    fields = [
+        "title_sv", "title_en",
+        "description_sv", "description_en",
+        "icon", "status", "progress_percent",
+        "features_sv", "features_en",
+        "link_url", "is_active", "order",
+    ]
+    success_url = reverse_lazy("admin_toolcards")
+
+
+@method_decorator(login_required, name="dispatch")
+class ToolCardDeleteView(DeleteView):
+    model = ToolCard
+    template_name = "custom_admin/toolcard_confirm_delete.html"
+    success_url = reverse_lazy("admin_toolcards")
+
+
+# ---------------------------
+# 🔨 SMEDJAN ADMIN — byggloggen
+# ---------------------------
+@method_decorator(login_required, name="dispatch")
+class BuildLogListView(ListView):
+    model = BuildLogEntry
+    template_name = "custom_admin/buildlog_list.html"
+    context_object_name = "entries"
+    ordering = ['-date', '-id']
+
+
+@method_decorator(login_required, name="dispatch")
+class BuildLogCreateView(CreateView):
+    model = BuildLogEntry
+    template_name = "custom_admin/buildlog_form.html"
+    fields = ["date", "title_sv", "title_en", "description_sv", "description_en", "is_active", "order"]
+    success_url = reverse_lazy("admin_buildlog")
+
+
+@method_decorator(login_required, name="dispatch")
+class BuildLogUpdateView(UpdateView):
+    model = BuildLogEntry
+    template_name = "custom_admin/buildlog_form.html"
+    fields = ["date", "title_sv", "title_en", "description_sv", "description_en", "is_active", "order"]
+    success_url = reverse_lazy("admin_buildlog")
+
+
+@method_decorator(login_required, name="dispatch")
+class BuildLogDeleteView(DeleteView):
+    model = BuildLogEntry
+    template_name = "custom_admin/buildlog_confirm_delete.html"
+    success_url = reverse_lazy("admin_buildlog")
 
 
 # ---------------------------

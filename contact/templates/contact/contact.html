@@ -4,151 +4,147 @@
 
 {% block title %}{% if is_english %}Contact – Johan's Digital Forge{% else %}Kontakt – Johan's Digital Forge{% endif %}{% endblock %}
 
-{% block meta_description %}{% if is_english %}Send a quick question or say hello. For concrete quote requests, use our project brief.{% else %}Skicka en kort fråga eller säg hej. För konkreta offertförfrågningar, använd vår offertbrief.{% endif %}{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/contact.css' %}">
-{% endblock %}
-
+{% block meta_description %}{% if is_english %}Send a quick question or request a quote. Choose what suits you — I answer personally.{% else %}Skicka en snabb fråga eller begär en offert. Välj det som passar — jag svarar personligen.{% endif %}{% endblock %}
 
 {% block content %}
-<div class="fade-in-section">
-  <div class="container py-5">
-    
-    <!-- Header -->
-    <div class="section-header text-center mb-4">
-      <h2 class="display-4">✉️ {% if is_english %}Send a message{% else %}Skicka ett meddelande{% endif %}</h2>
-      <p class="lead">
-        {% if is_english %}
-          Have a quick question or just want to say hello? Write a few lines and I'll get back to you shortly.
-        {% else %}
-          Har du en kort fråga eller vill bara säga hej? Skriv några rader så återkommer jag inom kort.
-        {% endif %}
-      </p>
-      <p>
-        {% if is_english %}
-          Looking for a concrete price or website proposal? The
-          <a href="{% url 'brief_en' %}">project brief</a> is better — it gives me what I need to send you a sharp proposal right away.
-        {% else %}
-          Söker du ett konkret pris eller förslag på hemsida? Då passar
-          <a href="{% url 'brief' %}">offertbriefen</a> bättre — där får jag den info jag behöver för att lämna ett skarpt förslag direkt.
-        {% endif %}
-      </p>
-    </div>
+<style>
+  .contact-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 0;
+    background:
+      radial-gradient(ellipse 1000px 500px at 80% -20%, rgba(255, 122, 26, 0.16), transparent 60%),
+      linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);
+  }
+  .contact-hero__row { display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+  .contact-hero__content { flex: 1 1 480px; max-width: 640px; }
+  .contact-hero__logo { width: 220px; max-width: 100%; height: auto; opacity: 0.4; pointer-events: none; user-select: none; flex-shrink: 0; }
+  .contact-hero p.lead { color: var(--text-muted) !important; }
+  @media (max-width: 767px) {
+    .contact-hero__row { justify-content: center; text-align: center; }
+    .contact-hero__logo { width: 160px; order: -1; }
+  }
 
-    <!-- Spam-skydd fel -->
-    {% if spam_error %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="fas fa-exclamation-triangle me-2"></i>
-      <strong>{% if is_english %}Verification failed.{% else %}Verifieringen misslyckades.{% endif %}</strong> {% if is_english %}Please try again.{% else %}Försök igen.{% endif %}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endif %}
+  .contact-tabs { display: flex; gap: 0.6rem; margin-bottom: 1.5rem; }
+  .contact-tab {
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--panel-border);
+    color: var(--text-muted);
+  }
+  .contact-tab.active { background: var(--accent); border-color: var(--accent); color: var(--btn-text-on-accent) !important; }
+  .contact-tab:not(.active):hover { border-color: var(--accent-light); color: var(--accent-light) !important; }
 
-    <!-- Success message -->
-    {% if success %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="fas fa-check-circle me-2"></i>
-      <strong>{% if is_english %}Thank you for your message!{% else %}Tack för ditt meddelande!{% endif %}</strong> {% if is_english %}I will get back to you as soon as I can.{% else %}Jag återkommer så snart jag kan.{% endif %}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endif %}
+  .contact-layout { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; }
+  .contact-form-panel { flex: 2 1 480px; padding: 2rem; }
+  .contact-form-panel .form-label { color: var(--text-primary); font-weight: 600; font-size: 0.88rem; }
+  .contact-form-note { color: var(--text-muted) !important; font-size: 0.8rem; font-style: italic; margin: 0.75rem 0 1.25rem; }
 
-    <!-- Form with Contact Info -->
-    <div class="row justify-content-center">
-      <!-- Contact Info Card -->
-      <div class="col-lg-4 mb-4 mb-lg-0">
-        <div class="card shadow-lg border-0 h-100">
-          <div class="card-body p-4 text-center">
-            <img src="{% static 'images/johan-profile.jpg' %}"
-                 alt="Johan Anteskog"
-                 class="img-fluid rounded-circle mb-3"
-                 style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #667eea;">
-            <h4 class="fw-bold mb-2">Johan Anteskog</h4>
-            <p class="mb-3">{% if is_english %}Founder & Web Developer{% else %}Grundare & Webbutvecklare{% endif %}</p>
+  .contact-side { flex: 1 1 280px; display: flex; flex-direction: column; gap: 1.25rem; }
+  .contact-info-panel { padding: 1.5rem; }
+  .contact-info-panel a, .contact-info-panel span { display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; color: var(--text-primary) !important; text-decoration: none; margin-bottom: 0.75rem; }
+  .contact-info-panel a:last-child, .contact-info-panel span:last-child { margin-bottom: 0; }
+  .contact-info-panel i { color: var(--accent-light); width: 16px; }
+  .contact-info-panel a:hover { color: var(--accent-light) !important; }
 
-            <!-- Phone number with reveal -->
-            <div class="phone-reveal-container">
-              <button class="btn btn-outline-primary w-100" id="revealPhoneBtn" onclick="revealPhone()">
-                <i class="fas fa-phone me-2"></i>
-                {% if is_english %}Show phone number{% else %}Visa telefonnummer{% endif %}
-              </button>
-              <a href="tel:0720333420" class="btn btn-primary w-100 d-none" id="phoneNumber">
-                <i class="fas fa-phone me-2"></i>
-                072-033 34 20
-              </a>
-            </div>
+  .chat-window { background: var(--panel-dark); border: 1px solid var(--panel-border); border-radius: 12px; overflow: hidden; }
+  .chat-window__header { background: var(--panel); padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 1px solid var(--panel-border); font-size: 0.82rem; }
+  .chat-window__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); }
+  .chat-window__body { display: flex; flex-direction: column; padding: 1rem; gap: 0.55rem; }
+  .chat-bubble { max-width: 82%; padding: 0.5rem 0.8rem; border-radius: 12px; font-size: 0.8rem; }
+  .chat-bubble--in { background: var(--panel); align-self: flex-start; color: var(--text-primary); }
+  .chat-bubble--out { background: var(--accent); align-self: flex-end; color: var(--btn-text-on-accent); }
+</style>
 
-            <hr class="my-3">
-            <p class="small mb-0">
-              <i class="fas fa-map-marker-alt me-2"></i>
-              {% if is_english %}Based in Fagersta, Sweden{% else %}Baserad i Fagersta{% endif %}
-            </p>
-          </div>
-        </div>
+<!-- Header -->
+<section class="contact-hero">
+  <div class="container">
+    <div class="contact-hero__row">
+      <div class="contact-hero__content">
+        <p class="section-eyebrow">{% if is_english %}Contact{% else %}Kontakt{% endif %}</p>
+        <h1 class="display-5 hero-heading">{% if is_english %}Get in touch{% else %}Hör av dig{% endif %}</h1>
+        <p class="lead">
+          {% if is_english %}
+            Got a quick question, or ready for a quote? Pick what fits — I answer personally.
+          {% else %}
+            Har du en snabb fråga eller är du redo för en offert? Välj det som passar — jag svarar personligen.
+          {% endif %}
+        </p>
       </div>
-
-      <!-- Form -->
-      <div class="col-lg-8">
-        <div class="card shadow-lg border-0">
-          <div class="card-body p-4 p-md-5">
-            <p class="mb-4">
-              <i class="fas fa-info-circle me-2"></i>
-              <small>* = {% if is_english %}Required field{% else %}Obligatoriskt fält{% endif %}</small>
-            </p>
-
-            <form method="post" novalidate id="contactForm">
-              {% csrf_token %}
-              {{ form|crispy }}
-              <!-- Honeypot: dold via CSS, ska lämnas tom -->
-              <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
-                <label for="website">Website (leave blank)</label>
-                <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
-              </div>
-              <!-- Tidsstämpeltoken -->
-              <input type="hidden" name="form_token" value="{{ form_token }}">
-
-              <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
-                <i class="fas fa-paper-plane me-2"></i>
-                {% if is_english %}Send message{% else %}Skicka meddelande{% endif %}
-              </button>
-              <p class="small text-center mt-3 mb-0">
-                {% if is_english %}
-                  Want a concrete proposal instead? Fill in the <a href="{% url 'brief_en' %}">project brief</a>.
-                {% else %}
-                  Vill du ha ett konkret förslag istället? Fyll i <a href="{% url 'brief' %}">offertbriefen</a>.
-                {% endif %}
-              </p>
-            </form>
-          </div>
-        </div>
-      </div>
+      <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="contact-hero__logo" aria-hidden="true">
     </div>
-
-    <script>
-    function revealPhone() {
-      document.getElementById('revealPhoneBtn').classList.add('d-none');
-      document.getElementById('phoneNumber').classList.remove('d-none');
-    }
-
-    // Rabattkod-validering
-    var discountInput = document.getElementById('id_discount_code');
-    if (discountInput) {
-      var infoDiv = document.createElement('div');
-      infoDiv.id = 'discount-info';
-      infoDiv.className = 'discount-message';
-      infoDiv.style.display = 'none';
-      infoDiv.innerHTML = '<p class="mb-0" style="color: #28a745; font-weight: bold;">&#10003; Rabattkod godkänd! Du får 15% rabatt på ditt projekt. / Discount code accepted! You get 15% off.</p>';
-      discountInput.parentNode.appendChild(infoDiv);
-
-      discountInput.addEventListener('input', function() {
-        var kod = this.value.toLowerCase().trim();
-        infoDiv.style.display = (kod === 'makeitgo26' || kod === 'mars2026') ? 'block' : 'none';
-      });
-    }
-
-</script>
-
   </div>
+</section>
+
+<div class="container py-5">
+
+  {% if spam_error %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <strong>{% if is_english %}Verification failed.{% else %}Verifieringen misslyckades.{% endif %}</strong> {% if is_english %}Please try again.{% else %}Försök igen.{% endif %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endif %}
+
+  {% if success %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <strong>{% if is_english %}Thank you for your message!{% else %}Tack för ditt meddelande!{% endif %}</strong> {% if is_english %}I will get back to you as soon as I can.{% else %}Jag återkommer så snart jag kan.{% endif %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endif %}
+
+  <div class="contact-tabs">
+    <span class="contact-tab active">{% if is_english %}Quick question{% else %}Snabb fråga{% endif %}</span>
+    <a href="{% if is_english %}{% url 'brief_en' %}{% else %}{% url 'brief' %}{% endif %}" class="contact-tab">{% if is_english %}Request a quote{% else %}Begär offert{% endif %}</a>
+  </div>
+
+  <div class="contact-layout">
+    <div class="panel-card contact-form-panel">
+      <form method="post" novalidate id="contactForm">
+        {% csrf_token %}
+        {{ form.name|as_crispy_field }}
+        {{ form.email|as_crispy_field }}
+        {{ form.message|as_crispy_field }}
+        <input type="hidden" name="subject" value="{% if form.subject.value %}{{ form.subject.value }}{% elif is_english %}Contact form{% else %}Kontaktformulär{% endif %}">
+        <input type="hidden" name="discount_code" value="{{ form.discount_code.value|default:'' }}">
+        <!-- Honeypot -->
+        <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+          <label for="website">Website (leave blank)</label>
+          <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="hidden" name="form_token" value="{{ form_token }}">
+
+        <p class="contact-form-note">{% if is_english %}[Click the "Request a quote" tab for the full form with project type, budget and description]{% else %}[Klicka på "Begär offert"-fliken för det fullständiga formuläret med projekttyp, budget och beskrivning]{% endif %}</p>
+
+        <button type="submit" class="btn-forge">{% if is_english %}Send question{% else %}Skicka fråga{% endif %}</button>
+      </form>
+    </div>
+
+    <div class="contact-side">
+      <div class="panel-card panel-card--rivets contact-info-panel">
+        <p class="section-eyebrow">{% if is_english %}Direct contact{% else %}Direktkontakt{% endif %}</p>
+        <a href="mailto:info@johans-digital-forge.se"><i class="fas fa-envelope"></i> info@johans-digital-forge.se</a>
+        <span><i class="fas fa-clock"></i> {% if is_english %}Usually replies within 24h{% else %}Svar oftast inom 24h{% endif %}</span>
+        <span><i class="fas fa-location-dot"></i> {% if is_english %}Fagersta &amp; Västmanland — in-person meetings possible{% else %}Fagersta &amp; Västmanland — fysiska möten möjliga{% endif %}</span>
+      </div>
+
+      <div class="chat-window">
+        <div class="chat-window__header">
+          <span class="chat-window__dot"></span>
+          {% if is_english %}Live chat — same script as on Smedjan{% else %}Live-chatt — samma skript som i Smedjan{% endif %}
+        </div>
+        <div class="chat-window__body">
+          <div class="chat-bubble chat-bubble--in">{% if is_english %}Hi! What can I help you with?{% else %}Hej! Vad kan jag hjälpa dig med?{% endif %}</div>
+          <div class="chat-bubble chat-bubble--out">{% if is_english %}Can I book a meeting?{% else %}Kan jag boka ett möte?{% endif %}</div>
+          <div class="chat-bubble chat-bubble--in">{% if is_english %}Sure — fill in the form and I'll get back to you!{% else %}Absolut — fyll i formuläret så hör jag av mig!{% endif %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

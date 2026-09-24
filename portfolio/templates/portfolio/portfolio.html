@@ -5,142 +5,148 @@
 
 {% block meta_description %}{% if is_english %}Examples of websites and web applications built by web developer Johan's Digital Forge for small businesses in Fagersta and Västmanland.{% else %}Exempel på hemsidor och webbapplikationer byggda av webbutvecklare Johan's Digital Forge åt småföretag i Fagersta och Västmanland.{% endif %}{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/portfolio.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="fade-in-section">
-  <div class="container py-5">
-    
-    <!-- Header -->
-    <div class="section-header text-center mb-5">
-      <h1 class="display-4">📂 {% if is_english %}Portfolio{% else %}Portfölj{% endif %}</h1>
-      <p class="lead">{% if is_english %}My previous projects{% else %}Mina tidigare projekt{% endif %}</p>
-    </div>
-
-    <!-- Portfolio Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-      {% for project in projects %}
-      <div class="col">
-        <div class="card portfolio-card h-100 shadow-sm">
-          
-          <!-- Project Image with overlay -->
-          <div class="card-img-wrapper">
-            {% if project.image %}
-            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title_sv }}">
-            {% else %}
-            <img src="{% static 'images/portfolio/default.png' %}" class="card-img-top" alt="Default">
-            {% endif %}
-            <div class="card-img-overlay">
-              <div class="overlay-content">
-                <i class="fas fa-eye fa-2x"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card body with text & buttons -->
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title fw-bold">{% if is_english %}{{ project.title_en }}{% else %}{{ project.title_sv }}{% endif %}</h5>
-            <p class="card-text small">{% if is_english %}{{ project.description_en }}{% else %}{{ project.description_sv }}{% endif %}</p>
-
-            {% if project.technologies %}
-            <div class="mb-3">
-              <small>
-                <i class="fas fa-tools me-2"></i>
-                <strong>Tech:</strong> {{ project.technologies }}
-              </small>
-            </div>
-            {% endif %}
-
-            <!-- Action Buttons -->
-            <div class="d-flex gap-2 mt-auto">
-              {% if project.live_url %}
-              <a href="{{ project.live_url }}" target="_blank" class="btn btn-primary flex-fill">
-                <i class="fas fa-external-link-alt me-1"></i>
-                Live
-              </a>
-              {% endif %}
-              {% if project.github_url %}
-              <a href="{{ project.github_url }}" target="_blank" class="btn btn-outline-secondary flex-fill">
-                <i class="fab fa-github me-1"></i>
-                GitHub
-              </a>
-              {% endif %}
-            </div>
-          </div>
-
-        </div>
-      </div>
-      {% empty %}
-      <div class="col-12 text-center py-5">
-        <i class="fas fa-folder-open fa-4x mb-3"></i>
-        <p class="lead">{% if is_english %}No projects to display yet.{% else %}Inga projekt att visa ännu.{% endif %}</p>
-      </div>
-      {% endfor %}
-    </div>
-
-  </div>
-</div>
-
-<!-- PORTFOLIO KLICK-FIX -->
 <style>
-/* Fix för oklickbara portfolio-länkar */
-.portfolio-card a,
-.card-body a,
-.btn-primary,
-.btn-outline-secondary {
-    position: relative !important;
-    z-index: 9999 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
-    display: inline-block !important;
-}
-
-.card-body {
-    position: relative !important;
-    z-index: 10 !important;
-}
-
-.card-img-overlay {
-    z-index: 1 !important;
-    pointer-events: none !important;
-}
-
-.portfolio-card a:hover {
-    text-decoration: none !important;
-    opacity: 0.9;
-}
-
-.btn:hover {
-    text-decoration: none !important;
-}
-
-.portfolio-card {
+  .portfolio-hero {
     position: relative;
-}
+    overflow: hidden;
+    padding: 4rem 0;
+    background:
+      radial-gradient(ellipse 1000px 500px at 80% -20%, rgba(255, 122, 26, 0.16), transparent 60%),
+      linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);
+  }
+  .portfolio-hero__row { display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+  .portfolio-hero__content { flex: 1 1 480px; max-width: 640px; }
+  .portfolio-hero__logo { width: 220px; max-width: 100%; height: auto; opacity: 0.4; pointer-events: none; user-select: none; flex-shrink: 0; }
+  .portfolio-hero p.lead { color: var(--text-muted) !important; }
+  @media (max-width: 767px) {
+    .portfolio-hero__row { justify-content: center; text-align: center; }
+    .portfolio-hero__logo { width: 160px; order: -1; }
+  }
+
+  .case-row {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+  }
+  .case-row.is-reversed { flex-direction: row-reverse; }
+  .case-media, .case-content { flex: 1 1 420px; }
+
+  .case-media {
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+    background: linear-gradient(145deg, rgba(255, 122, 26, 0.16) 0%, var(--panel-dark) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .case-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .case-media__bar { position: absolute; top: 0; left: 0; right: 0; display: flex; gap: 5px; padding: 10px 12px; }
+  .case-media__bar span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+  .case-media__icon {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.75rem;
+    color: var(--accent);
+    opacity: 0.85;
+  }
+
+  .case-category {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-light);
+    margin-bottom: 0.5rem;
+  }
+  .case-content h2 { margin-bottom: 0.75rem; }
+  .case-content p.desc { color: var(--text-muted) !important; margin-bottom: 1.5rem; }
+
+  .portfolio-note { color: var(--text-muted) !important; font-size: 0.8rem; font-style: italic; margin: -1rem 0 3rem; }
+
+  .portfolio-cta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; padding: 2.5rem; }
+  .portfolio-cta p { color: var(--text-muted) !important; margin: 0.4rem 0 0; }
+  .portfolio-cta__actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+  @media (max-width: 767px) { .case-row.is-reversed { flex-direction: column; } .case-row { flex-direction: column; } }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Extra säkerhet för portfolio-länkar
-    const portfolioLinks = document.querySelectorAll('.portfolio-card a, .card-body a');
-    
-    portfolioLinks.forEach(function(link) {
-        link.style.position = 'relative';
-        link.style.zIndex = '9999';
-        link.style.pointerEvents = 'auto';
-        link.style.cursor = 'pointer';
-        
-        // Backup click handler om CSS inte fungerar
-        link.addEventListener('click', function(e) {
-            if (this.href && this.href !== window.location.href) {
-                return true; // Låt klicket fortsätta normalt
-            }
-        });
-    });
-    
-    console.log('✅ Portfolio link fix applied to', portfolioLinks.length, 'links');
-});
-</script>
+<!-- Header -->
+<section class="portfolio-hero">
+  <div class="container">
+    <div class="portfolio-hero__row">
+      <div class="portfolio-hero__content">
+        <p class="section-eyebrow">{% if is_english %}Portfolio{% else %}Portfölj{% endif %}</p>
+        <h1 class="display-5 hero-heading">{% if is_english %}Sites I've forged for clients{% else %}Sidor jag har smitt åt kunder{% endif %}</h1>
+        <p class="lead">
+          {% if is_english %}
+            A selection of websites and digital solutions built for real clients — from idea to launch.
+          {% else %}
+            Ett urval av webbplatser och digitala lösningar byggda för riktiga kunder — från idé till lansering.
+          {% endif %}
+        </p>
+      </div>
+      <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="portfolio-hero__logo" aria-hidden="true">
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  {% for project in projects %}
+  <div class="case-row{% if forloop.counter|divisibleby:2 %} is-reversed{% endif %}">
+    <div class="case-media">
+      <div class="case-media__bar"><span></span><span></span><span></span></div>
+      {% if project.image %}
+        <img src="{{ project.image.url }}" alt="{% if is_english %}{{ project.title_en }}{% else %}{{ project.title_sv }}{% endif %}">
+      {% else %}
+        <div class="case-media__icon">
+          {% if 'Get Pumped' in project.title_sv %}<i class="fas fa-truck"></i>
+          {% elif 'Make it Go' in project.title_sv %}<i class="fas fa-arrow-trend-up"></i>
+          {% elif 'Ludvika' in project.title_sv %}<i class="fas fa-shield-halved"></i>
+          {% else %}<i class="fas fa-globe"></i>{% endif %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="case-content">
+      <p class="case-category">
+        {% if 'Get Pumped' in project.title_sv %}{% if is_english %}Web development · Construction{% else %}Webbutveckling · Bygg &amp; anläggning{% endif %}
+        {% elif 'Make it Go' in project.title_sv %}{% if is_english %}Web application · Consulting{% else %}Webbapplikation · Konsultverksamhet{% endif %}
+        {% elif 'Ludvika' in project.title_sv %}{% if is_english %}Web development · Security services{% else %}Webbutveckling · Säkerhetstjänster{% endif %}
+        {% else %}{{ project.technologies }}{% endif %}
+      </p>
+      <h2 class="h3">{% if is_english %}{{ project.title_en }}{% else %}{{ project.title_sv }}{% endif %}</h2>
+      <p class="desc">{% if is_english %}{{ project.description_en }}{% else %}{{ project.description_sv }}{% endif %}</p>
+      <div class="d-flex gap-2 flex-wrap">
+        {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener" class="btn-forge-outline btn-forge-sm">{% if is_english %}Visit site{% else %}Besök sida{% endif %} →</a>{% endif %}
+        {% if project.github_url %}<a href="{{ project.github_url }}" target="_blank" rel="noopener" class="btn-forge-outline btn-forge-sm"><i class="fab fa-github"></i> GitHub</a>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p style="color: var(--text-muted);">{% if is_english %}No projects to display yet.{% else %}Inga projekt att visa ännu.{% endif %}</p>
+  {% endfor %}
+
+  <p class="portfolio-note">{% if is_english %}[Placeholders — replaced with real screenshots from each client project]{% else %}[Platshållare — ersätt med riktiga skärmdumpar från respektive kundprojekt]{% endif %}</p>
+
+  <!-- CTA banner -->
+  <div class="panel-card portfolio-cta">
+    <div>
+      <h2 class="h3 mb-0">{% if is_english %}Your project could be next{% else %}Nästa case kan vara ditt{% endif %}</h2>
+      <p>{% if is_english %}Tell me about your project and we'll shape a solution together.{% else %}Berätta om ditt projekt så tar vi fram en lösning tillsammans.{% endif %}</p>
+    </div>
+    <div class="portfolio-cta__actions">
+      {% if is_english %}
+      <a href="{% url 'brief_en' %}" class="btn-forge">Get a quote</a>
+      <a href="{% url 'contact_en' %}" class="btn-forge-outline">Free consultation</a>
+      {% else %}
+      <a href="{% url 'brief' %}" class="btn-forge">Begär offert</a>
+      <a href="{% url 'contact' %}" class="btn-forge-outline">Gratis konsultation</a>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
 {% endblock %}

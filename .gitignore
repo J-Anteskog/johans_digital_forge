@@ -15,6 +15,7 @@ venv
 *.pyo
 *.pyd
 db.sqlite3
+staticfiles/
 
 
 # VS Code

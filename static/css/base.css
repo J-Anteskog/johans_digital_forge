@@ -27,12 +27,15 @@ html, body {
     color: var(--text-primary);
 }
 
-/* "html body" för att slå Bootstraps body-regel, som laddas efter base.css */
+/* "html body" för att slå Bootstraps body-regel, som laddas efter base.css.
+   color måste vara med här också — annars ärver alla element utan egen
+   färgregel (span, label, div ...) Bootstraps mörka standardfärg istället. */
 html body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     font-family: var(--font-body);
+    color: var(--text-primary);
     background-color: var(--bg-base);
     background-image:
         repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 48px),
@@ -70,8 +73,12 @@ h1, h2 {
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
-/* Den kraftiga glowen fungerar bara på riktigt stor text (hero, ~40px+). */
+/* Den kraftiga glowen fungerar bara på riktigt stor text (hero, ~40px+) OCH
+   bara på versaler — Black Ops Ones gemener suddas ut av 26px-blurren.
+   text-transform ligger här (inte bara på enskilda sidors egna klasser) så
+   att alla framtida .hero-heading-element är skyddade automatiskt. */
 .hero-heading {
+    text-transform: uppercase;
     text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), 0 0 26px rgba(255, 122, 26, 0.2);
 }
 
@@ -437,13 +444,22 @@ form .form-control::placeholder {
   color: var(--accent-light);
 }
 
+/* Bootstraps default .btn-primary är blå (#0d6efd) — sidor vi inte har
+   omstylat än (t.ex. offertbrief-guiden) använder den fortfarande, så den
+   ska följa accentfärgen istället för att sticka ut. */
 .btn-primary {
-  border: none;
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--btn-text-on-accent) !important;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--accent-light) !important;
+  border-color: var(--accent-light) !important;
+  color: var(--btn-text-on-accent) !important;
   box-shadow: 0 6px 20px rgba(255, 122, 26, 0.5);
   transform: translateY(-2px);
 }

@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_english %}Smedjan – Our own tools & products{% else %}Smedjan – Egna verktyg & produkter{% endif %} | Johan's Digital Forge{% endblock %}
+
+{% block meta_description %}{% if is_english %}A look inside the workshop: the tools and products Johan's Digital Forge builds and runs itself — what's live, what's in the forge, and how far it's come.{% else %}En titt in i verkstaden: verktygen och produkterna Johan's Digital Forge bygger och driver själv — vad som är live, vad som smids, och hur långt det har kommit.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+  .smedjan-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 0;
+    background:
+      radial-gradient(ellipse 1000px 500px at 80% -20%, rgba(255, 122, 26, 0.16), transparent 60%),
+      linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);
+  }
+  .smedjan-hero__row { display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+  .smedjan-hero__content { flex: 1 1 480px; max-width: 640px; }
+  .smedjan-hero__logo { width: 220px; max-width: 100%; height: auto; opacity: 0.4; pointer-events: none; user-select: none; flex-shrink: 0; }
+  .smedjan-hero p.lead { color: var(--text-muted) !important; }
+  @media (max-width: 767px) {
+    .smedjan-hero__row { justify-content: center; text-align: center; }
+    .smedjan-hero__logo { width: 160px; order: -1; }
+  }
+
+  .tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+  @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+
+  .tool-card {
+    background: linear-gradient(145deg, var(--panel-light) 0%, var(--panel) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    position: relative;
+  }
+  .tool-card::before, .tool-card::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffd9a8, var(--accent-dark) 75%);
+  }
+  .tool-card::before { left: 10px; }
+  .tool-card::after { right: 10px; }
+
+  .tool-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.9rem; }
+  .tool-card__icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: rgba(255, 122, 26, 0.12);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent-light);
+    font-size: 1.2rem;
+  }
+  .tool-card__title { font-family: var(--font-body); font-weight: 600; font-size: 1.05rem; text-transform: none; margin: 0 0 0.5rem; }
+  .tool-card__desc { color: var(--text-muted) !important; font-size: 0.88rem; margin: 0 0 1rem; }
+
+  .tool-card__progress { margin-bottom: 1rem; }
+  .tool-card__progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tool-card__progress-label span:last-child { color: var(--accent-light); font-weight: 700; }
+  .tool-card__progress-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .tool-card__progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-dark), var(--accent)); border-radius: 3px; }
+
+  .tool-card__features { list-style: none; padding: 0; margin: 0 0 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .tool-card__features li { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 0.5rem; align-items: flex-start; }
+  .tool-card__features li.is-done::before { content: '\2713'; color: var(--success); flex-shrink: 0; }
+  .tool-card__features li:not(.is-done)::before { content: ''; width: 10px; height: 10px; border: 1px solid var(--panel-border); border-radius: 2px; flex-shrink: 0; margin-top: 3px; }
+
+  .tool-card__link { color: var(--accent-light); text-decoration: none; font-size: 0.87rem; font-weight: 600; }
+  .tool-card__link:hover { color: var(--accent) !important; }
+
+  /* ===== Byggloggen ===== */
+  .buildlog-note { color: var(--text-muted) !important; font-size: 0.78rem; font-style: italic; margin: 0.5rem 0 2rem; }
+  .buildlog { position: relative; padding-left: 1.75rem; margin-bottom: 4rem; }
+  .buildlog::before { content: ''; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: var(--panel-border); }
+  .buildlog-item { position: relative; padding-bottom: 1.75rem; }
+  .buildlog-item:last-child { padding-bottom: 0; }
+  .buildlog-item::before {
+    content: '';
+    position: absolute;
+    left: -1.75rem; top: 5px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+  .buildlog-item:first-child::before { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .buildlog-item__date { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+  .buildlog-item__text { font-size: 0.92rem; }
+  .buildlog-item__text strong { color: var(--text-primary); }
+
+  /* ===== CTA banner ===== */
+  .smedjan-cta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; padding: 2.5rem; }
+  .smedjan-cta p { color: var(--text-muted) !important; margin: 0.4rem 0 0; }
+  .smedjan-cta__actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+</style>
+
+<!-- Header -->
+<section class="smedjan-hero">
+  <div class="container">
+    <div class="smedjan-hero__row">
+      <div class="smedjan-hero__content">
+        <p class="section-eyebrow">{% if is_english %}Smedjan{% else %}Smedjan{% endif %}</p>
+        <h1 class="display-5 hero-heading">{% if is_english %}The tools I build, forged in-house{% else %}Verktygen jag bygger, smidda i egen drift{% endif %}</h1>
+        <p class="lead">
+          {% if is_english %}
+            Internal products and client applications — tested in everyday use before they reach you. Here you can see what's live, what's in development, and how far along it is.
+          {% else %}
+            Interna produkter och kundapplikationer — testade i vardagen innan de når dig. Här ser du vad som är live, vad som är under utveckling, och hur långt det har kommit.
+          {% endif %}
+        </p>
+      </div>
+      <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="smedjan-hero__logo" aria-hidden="true">
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  <!-- Verktygskort -->
+  <div class="tool-grid">
+    {% for tool in tools %}
+    <div class="tool-card">
+      <div class="tool-card__top">
+        <div class="tool-card__icon"><i class="{{ tool.icon|default:'fas fa-cog' }}"></i></div>
+        {% if tool.status == 'live' %}
+          <span class="badge-pill-forge badge-live">Live</span>
+        {% elif tool.status == 'forging' %}
+          <span class="badge-pill-forge badge-forging">{% if is_english %}In the forge{% else %}I smedjan{% endif %}</span>
+        {% else %}
+          <span class="badge-pill-forge badge-forging">{% if is_english %}In development{% else %}Under utveckling{% endif %}</span>
+        {% endif %}
+      </div>
+      <h3 class="tool-card__title">{% if is_english %}{{ tool.title_en }}{% else %}{{ tool.title_sv }}{% endif %}</h3>
+      <p class="tool-card__desc">{% if is_english %}{{ tool.description_en }}{% else %}{{ tool.description_sv }}{% endif %}</p>
+
+      {% if tool.progress_percent is not None %}
+      <div class="tool-card__progress">
+        <div class="tool-card__progress-label">
+          <span>{% if is_english %}Development{% else %}Utveckling{% endif %}</span>
+          <span>{{ tool.progress_percent }}%</span>
+        </div>
+        <div class="tool-card__progress-bar"><div class="tool-card__progress-fill" style="width: {{ tool.progress_percent }}%;"></div></div>
+      </div>
+      {% endif %}
+
+      <ul class="tool-card__features">
+        {% if is_english %}
+          {% for f in tool.features_list_en %}<li class="{% if f.done %}is-done{% endif %}">{{ f.text }}</li>{% endfor %}
+        {% else %}
+          {% for f in tool.features_list_sv %}<li class="{% if f.done %}is-done{% endif %}">{{ f.text }}</li>{% endfor %}
+        {% endif %}
+      </ul>
+
+      {% if tool.link_url %}
+      <a href="{{ tool.link_url }}" class="tool-card__link">{% if is_english %}See how it works{% else %}Se hur det fungerar{% endif %} →</a>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p style="color: var(--text-muted);">{% if is_english %}No tools published yet.{% else %}Inga verktyg publicerade ännu.{% endif %}</p>
+    {% endfor %}
+  </div>
+
+  <!-- Byggloggen -->
+  {% if log_entries %}
+  <div>
+    <p class="section-eyebrow">{% if is_english %}The build log{% else %}Byggloggen{% endif %}</p>
+    <h2 class="display-6 mb-2">{% if is_english %}Latest from the workshop{% else %}Senaste från verkstaden{% endif %}</h2>
+    <p class="buildlog-note">{% if is_english %}[This is example data — replaced with real updates as they happen]{% else %}[Exempel på hur loggen kan se ut — fylls med riktiga uppdateringar när de sker]{% endif %}</p>
+
+    <div class="buildlog">
+      {% for entry in log_entries %}
+      <div class="buildlog-item">
+        <div class="buildlog-item__date">{{ entry.date|date:"M Y" }}</div>
+        <div class="buildlog-item__text">
+          <strong>{% if is_english %}{{ entry.title_en }}{% else %}{{ entry.title_sv }}{% endif %}</strong>
+          — {% if is_english %}{{ entry.description_en }}{% else %}{{ entry.description_sv }}{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- CTA banner -->
+  <div class="panel-card smedjan-cta">
+    <div>
+      <h2 class="h3 mb-0">{% if is_english %}Want to try one of the tools?{% else %}Vill du testa något av verktygen?{% endif %}</h2>
+      <p>{% if is_english %}Get in touch if you'd like to be an early tester, or want a similar tool built for your business.{% else %}Hör av dig om du vill bli tidig testare, eller vill ha ett liknande verktyg byggt åt ditt företag.{% endif %}</p>
+    </div>
+    <div class="smedjan-cta__actions">
+      {% if is_english %}
+      <a href="{% url 'brief_en' %}" class="btn-forge">Get a quote</a>
+      <a href="{% url 'contact_en' %}" class="btn-forge-outline">Send a question</a>
+      {% else %}
+      <a href="{% url 'brief' %}" class="btn-forge">Begär offert</a>
+      <a href="{% url 'contact' %}" class="btn-forge-outline">Skicka en fråga</a>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

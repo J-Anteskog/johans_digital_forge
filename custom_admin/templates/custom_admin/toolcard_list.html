@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex" style="min-height: 100vh;">
+  {% include 'custom_admin/_sidebar.html' %}
+
+  <main class="flex-grow-1 bg-light p-5">
+    <div class="container-fluid">
+      <h1 class="mb-4">🔨 Verktygskort (Smedjan)</h1>
+
+      <a href="{% url 'admin_toolcard_add' %}" class="btn btn-success mb-3">➕ Lägg till nytt verktygskort</a>
+
+      {% if tools %}
+      <div class="row g-4">
+        {% for tool in tools %}
+        <div class="col-md-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ tool.title_sv }} <span class="badge bg-secondary">{{ tool.get_status_display }}</span></h5>
+              {% if tool.progress_percent is not None %}<p class="small text-muted mb-1">Utveckling: {{ tool.progress_percent }}%</p>{% endif %}
+              <p>{{ tool.description_sv|truncatechars:120 }}</p>
+              {% if not tool.is_active %}<span class="badge bg-danger mb-2">Dold</span>{% endif %}
+              <div class="d-flex justify-content-between mt-2">
+                <a href="{% url 'admin_toolcard_edit' tool.id %}" class="btn btn-sm btn-warning">✏️ Redigera</a>
+                <a href="{% url 'admin_toolcard_delete' tool.id %}" class="btn btn-sm btn-danger">🗑 Ta bort</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="alert alert-info mt-3">Inga verktygskort har lagts till ännu.</div>
+      {% endif %}
+    </div>
+  </main>
+</div>
+
+{% endblock %}
