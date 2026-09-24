@@ -1,10 +1,10 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
   <div class="container-fluid">
     <!-- Logo -->
 <a class="navbar-brand d-flex align-items-center gap-2" href="{% if request.path|slice:":3" == "/en" %}/en/{% else %}/{% endif %}">
-  <img src="{% static 'images/JDFbild-ny.png' %}" alt="Johans Digital Forge logo" height="56" style="filter: drop-shadow(0 0 4px #00bfff);">
-  <span class="fw-bold">Johan's Digital Forge</span>
+  <img src="{% static 'images/jdf-2.0-icon.png' %}" alt="Johan's Digital Forge logo" height="52">
+  <span class="navbar-brand-text">Johan's Digital Forge</span>
 </a>
 
     <!-- Mobilknapp -->
@@ -19,17 +19,17 @@
         {% if request.path|slice:":3" == "/en" %}
           <li class="nav-item"><a class="nav-link" href="/en/">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'service_list_en' %}">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'portfolio_en' %}">Portfolio</a></li>
           <li class="nav-item"><a class="nav-link" href="/en/about-us/">About Us</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'contact_en' %}">Contact</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'portfolio_en' %}">Portfolio</a></li>
           <li class="nav-item"><a class="nav-link" href="https://portal.johans-digital-forge.se" target="_blank"><i class="bi bi-person-lock"></i> Client Portal
     </a></li>
         {% else %}
           <li class="nav-item"><a class="nav-link" href="/">Hem</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'service_list' %}">Tjänster</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'portfolio' %}">Portfölj</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'about:about_us' %}">Om oss</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Kontakt</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'portfolio' %}">Portfölj</a></li>
           <li class="nav-item"><a class="nav-link" href="https://portal.johans-digital-forge.se" target="_blank"><i class="bi bi-person-lock"></i> Kundportal
     </a></li>
         {% endif %}

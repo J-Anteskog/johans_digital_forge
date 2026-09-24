@@ -6,7 +6,14 @@
       "Bash(python -X utf8 -c \"import analysis.views; import analysis.email; import analysis.admin; import custom_admin.views; print\\('OK'\\)\")",
       "Bash(python -X utf8 -m py_compile analysis/views.py analysis/email.py analysis/admin.py custom_admin/views.py analysis/management/commands/send_followup_emails.py)",
       "Bash(python -X utf8 manage.py makemigrations brief --name add_promo_code)",
-      "Bash(python -X utf8 -m py_compile brief/models.py brief/forms.py brief/views.py analysis/utils.py)"
+      "Bash(python -X utf8 -m py_compile brief/models.py brief/forms.py brief/views.py analysis/utils.py)",
+      "Bash(npx --version)",
+      "Bash(chromium-cli --help)",
+      "Bash(cat \"C:\\\\Users\\\\Antes\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Antes-Documents-Projects-johans-digital-forge\\\\68556c99-07a5-4693-85d4-c45be60a341a\\\\tasks\\\\bkovyhm7l.output\" 2>/dev/null; echo \"---runserver log---\"; cat /tmp/runserver.log 2>/dev/null)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /tmp/sv_home.html -w \"%{http_code}\\\\n\" http://127.0.0.1:8000/)",
+      "Bash(curl -s -o /tmp/en_home.html -w \"%{http_code}\\\\n\" http://127.0.0.1:8000/en/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:8000/static/css/base.css)"
     ]
   }
 }
