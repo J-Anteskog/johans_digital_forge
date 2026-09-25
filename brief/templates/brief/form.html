@@ -54,11 +54,12 @@
   .choice-card .form-check {
     border: 1.5px solid var(--panel-border); border-radius: .5rem;
     background: var(--panel);
-    padding: 10px 14px 10px 2.5rem;
+    padding: 10px 14px;
     cursor: pointer; transition: border-color .15s, background .15s;
-    min-height: 44px; display: flex; align-items: center;
+    min-height: 44px; display: flex; align-items: center; gap: 0.75rem;
   }
-  .choice-card .form-check-input { margin-top: 0; }
+  .choice-card .form-check-input { margin-top: 0; margin-left: 0; flex-shrink: 0; }
+  .choice-card .form-check-label { margin-left: 0 !important; }
   .choice-card .form-check:hover { border-color: rgba(255, 122, 26, .5); background: rgba(255, 122, 26, .06); }
   .choice-card .form-check input:checked ~ label { font-weight: 600; color: var(--text-primary); }
   .choice-card .form-check:has(input:checked) { border-color: var(--accent); background: rgba(255, 122, 26, .1); }
