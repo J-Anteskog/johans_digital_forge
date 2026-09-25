@@ -49,6 +49,14 @@ html body {
     background-attachment: fixed;
 }
 
+/* Säkerhetsnät: bilder utan egen breddregel ska aldrig kunna göra sidan
+   bredare än viewporten (orsakade tidigare horisontell overflow på mobil
+   för bl.a. portföljbilder). */
+img, svg {
+    max-width: 100%;
+    height: auto;
+}
+
 p, li, td, th {
     color: var(--text-primary);
 }
@@ -265,8 +273,9 @@ footer {
     border-radius: 6px;
     text-decoration: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
-    white-space: nowrap;
+    text-align: center;
     cursor: pointer;
+    max-width: 100%;
 }
 
 .btn-forge {
@@ -471,6 +480,17 @@ form .form-control::placeholder {
   border: 1px solid rgba(255, 122, 26, 0.3);
   border-radius: 0.75rem;
   color: var(--accent);
+}
+
+.alert-danger {
+  background: rgba(220, 53, 69, 0.12);
+  border: 1px solid rgba(220, 53, 69, 0.35);
+  border-radius: 0.75rem;
+  color: #ff8080;
+}
+
+.alert-danger .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 /* Bootstraps default .btn-primary är blå (#0d6efd) — sidor vi inte har
