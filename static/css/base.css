@@ -241,6 +241,61 @@ footer {
     background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
+/* ========== ADMINPANEL ========== */
+/* Egen, explicit stajling istället för Bootstraps bg-light/text-dark-verktyg,
+   som annars krockade med det mörka temat och gav osynlig/lågkontrast text. */
+.admin-main {
+    background: var(--panel-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    border-left: 1px solid var(--panel-border);
+}
+
+.admin-main h1,
+.admin-main h2,
+.admin-main h3,
+.admin-main h4,
+.admin-main h5 {
+    color: var(--text-primary) !important;
+}
+
+.admin-main p,
+.admin-main label,
+.admin-main td,
+.admin-main th {
+    color: var(--text-primary);
+}
+
+.admin-main .text-muted {
+    color: var(--text-muted) !important;
+}
+
+.admin-main .card {
+    background: var(--panel) !important;
+}
+
+.admin-main .card.bg-primary,
+.admin-main .card.bg-success,
+.admin-main .card.bg-warning,
+.admin-main .card.bg-danger,
+.admin-main .card.bg-info {
+    color: #fff !important;
+}
+
+.admin-main .table {
+    background: var(--panel);
+}
+
+.admin-main .table thead th {
+    color: var(--accent-light);
+    border-bottom-color: var(--panel-border);
+}
+
+.admin-main .table td,
+.admin-main .table th {
+    border-color: var(--panel-border);
+}
+
 .modal-content {
     background: linear-gradient(145deg, var(--panel-light) 0%, var(--panel-dark) 100%) !important;
     border: 1px solid var(--panel-border) !important;
