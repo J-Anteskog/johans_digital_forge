@@ -54,7 +54,6 @@ html body {
    för bl.a. portföljbilder). */
 img, svg {
     max-width: 100%;
-    height: auto;
 }
 
 p, li, td, th {
