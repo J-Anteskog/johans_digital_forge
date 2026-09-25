@@ -123,9 +123,12 @@ p {
 
 /* ========== DARK THEME OVERRIDES (Bootstrap) ========== */
 
-.bg-light,
-.bg-white,
-.bg-body-tertiary {
+/* "html .bg-white" etc för att slå Bootstraps egna .bg-*-verktygsklasser,
+   som laddas efter base.css och annars vinner trots !important på båda
+   sidor (samma specificitet, Bootstrap laddas sist). */
+html .bg-light,
+html .bg-white,
+html .bg-body-tertiary {
     background: var(--panel) !important;
     color: var(--text-primary) !important;
 }
