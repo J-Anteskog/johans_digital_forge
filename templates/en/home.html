@@ -35,6 +35,7 @@
     pointer-events: none;
     user-select: none;
   }
+  .forge-hero__logo--mobile { display: none; }
 
   .forge-hero__scrim {
     position: absolute;
@@ -257,7 +258,8 @@
 
 
   @media (max-width: 991px) {
-    .forge-hero__logo { max-width: 220px; }
+    .forge-hero__logo:not(.forge-hero__logo--mobile) { display: none; }
+    .forge-hero__logo--mobile { display: block; max-width: 220px; margin: 0 auto 1.5rem; }
     .forge-hero__content { padding-top: 3rem; text-align: center; }
     .forge-hero__lead { margin-left: auto; margin-right: auto; }
     .forge-hero__desk { margin-top: 3rem; }
@@ -534,6 +536,7 @@
     <div class="row align-items-center">
       <div class="col-lg-7">
         <span class="hero-eyebrow">Fagersta &amp; Västmanland</span>
+        <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="forge-hero__logo forge-hero__logo--mobile" aria-hidden="true">
         <h1 class="forge-hero__title hero-heading">We forge websites that <span class="text-accent">last.</span></h1>
         <p class="forge-hero__lead">Websites, e-commerce and web applications — tailored for small businesses, individuals and associations. From idea to launch, all from one and the same forge.</p>
         <div class="d-flex gap-3 flex-wrap">

@@ -25,6 +25,11 @@ html, body {
     margin: 0;
     background-color: var(--bg-base);
     color: var(--text-primary);
+    /* Säkerhetsnät: om något element ändå blir bredare än viewporten
+       (t.ex. en lång ord-sträng eller ett fast breddat element) ska
+       det klippas tyst istället för att skapa horisontell scroll som
+       skjuter hela sidan i sidled på mobil. */
+    overflow-x: hidden;
 }
 
 /* "html body" för att slå Bootstraps body-regel, som laddas efter base.css.
@@ -157,6 +162,16 @@ p {
     font-size: 1.1rem;
     color: var(--accent) !important;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    white-space: nowrap;
+}
+
+/* Logga + "Johan's Digital Forge" i Black Ops One är för brett för att
+   få plats bredvid mobilmenyns hamburgerknapp på smala skärmar (Bootstraps
+   .navbar-brand har white-space:nowrap som standard, vilket tvingade hela
+   sidan i sidled). Tona ner till bara ikonen under 480px. */
+@media (max-width: 480px) {
+    .navbar-brand-text { display: none; }
+    .navbar-brand img { height: 40px !important; }
 }
 
 .navbar-light .navbar-nav .nav-link,

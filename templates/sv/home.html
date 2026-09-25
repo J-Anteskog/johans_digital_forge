@@ -35,6 +35,9 @@
     pointer-events: none;
     user-select: none;
   }
+  /* Extra logg-instans som bara visas högst upp på mobil (se media query
+     nedan) — döljs på desktop där originalloggan i höger kolumn gäller. */
+  .forge-hero__logo--mobile { display: none; }
 
   .forge-hero__scrim {
     position: absolute;
@@ -256,7 +259,8 @@
   }
 
   @media (max-width: 991px) {
-    .forge-hero__logo { max-width: 220px; }
+    .forge-hero__logo:not(.forge-hero__logo--mobile) { display: none; }
+    .forge-hero__logo--mobile { display: block; max-width: 220px; margin: 0 auto 1.5rem; }
     .forge-hero__content { padding-top: 3rem; text-align: center; }
     .forge-hero__lead { margin-left: auto; margin-right: auto; }
     .forge-hero__desk { margin-top: 3rem; }
@@ -533,6 +537,7 @@
     <div class="row align-items-center">
       <div class="col-lg-7">
         <span class="hero-eyebrow">Fagersta &amp; Västmanland</span>
+        <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="forge-hero__logo forge-hero__logo--mobile" aria-hidden="true">
         <h1 class="forge-hero__title hero-heading">Vi smider webbplatser som <span class="text-accent">håller.</span></h1>
         <p class="forge-hero__lead">Hemsidor, e-handel och webbapplikationer — skräddarsydda för småföretag, privatpersoner och föreningar. Från idé till lansering, allt från en och samma smedja.</p>
         <div class="d-flex gap-3 flex-wrap">
