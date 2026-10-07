@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.cache import cache_control
 from portfolio.models import Project
+from smedjan.models import ToolCard
 from urllib.parse import urlparse
 
 # Pages with non-standard URL structures between languages
@@ -69,11 +70,13 @@ LLMs: https://www.johans-digital-forge.se/llms.txt
 
 def home_sv(request):
     projects = Project.objects.filter(is_active=True)[:3]
-    return render(request, 'sv/home.html', {'projects': projects})
+    tools = ToolCard.objects.filter(is_active=True)[:4]
+    return render(request, 'sv/home.html', {'projects': projects, 'tools': tools})
 
 def home_en(request):
     projects = Project.objects.filter(is_active=True)[:3]
-    return render(request, 'en/home.html', {'projects': projects})
+    tools = ToolCard.objects.filter(is_active=True)[:4]
+    return render(request, 'en/home.html', {'projects': projects, 'tools': tools})
 
 def set_language(request):
     lang = request.GET.get('lang', 'sv')

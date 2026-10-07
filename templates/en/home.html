@@ -597,39 +597,22 @@
     </div>
 
     <div class="bento-grid">
-      <a href="{% url 'smedjan_en' %}" class="tool-card tool-card--wide">
+      {% for tool in tools %}
+      <a href="{% url 'smedjan_en' %}" class="tool-card{% if forloop.counter0 == 0 or forloop.counter0 == 3 %} tool-card--wide{% endif %}">
         <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-comments"></i></div>
-          <span class="badge-pill-forge badge-live">Live</span>
+          <div class="tool-card__icon"><i class="{{ tool.icon|default:'fas fa-cog' }}"></i></div>
+          {% if tool.status == 'live' %}
+            <span class="badge-pill-forge badge-live">Live</span>
+          {% elif tool.status == 'forging' %}
+            <span class="badge-pill-forge badge-forging">In the forge</span>
+          {% else %}
+            <span class="badge-pill-forge badge-forging">In development</span>
+          {% endif %}
         </div>
-        <h3 class="tool-card__title">Custom live chat &amp; response app</h3>
-        <p class="tool-card__desc">A lightweight chat script for the site, connected to a mobile app for quick replies wherever you are.</p>
+        <h3 class="tool-card__title">{{ tool.title_en }}</h3>
+        <p class="tool-card__desc">{{ tool.description_en }}</p>
       </a>
-      <a href="{% url 'smedjan_en' %}" class="tool-card">
-        <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-file-invoice-dollar"></i></div>
-          <span class="badge-pill-forge badge-live">Live</span>
-        </div>
-        <h3 class="tool-card__title">Automated invoicing</h3>
-        <p class="tool-card__desc">Status tracking, automatic reminders, connected to the customer registry.</p>
-      </a>
-      <a href="{% url 'smedjan_en' %}" class="tool-card">
-        <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-users-gear"></i></div>
-          <span class="badge-pill-forge badge-forging">In the forge</span>
-        </div>
-        <h3 class="tool-card__title">Next-gen CRM</h3>
-        <p class="tool-card__desc">Customer view &amp; core flow ready, invoice integration in progress.</p>
-      </a>
-
-      <a href="{% url 'smedjan_en' %}" class="tool-card tool-card--wide">
-        <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-clock-rotate-left"></i></div>
-          <span class="badge-pill-forge badge-forging">In development</span>
-        </div>
-        <h3 class="tool-card__title">Rutinklockan</h3>
-        <p class="tool-card__desc">A mobile app for daily structure and routines — launching for a select test group soon.</p>
-      </a>
+      {% endfor %}
       <div class="bento-cta">
         <h3>Got an idea in mind?</h3>
         <p>Book a free call and let's talk it through.</p>

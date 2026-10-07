@@ -598,39 +598,22 @@
     </div>
 
     <div class="bento-grid">
-      <a href="{% url 'smedjan' %}" class="tool-card tool-card--wide">
+      {% for tool in tools %}
+      <a href="{% url 'smedjan' %}" class="tool-card{% if forloop.counter0 == 0 or forloop.counter0 == 3 %} tool-card--wide{% endif %}">
         <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-comments"></i></div>
-          <span class="badge-pill-forge badge-live">Live</span>
+          <div class="tool-card__icon"><i class="{{ tool.icon|default:'fas fa-cog' }}"></i></div>
+          {% if tool.status == 'live' %}
+            <span class="badge-pill-forge badge-live">Live</span>
+          {% elif tool.status == 'forging' %}
+            <span class="badge-pill-forge badge-forging">I smedjan</span>
+          {% else %}
+            <span class="badge-pill-forge badge-forging">Under utveckling</span>
+          {% endif %}
         </div>
-        <h3 class="tool-card__title">Skräddarsydd live-chatt &amp; svars-app</h3>
-        <p class="tool-card__desc">Lättviktigt chattskript för hemsidan, kopplat till en mobilapp för snabba svar var du än är.</p>
+        <h3 class="tool-card__title">{{ tool.title_sv }}</h3>
+        <p class="tool-card__desc">{{ tool.description_sv }}</p>
       </a>
-      <a href="{% url 'smedjan' %}" class="tool-card">
-        <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-file-invoice-dollar"></i></div>
-          <span class="badge-pill-forge badge-live">Live</span>
-        </div>
-        <h3 class="tool-card__title">Automatiserad fakturering</h3>
-        <p class="tool-card__desc">Statusspårning, automatiska påminnelser, kopplat till kundregister.</p>
-      </a>
-      <a href="{% url 'smedjan' %}" class="tool-card">
-        <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-users-gear"></i></div>
-          <span class="badge-pill-forge badge-forging">I smedjan</span>
-        </div>
-        <h3 class="tool-card__title">Nästa generations CRM</h3>
-        <p class="tool-card__desc">Kundvy &amp; grundflöde klart, fakturaintegration pågår.</p>
-      </a>
-
-      <a href="{% url 'smedjan' %}" class="tool-card tool-card--wide">
-        <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="fas fa-clock-rotate-left"></i></div>
-          <span class="badge-pill-forge badge-forging">Under utveckling</span>
-        </div>
-        <h3 class="tool-card__title">Rutinklockan</h3>
-        <p class="tool-card__desc">Mobilapp för struktur och tidsoptimering i vardagen — lanseras för utvald testgrupp inom kort.</p>
-      </a>
+      {% endfor %}
       <div class="bento-cta">
         <h3>Har du en idé i åtanke?</h3>
         <p>Boka ett kostnadsfritt samtal så pratar vi igenom den.</p>
