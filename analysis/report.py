@@ -179,6 +179,23 @@ def build_categories(obj) -> list:
 # ── Fynd över alla kontrollerade sidor ─────────────────────────────────────
 
 _SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2}
+_ONE_STEP_DOWN = {'critical': 'high', 'high': 'medium', 'medium': 'medium'}
+
+
+def _adjust_for_share(finding: dict, total: int, start_url: str) -> None:
+    """
+    Fynd som gäller färre än hälften av de kontrollerade sidorna sänks ett steg
+    (KRITISK → HÖG, HÖG → MEDEL) – men inte om startsidan är en av dem.
+    Påverkar bara etikett och sortering i fyndlistan, inte poängen.
+    """
+    finding['base_severity'] = finding['severity']
+    finding['downgraded'] = False
+    if start_url in finding['pages'] or len(finding['pages']) * 2 >= total:
+        return
+    lower = _ONE_STEP_DOWN[finding['severity']]
+    if lower != finding['severity']:
+        finding['severity'] = lower
+        finding['downgraded'] = True
 
 # (nyckel, allvarlighet, test på en sidas SEO-resultat, text sv, text en)
 _PAGE_CHECKS = [
@@ -302,6 +319,9 @@ def site_findings(results: dict, lang: str = 'sv') -> list:
             'hint': _HINTS['alt_missing'][1 if en else 0],
         })
 
+    start_url = pages[0][0]
+    for f in findings:
+        _adjust_for_share(f, total, start_url)
     findings.sort(key=lambda f: _SEVERITY_ORDER[f['severity']])
     return findings
 
