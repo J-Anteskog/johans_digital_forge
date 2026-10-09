@@ -29,8 +29,8 @@ _OPT_IN_BUTTON  = 'Skicka rapporten'
 # Steg på väntesidan – nycklarna motsvarar tasks.PHASES
 _PENDING_STEPS = [
     ('fetch', 'Hämtar sidan, HTTPS och certifikat', 'Fetching the page, HTTPS and certificate'),
-    ('checks', 'SEO, mobil och tillgänglighet', 'SEO, mobile and accessibility'),
     ('crawl', 'Undersidor', 'Subpages'),
+    ('checks', 'SEO, mobil och tillgänglighet', 'SEO, mobile and accessibility'),
     ('pagespeed', 'Google PageSpeed (upp till 60 s)', 'Google PageSpeed (up to 60 s)'),
     ('scoring', 'Poäng och rapport', 'Scores and report'),
 ]
@@ -159,6 +159,11 @@ def analysis_form_sv(request):
 
 def analysis_form_en(request):
     return _analysis_view(request, language='en')
+
+
+def analysis_bot(request):
+    """Förklarar vår User-Agent (JDF-Webbanalys) för den som ser den i sin serverlogg."""
+    return render(request, 'analysis/bot.html')
 
 
 @_noindex

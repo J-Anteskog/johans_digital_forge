@@ -12,12 +12,26 @@ ska gå via safe_request() / fetch_limited():
      godkända IP:t, så att en DNS-post inte kan bytas mellan kontroll och
      anslutning (DNS rebinding).
   3. Proxy-inställningar från miljön ignoreras (trust_env=False).
+
+Hänsyn till den analyserade servern (per session och värd):
+  - minst MIN_HOST_INTERVAL sekunder mellan anrop till samma värd
+    (längre om robots.txt anger Crawl-delay, se set_host_interval)
+  - GET/HEAD görs om vid anslutningsfel/timeout med backoff (RETRY_BACKOFF),
+    och en gång vid 429/503 med kort Retry-After
+  - efter HOST_FAILURE_LIMIT misslyckade anrop i rad slutar vi anropa värden
+    (HostUnavailableError) i stället för att fortsätta belasta den
+
+Alla fel loggas (logger "analysis.net") med hela felkedjan, men nycklar och
+liknande parametrar i URL:er tas bort först (redact).
 """
 
+import logging
+import random
+import re
 import socket
 import time
 from dataclasses import dataclass, field
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 from django.core.exceptions import ValidationError
@@ -28,13 +42,43 @@ from urllib3.exceptions import NewConnectionError
 
 from .validators import resolve_public_ips, validate_url_syntax
 
-UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
+logger = logging.getLogger('analysis.net')
+
+UA = 'Mozilla/5.0 (compatible; JDF-Webbanalys/1.1; +https://www.johans-digital-forge.se/analys/bot/)'
+ROBOTS_AGENT = 'JDF-Webbanalys'   # namnet vi matchar mot i robots.txt
 MAX_REDIRECTS = 5
 _REDIRECT_CODES = {301, 302, 303, 307, 308}
+
+MIN_HOST_INTERVAL = 0.3        # sekunder mellan anrop till samma värd
+RETRY_BACKOFF = (1.0, 3.0)     # väntetid före försök 2 och 3
+RETRY_JITTER = 0.3             # slumpmässigt tillägg till väntetiden
+MAX_RETRY_AFTER = 10           # följ Retry-After (429/503) bara om den är kort
+HOST_FAILURE_LIMIT = 2         # misslyckade anrop i rad innan vi slutar anropa värden
+_RETRY_METHODS = {'GET', 'HEAD'}
+
+# Byts ut i testerna
+_sleep = time.sleep
+_now = time.monotonic
+
+# Parametrar som kan innehålla nycklar eller lösenord – värdet ersätts med ***
+_SENSITIVE = re.compile(
+    r'((?<![\w-])(?:key|api_?key|api-key|apikey|token|access_?token|auth|secret|client_?secret|'
+    r'password|passwd|pwd|signature|sig)=)[^&\s\'"<>)]+',
+    re.IGNORECASE,
+)
+
+
+def redact(text) -> str:
+    """Tar bort värdet på nyckel-/lösenordsparametrar ur en text (t.ex. en URL i ett felmeddelande)."""
+    return _SENSITIVE.sub(r'\1***', str(text))
 
 
 class BlockedAddressError(requests.exceptions.ConnectionError):
     """Anropet stoppades eftersom adressen inte är publik."""
+
+
+class HostUnavailableError(requests.exceptions.ConnectionError):
+    """Vi har slutat anropa värden efter upprepade fel i rad."""
 
 
 # ── Anslutning som validerar IP:t den faktiskt kopplar upp mot ────────────
@@ -108,6 +152,97 @@ def safe_session() -> requests.Session:
     return s
 
 
+# ── Hänsyn till servern: paus, retry och spärr per värd ──────────────────
+
+def _host_state(session, host: str) -> dict:
+    hosts = getattr(session, 'jdf_hosts', None)
+    if hosts is None:
+        hosts = session.jdf_hosts = {}
+    return hosts.setdefault(host, {'last': None, 'failures': 0, 'down': False,
+                                   'interval': MIN_HOST_INTERVAL})
+
+
+def set_host_interval(session, host: str, seconds: float) -> None:
+    """Minsta tid mellan anrop till värden (t.ex. robots.txt Crawl-delay)."""
+    state = _host_state(session, host.lower())
+    state['interval'] = max(MIN_HOST_INTERVAL, seconds)
+
+
+def host_is_down(session, host: str) -> bool:
+    return _host_state(session, host.lower())['down']
+
+
+def _throttle(state: dict) -> None:
+    if state['last'] is not None:
+        wait = state['interval'] - (_now() - state['last'])
+        if wait > 0:
+            _sleep(wait)
+    state['last'] = _now()
+
+
+def _retry_after_seconds(value) -> float | None:
+    try:
+        return max(0.0, float(value))
+    except (TypeError, ValueError):
+        return None   # HTTP-datum stöds inte – då görs inget nytt försök
+
+
+def describe_error(exc) -> str:
+    """Hela felkedjan som en rad, utan nycklar – för logg och teknisk vy."""
+    parts, seen, cur = [], set(), exc
+    while cur is not None and id(cur) not in seen and len(parts) < 6:
+        seen.add(id(cur))
+        parts.append(f'{type(cur).__name__}: {cur}')
+        cur = cur.__cause__ or cur.__context__ or getattr(cur, 'reason', None)
+        if not isinstance(cur, BaseException):
+            cur = None
+    return redact(' <- '.join(parts))
+
+
+def _send(s, method: str, url: str, timeout, stream: bool):
+    """Ett anrop (utan omdirigeringar) med paus, retry och spärr per värd."""
+    host = (urlparse(url).hostname or '').lower()
+    state = _host_state(s, host)
+    if state['down']:
+        raise HostUnavailableError(f'{host} slutade svara – inga fler anrop')
+
+    max_attempts = 1 + len(RETRY_BACKOFF) if method in _RETRY_METHODS else 1
+    attempt, retry_after_used = 0, False
+    while True:
+        attempt += 1
+        _throttle(state)
+        try:
+            resp = s.request(method, url, timeout=timeout, allow_redirects=False, stream=stream)
+        except requests.exceptions.SSLError:
+            raise   # certifikatfel blir inte bättre av ett nytt försök
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            reason = getattr(e.args[0] if e.args else None, 'reason', None)
+            if isinstance(reason, _BlockedConnectionError):
+                raise BlockedAddressError(reason._message) from e
+            logger.warning('Anrop misslyckades (försök %d av %d): %s %s – %s',
+                           attempt, max_attempts, method, redact(url), describe_error(e))
+            if attempt < max_attempts:
+                _sleep(RETRY_BACKOFF[attempt - 1] + random.uniform(0, RETRY_JITTER))
+                continue
+            state['failures'] += 1
+            if state['failures'] >= HOST_FAILURE_LIMIT and not state['down']:
+                state['down'] = True
+                logger.warning('Slutar anropa %s efter %d misslyckade anrop i rad', host, state['failures'])
+            raise
+
+        if (resp.status_code in (429, 503) and method in _RETRY_METHODS and not retry_after_used):
+            wait = _retry_after_seconds(resp.headers.get('Retry-After'))
+            if wait is not None and wait <= MAX_RETRY_AFTER:
+                retry_after_used = True
+                logger.info('%s svarade %d med Retry-After %s s – väntar och försöker igen',
+                            host, resp.status_code, wait)
+                resp.close()
+                _sleep(wait)
+                continue
+        state['failures'] = 0
+        return resp
+
+
 # ── Publika hjälpfunktioner ───────────────────────────────────────────────
 
 def safe_request(method: str, url: str, *, timeout=10, session=None,
@@ -127,14 +262,7 @@ def safe_request(method: str, url: str, *, timeout=10, session=None,
                 validate_url_syntax(current)
             except ValidationError as e:
                 raise BlockedAddressError(f'Blockerad adress: {e.messages[0]}')
-            try:
-                resp = s.request(method, current, timeout=timeout,
-                                 allow_redirects=False, stream=stream)
-            except requests.exceptions.ConnectionError as e:
-                reason = getattr(e.args[0] if e.args else None, 'reason', None)
-                if isinstance(reason, _BlockedConnectionError):
-                    raise BlockedAddressError(reason._message) from e
-                raise
+            resp = _send(s, method, current, timeout, stream)
             if resp.status_code in _REDIRECT_CODES and resp.headers.get('Location'):
                 history.append(resp)
                 current = urljoin(resp.url, resp.headers['Location'])
@@ -162,8 +290,9 @@ class FetchResult:
     total_ms: int | None = None
     truncated: bool = False
     encoding: str | None = None
-    error: str | None = None
-    error_kind: str | None = None   # 'blocked' | 'timeout' | 'ssl' | 'connection' | 'too_large' | 'other'
+    error: str | None = None        # teknisk text (utan nycklar) – bara för logg och teknisk vy
+    error_kind: str | None = None   # 'blocked' | 'timeout' | 'ssl' | 'connection' | 'host_unavailable'
+                                    # | 'too_large' | 'other'
 
 
 def fetch_limited(url: str, *, max_bytes: int, timeout=(5, 15), session=None,
@@ -200,14 +329,18 @@ def fetch_limited(url: str, *, max_bytes: int, timeout=(5, 15), session=None,
         finally:
             resp.close()
     except BlockedAddressError as e:
-        res.error, res.error_kind = str(e), 'blocked'
+        res.error, res.error_kind = redact(e), 'blocked'
+    except HostUnavailableError as e:
+        res.error, res.error_kind = redact(e), 'host_unavailable'
     except requests.exceptions.SSLError as e:
-        res.error, res.error_kind = f'SSL-fel: {e}', 'ssl'
-    except requests.exceptions.Timeout:
-        res.error, res.error_kind = 'Timeout', 'timeout'
+        res.error, res.error_kind = f'SSL-fel: {describe_error(e)}', 'ssl'
+    except requests.exceptions.Timeout as e:
+        res.error, res.error_kind = f'Timeout: {describe_error(e)}', 'timeout'
     except requests.exceptions.ConnectionError as e:
-        res.error, res.error_kind = f'Anslutningsfel: {e}', 'connection'
+        res.error, res.error_kind = f'Anslutningsfel: {describe_error(e)}', 'connection'
     except Exception as e:  # noqa: BLE001 – rapporteras i resultatet
-        res.error, res.error_kind = str(e), 'other'
+        res.error, res.error_kind = describe_error(e), 'other'
+    if res.error and res.error_kind not in ('blocked', 'host_unavailable', 'too_large'):
+        logger.warning('Hämtning misslyckades: %s – %s', redact(url), res.error)
     res.total_ms = int((time.monotonic() - start) * 1000)
     return res

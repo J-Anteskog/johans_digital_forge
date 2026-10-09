@@ -14,11 +14,12 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from .models import SiteAnalysis
-from .net import safe_session
+from .net import safe_session, set_host_interval
+from .robots import MAX_CRAWL_DELAY, RobotsRules
 from .validators import validate_target_url
 from .checks.http import check_http, check_ssl, fetch_page
 from .checks.page_facts import analyze_images, analyze_resources, parse_html
-from .checks.seo import check_seo, check_seo_page
+from .checks.seo import check_seo, check_seo_page, fetch_robots_txt
 from .checks.performance import check_performance
 from .checks.mobile import check_mobile
 from .checks.pagespeed import check_pagespeed
@@ -30,8 +31,8 @@ from .scoring import (
 )
 
 
-# Faser som visas på väntesidan (pending.html) medan analysen körs
-PHASES = ('fetch', 'checks', 'crawl', 'pagespeed', 'scoring')
+# Faser som visas på väntesidan (pending.html) medan analysen körs, i körordning
+PHASES = ('fetch', 'crawl', 'checks', 'pagespeed', 'scoring')
 
 
 def collect_results(url: str, progress=None) -> dict:
@@ -59,24 +60,39 @@ def collect_results(url: str, progress=None) -> dict:
         soup = None
         if page.error:
             results['html_fetch_error'] = page.error
+            results['html_fetch_error_kind'] = page.error_kind
         elif page.status_code and page.status_code >= 400:
             results['html_fetch_error'] = f'HTTP {page.status_code}'
+            results['html_fetch_error_kind'] = 'http'
         elif page.content:
             soup = parse_html(page.content, page.encoding)
 
         # ── 4. Kontroller som kräver HTML ─────────────────────────────────
-        report('checks')
         if soup:
             images    = analyze_images(soup, final_url)
             resources = analyze_resources(soup, final_url)
             results['images']        = images
             results['resources']     = resources
-            results['seo']           = check_seo(final_url, soup, session)
+
+            # robots.txt hämtas en gång: SEO-kontrollen och crawlens regler
+            robots_res = fetch_robots_txt(final_url, session)
+            results['seo'] = check_seo(final_url, soup, session, robots=robots_res)
+            rules = RobotsRules.from_fetch(robots_res)
+            results['robots'] = rules.summary()
+            if rules.crawl_delay:
+                set_host_interval(session, urlparse(final_url).hostname or '',
+                                  min(rules.crawl_delay, MAX_CRAWL_DELAY))
+
+            # Undersidorna före bild-/CSS-kontrollerna: de är viktigast om
+            # servern börjar neka anrop
+            report('crawl')
+            results['pages'], results['pages_skipped'] = _crawl_internal_pages(
+                final_url, soup, session, rules=rules, max_pages=rules.max_pages(20))
+
+            report('checks')
             results['performance']   = check_performance(final_url, soup, session)
             results['mobile']        = check_mobile(soup, resources, session)
             results['accessibility'] = check_accessibility(soup, images)
-            report('crawl')
-            results['pages'], results['pages_skipped'] = _crawl_internal_pages(final_url, soup, session)
         else:
             results['seo']           = {}
             results['performance']   = {}
@@ -198,11 +214,13 @@ def _skip_reason(url: str) -> str | None:
     return None
 
 
-def _crawl_internal_pages(base_url: str, root_soup, session=None, max_pages: int = 20):
+def _crawl_internal_pages(base_url: str, root_soup, session=None, max_pages: int = 20, rules=None):
     """
     Crawlar interna sidor och kör SEO + tillgänglighet på var och en.
-    Returnerar (sidor, överhoppade). Tekniska adresser, filer och dubbletter av
-    startsidan hoppas över och redovisas separat – aldrig som sidfel.
+    Returnerar (sidor, överhoppade). Tekniska adresser, filer, dubbletter av
+    startsidan och sidor som robots.txt inte tillåter hoppas över och redovisas
+    separat – aldrig som sidfel. Fel sparas med typ (error_kind) och teknisk
+    text (error) så att rapporten kan visa en läsbar text.
     """
     base_host = urlparse(base_url).hostname or ''
     base_site = base_host[4:] if base_host.startswith('www.') else base_host
@@ -227,6 +245,8 @@ def _crawl_internal_pages(base_url: str, root_soup, session=None, max_pages: int
             continue
         seen.add(key)
         reason = _skip_reason(absolute)
+        if not reason and rules is not None and not rules.allowed(absolute):
+            reason = 'robots'
         if reason:
             skipped.append({'url': absolute, 'reason': reason})
             continue
@@ -235,8 +255,15 @@ def _crawl_internal_pages(base_url: str, root_soup, session=None, max_pages: int
     pages = []
     for url in to_visit[:max_pages]:
         page = fetch_page(url, session)
-        if page.error or not page.content or (page.status_code or 0) >= 400:
-            pages.append({'url': url, 'error': page.error or f'HTTP {page.status_code}'})
+        if page.error:
+            pages.append({'url': url, 'error': page.error, 'error_kind': page.error_kind})
+            continue
+        if (page.status_code or 0) >= 400:
+            pages.append({'url': url, 'error': f'HTTP {page.status_code}', 'error_kind': 'http',
+                          'status_code': page.status_code})
+            continue
+        if not page.content:
+            pages.append({'url': url, 'error': 'Tomt svar', 'error_kind': 'empty'})
             continue
         soup = parse_html(page.content, page.encoding)
         images = analyze_images(soup, url)

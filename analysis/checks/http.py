@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 from django.core.exceptions import ValidationError
 
-from ..net import fetch_limited
+from ..net import fetch_limited, redact
 from ..validators import resolve_public_ips
 
 _TIMEOUT = (5, 15)
@@ -86,7 +86,7 @@ def check_ssl(url: str) -> dict:
     except ValidationError as e:
         result['error'] = f'Blockerad adress: {e.messages[0]}'
     except ssl.SSLCertVerificationError as e:
-        result['error'] = f'Ogiltigt certifikat: {e}'
+        result['error'] = f'Ogiltigt certifikat: {redact(e)}'
     except Exception as e:
-        result['error'] = str(e)
+        result['error'] = redact(e)
     return result

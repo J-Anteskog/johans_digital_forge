@@ -6,8 +6,21 @@ _TIMEOUT = 10
 _MAX_BYTES = 500_000
 
 
-def check_seo(base_url: str, soup, session=None) -> dict:
-    """Kör alla SEO-kontroller på en färdigparsad BeautifulSoup-instans."""
+def robots_url(base_url: str) -> str:
+    parsed = urlparse(base_url)
+    return f"{parsed.scheme}://{parsed.netloc}/robots.txt"
+
+
+def fetch_robots_txt(base_url: str, session=None):
+    """Hämtar /robots.txt EN gång – används både av SEO-kontrollen och av crawlen."""
+    return fetch_limited(robots_url(base_url), max_bytes=_MAX_BYTES, timeout=_TIMEOUT, session=session)
+
+
+def check_seo(base_url: str, soup, session=None, robots=None) -> dict:
+    """
+    Kör alla SEO-kontroller på en färdigparsad BeautifulSoup-instans.
+    robots: redan hämtad /robots.txt (FetchResult); hämtas annars här.
+    """
     return {
         'viewport':         _check_viewport(soup),
         'title':            _check_title(soup),
@@ -15,7 +28,7 @@ def check_seo(base_url: str, soup, session=None) -> dict:
         'h1':               _check_h1(soup),
         'og_title':         _check_og(soup, 'og:title'),
         'og_image':         _check_og(soup, 'og:image'),
-        'robots_txt':       _check_robots_txt(base_url, session),
+        'robots_txt':       _check_robots_txt(base_url, session, robots),
         'sitemap':          _check_sitemap(base_url, session),
     }
 
@@ -86,13 +99,12 @@ def _check_og(soup, property_name):
     }
 
 
-def _check_robots_txt(base_url, session=None):
-    parsed = urlparse(base_url)
-    robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
-    res = fetch_limited(robots_url, max_bytes=_MAX_BYTES, timeout=_TIMEOUT, session=session)
+def _check_robots_txt(base_url, session=None, res=None):
+    if res is None:
+        res = fetch_robots_txt(base_url, session)
     found = res.status_code == 200
     text = res.content.decode('utf-8', errors='replace').lower() if found else ''
-    return {'found': found, 'url': robots_url, 'sitemap_referenced': 'sitemap' in text}
+    return {'found': found, 'url': robots_url(base_url), 'sitemap_referenced': 'sitemap' in text}
 
 
 def _check_sitemap(base_url, session=None):

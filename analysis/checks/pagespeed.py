@@ -1,7 +1,12 @@
+import logging
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from django.conf import settings
+
+from ..net import describe_error, redact
+
+logger = logging.getLogger('analysis.pagespeed')
 
 _API_URL = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
 _TIMEOUT = 60
@@ -45,10 +50,13 @@ def _run_strategy(url: str, strategy: str, api_key: str) -> dict:
             params={'url': url, 'strategy': strategy, 'key': api_key, 'category': 'performance'},
             timeout=_TIMEOUT,
         )
-    except requests.exceptions.Timeout:
+    except requests.exceptions.Timeout as e:
+        logger.warning('PageSpeed %s: timeout efter %s s (%s)', strategy, _TIMEOUT, redact(url))
         return {'error_kind': 'timeout', 'timeout_s': _TIMEOUT}
     except requests.exceptions.RequestException as e:
-        # Felmeddelandet kan innehålla anrops-URL:en med API-nyckeln – spara bara typen
+        # Felmeddelandet innehåller anrops-URL:en med API-nyckeln: loggas utan nyckel,
+        # och i resultatet sparas bara typen
+        logger.warning('PageSpeed %s misslyckades: %s', strategy, describe_error(e))
         return {'error_kind': 'error', 'error': type(e).__name__}
 
     if resp.status_code != 200:
@@ -59,6 +67,7 @@ def _run_strategy(url: str, strategy: str, api_key: str) -> dict:
             reason = resp.json().get('error', {}).get('status', '')
         except ValueError:
             pass
+        logger.warning('PageSpeed %s svarade HTTP %s (%s) för %s', strategy, resp.status_code, reason, redact(url))
         return {'error_kind': 'http', 'http_status': resp.status_code, 'reason': reason[:60]}
 
     try:

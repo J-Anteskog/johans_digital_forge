@@ -160,14 +160,15 @@ class ImageSizeTests(NoNetworkMixin, SimpleTestCase):
         self.assertEqual(perf['images_not_checked'], 0)
         self.assertNoNetwork()
 
-    def test_more_than_20_images_are_reported_as_not_checked(self):
+    def test_more_than_10_images_are_reported_as_not_checked(self):
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(''.join(f'<img src="/{i}.jpg" alt="">' for i in range(25)), 'lxml')
         web = FakeWeb({})
         with patch('analysis.checks.performance.safe_request', side_effect=web.safe_request):
             perf = check_performance('https://example.com/', soup)
-        self.assertEqual((perf['images_considered'], perf['images_not_checked']), (25, 5))
-        self.assertEqual(len(web.requested), 20)
+        self.assertEqual((perf['images_considered'], perf['images_not_checked']), (25, 15))
+        self.assertEqual(len(web.requested), 10)              # högst 10 HEAD-anrop för bilder
+        self.assertEqual(perf['images_check_limit'], 10)
 
 
 @override_settings(PAGESPEED_API_KEY='')

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}JDF-Webbanalys – om vår automatiska genomgång – Johans Digital Forge{% endblock %}
+
+{% block meta_description %}JDF-Webbanalys är Johans Digital Forges automatiska genomgång av webbplatser. Här står vad den hämtar, hur ofta och hur du kontaktar oss.{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background:linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);">
+  <div class="container text-light" style="max-width:720px;padding-top:2rem;">
+    <h1 class="h3 fw-bold mb-3">JDF-Webbanalys</h1>
+    <p class="text-secondary mb-4">
+      Om du ser <code class="text-light">JDF-Webbanalys</code> i din servers logg är det Johans Digital Forges
+      automatiska genomgång av en webbplats. Den startas när någon ber om en analys av en adress på
+      <a href="{% url 'analysis' %}" class="text-warning">johans-digital-forge.se/analys</a>.
+    </p>
+
+    <h2 class="h6 fw-bold mt-4">Vad som hämtas</h2>
+    <ul class="text-secondary">
+      <li>Startsidan som någon bett oss analysera, samt robots.txt och sitemap.</li>
+      <li>Upp till 20 undersidor som startsidan länkar till.</li>
+      <li>Upp till 10 bilder (bara storleken, via HEAD) och upp till 6 stilmallar (CSS).</li>
+      <li>Sammanlagt högst cirka 50 anrop per genomgång. Vi skickar inga formulär och loggar inte in.</li>
+    </ul>
+
+    <h2 class="h6 fw-bold mt-4">Hur försiktigt</h2>
+    <ul class="text-secondary">
+      <li>Minst 0,3 sekunders paus mellan anrop till samma server.</li>
+      <li>Vi följer <code class="text-light">Disallow</code> och <code class="text-light">Crawl-delay</code> i robots.txt för <code class="text-light">JDF-Webbanalys</code> (annars för <code class="text-light">*</code>).</li>
+      <li>Om servern slutar svara gör vi högst två nya försök och slutar sedan helt efter två misslyckade anrop i rad.</li>
+    </ul>
+
+    <h2 class="h6 fw-bold mt-4">Stoppa genomgången</h2>
+    <p class="text-secondary">
+      Lägg till följande i robots.txt för att stoppa genomgången av undersidor:
+    </p>
+    <pre class="rounded-3 p-3 text-light" style="background:rgba(255,255,255,.05);">User-agent: JDF-Webbanalys
+Disallow: /</pre>
+
+    <h2 class="h6 fw-bold mt-4">Kontakt</h2>
+    <p class="text-secondary mb-0">
+      Frågor eller problem? Mejla <a href="mailto:info@johans-digital-forge.se" class="text-warning">info@johans-digital-forge.se</a>.
+    </p>
+  </div>
+</section>
+{% endblock %}

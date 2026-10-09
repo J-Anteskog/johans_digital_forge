@@ -5,7 +5,7 @@ from .page_facts import image_src
 
 _TIMEOUT = 8
 _IMAGE_LIMIT_BYTES = 500 * 1024   # 500 KB
-_MAX_IMG_TO_CHECK = 20            # cap HEAD-anrop för att hålla nere analystiden
+_MAX_IMG_TO_CHECK = 10            # cap HEAD-anrop: håller nere analystiden och belastningen på servern
 
 
 def check_performance(base_url: str, soup, session=None) -> dict:
@@ -52,5 +52,6 @@ def check_performance(base_url: str, soup, session=None) -> dict:
         'images_size_unknown': unknown,
         'images_blocked': blocked,
         'images_not_checked': max(0, len(urls) - _MAX_IMG_TO_CHECK),
+        'images_check_limit': _MAX_IMG_TO_CHECK,
         'images_size_limit_kb': _IMAGE_LIMIT_BYTES // 1024,
     }

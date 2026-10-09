@@ -120,7 +120,6 @@
     pagespeed: "Väntar på Google PageSpeed Insights…",
     scoring:   "Beräknar poäng…"
   };
-  var order = ["fetch", "checks", "crawl", "pagespeed", "scoring"];
 
   var msgEl     = document.getElementById("status-msg");
   var elapsedEl = document.getElementById("elapsed");
@@ -130,6 +129,8 @@
   var pspText   = document.getElementById("psp-text");
   var dots      = document.querySelectorAll(".dot");
   var steps     = document.querySelectorAll(".step");
+  // Stegens ordning tas från sidan (samma som tasks.PHASES)
+  var order     = Array.prototype.map.call(steps, function (li) { return li.dataset.phase; });
   var elapsed = 0, dotIndex = 0, phase = null, phaseSeconds = 0, failures = 0, polling = false;
 
   function updateDots() {

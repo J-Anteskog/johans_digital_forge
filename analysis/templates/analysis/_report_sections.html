@@ -449,7 +449,7 @@
                 {% if obj.language == 'en' %}No images on the page{% else %}Inga bilder på sidan{% endif %}
               {% endif %}
               {% if perf.images_size_unknown %}{% if perf.images_checked_for_size %}<br>{% endif %}<span class="text-light">{{ perf.images_size_unknown }} {% if obj.language == 'en' %}could not be measured{% else %}kunde inte mätas{% endif %}</span> — {% if obj.language == 'en' %}the server did not report their size{% else %}servern angav inte deras storlek{% endif %}{% endif %}
-              {% if perf.images_not_checked %}<br>{{ perf.images_not_checked }} {% if obj.language == 'en' %}not checked (we check at most 20 per page){% else %}ej kontrollerade (vi kontrollerar högst 20 per sida){% endif %}{% endif %}
+              {% if perf.images_not_checked %}<br>{{ perf.images_not_checked }} {% if obj.language == 'en' %}not checked (we check at most {{ perf.images_check_limit|default:20 }} per page){% else %}ej kontrollerade (vi kontrollerar högst {{ perf.images_check_limit|default:20 }} per sida){% endif %}{% endif %}
               {% if perf.images_blocked %}<br>{{ perf.images_blocked }} {% if obj.language == 'en' %}not checked (address not public){% else %}ej kontrollerade (adressen är inte publik){% endif %}{% endif %}
               {% if r.images.total and not perf.images_checked_for_size and not perf.images_size_unknown and not perf.images_not_checked and not perf.images_blocked %}
                 {% if obj.language == 'en' %}Not measured{% else %}Ej mätt{% endif %}
