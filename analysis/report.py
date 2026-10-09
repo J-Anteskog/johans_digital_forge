@@ -122,9 +122,11 @@ def category_measures(key: str, results: dict, lang: str = 'sv') -> str:
         start = round(SEO_START_WEIGHT * 100)
         if n:
             return (f'Mäter sidtitel, metabeskrivning, H1, viewport och Open Graph på startsidan ({start} %) och '
-                    f'på {n} undersidor ({100 - start} %, medelvärde), samt robots.txt och sitemap för hela webbplatsen.',
+                    f'på {n} {"undersida" if n == 1 else "undersidor"} ({100 - start} %, '
+                    f'{"värdet för undersidan" if n == 1 else "medelvärde"}), samt robots.txt och sitemap för hela webbplatsen.',
                     f'Measures page title, meta description, H1, viewport and Open Graph on the home page ({start} %) and '
-                    f'on {n} subpages ({100 - start} %, average), plus robots.txt and sitemap for the whole site.')[i]
+                    f'on {n} {"subpage" if n == 1 else "subpages"} ({100 - start} %, '
+                    f'{"its value" if n == 1 else "average"}), plus robots.txt and sitemap for the whole site.')[i]
         return ('Mäter sidtitel, metabeskrivning, H1, viewport och Open Graph på startsidan (inga undersidor '
                 'kunde kontrolleras), samt robots.txt och sitemap.',
                 'Measures page title, meta description, H1, viewport and Open Graph on the home page (no subpages '
@@ -215,8 +217,8 @@ _PAGE_CHECKS = [
 
 # Förklaring som visas efter fyndet
 _HINTS = {
-    'title_missing': ('sökmotorer vet inte vad sidan handlar om',
-                      "search engines don't know what the page is about"),
+    'title_missing': ('utan titel väljer Google själv vilken rubrik som visas i sökresultaten',
+                      'without a title, Google picks the headline shown in search results itself'),
     'desc_missing': ('ingen egen beskrivning är satt, så Google väljer själv vilken text från sidan som visas i sökresultaten',
                      'no description is set, so Google picks text from the page itself for search results'),
     'alt_missing': ('bilderna är osynliga för skärmläsare', 'the images are invisible to screen readers'),
