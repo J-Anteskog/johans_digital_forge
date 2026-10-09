@@ -29,51 +29,58 @@ class BuildBriefInitialTests(TestCase):
         for score in (0, 30, 59):
             with self.subTest(score=score):
                 analysis = _make_analysis(score_overall=score)
-                initial = build_brief_initial_from_analysis(analysis)
+                initial, summary = build_brief_initial_from_analysis(analysis)
                 self.assertEqual(initial['has_existing_site'], 'redo_needed')
 
     def test_score_60_to_79_gives_unhappy(self):
         for score in (60, 72, 79):
             with self.subTest(score=score):
                 analysis = _make_analysis(score_overall=score)
-                initial = build_brief_initial_from_analysis(analysis)
+                initial, summary = build_brief_initial_from_analysis(analysis)
                 self.assertEqual(initial['has_existing_site'], 'unhappy')
 
     def test_score_80_plus_does_not_set_has_existing_site(self):
         for score in (80, 92, 100):
             with self.subTest(score=score):
                 analysis = _make_analysis(score_overall=score)
-                initial = build_brief_initial_from_analysis(analysis)
+                initial, summary = build_brief_initial_from_analysis(analysis)
                 self.assertNotIn('has_existing_site', initial)
 
     def test_goals_never_set(self):
         analysis = _make_analysis(score_overall=30)
-        initial = build_brief_initial_from_analysis(analysis)
+        initial, summary = build_brief_initial_from_analysis(analysis)
         self.assertNotIn('goals', initial)
 
     def test_notes_contains_url(self):
         analysis = _make_analysis(url='https://mysite.se')
-        initial = build_brief_initial_from_analysis(analysis)
-        self.assertIn('https://mysite.se', initial['notes'])
+        initial, summary = build_brief_initial_from_analysis(analysis)
+        self.assertIn('https://mysite.se', summary)
 
     def test_notes_contains_grade_and_score(self):
         analysis = _make_analysis(score_overall=72)
-        initial = build_brief_initial_from_analysis(analysis)
-        self.assertIn('72', initial['notes'])
+        initial, summary = build_brief_initial_from_analysis(analysis)
+        self.assertIn('72', summary)
 
     def test_notes_contains_category_scores(self):
         analysis = _make_analysis(
             score_security=88, score_seo=55,
             score_performance=62, score_mobile=71,
         )
-        initial = build_brief_initial_from_analysis(analysis)
-        self.assertIn('88', initial['notes'])
-        self.assertIn('55', initial['notes'])
+        initial, summary = build_brief_initial_from_analysis(analysis)
+        self.assertIn('88', summary)
+        self.assertIn('55', summary)
 
     def test_notes_contains_report_link(self):
         analysis = _make_analysis()
-        initial = build_brief_initial_from_analysis(analysis)
-        self.assertIn(str(analysis.id), initial['notes'])
+        initial, summary = build_brief_initial_from_analysis(analysis)
+        self.assertIn(str(analysis.id), summary)
+
+    def test_summary_is_also_in_initial(self):
+        """Funktionen returnerar (initial, summary); sammanfattningen förifyller analysis_summary."""
+        analysis = _make_analysis()
+        initial, summary = build_brief_initial_from_analysis(analysis)
+        self.assertIsInstance(initial, dict)
+        self.assertEqual(initial['analysis_summary'], summary)
 
 
 class BriefFormGetTests(TestCase):
@@ -168,7 +175,10 @@ class BriefFormPostTests(TestCase):
         import time
         token = signing.dumps(int(time.time()) - 5)
         data['form_token'] = token
-        with patch('brief.views._verify_turnstile', return_value=True):
+        # _fire_analytics_event skickar annars ett riktigt event till produktionens
+        # Shynet i en bakgrundstråd vid varje testkörning
+        with patch('brief.views._verify_turnstile', return_value=True), \
+             patch('brief.views._fire_analytics_event'):
             return self.client.post(url, data)
 
     def test_post_with_analysis_id_saves_referrer(self):
