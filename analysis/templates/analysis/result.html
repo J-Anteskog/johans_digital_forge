@@ -27,13 +27,8 @@
     <p class="text-secondary mb-4">
       {% if obj.language == 'en' %}The site could not be reached or an unexpected error occurred.{% else %}Sidan kunde inte nås eller ett oväntat fel uppstod.{% endif %}
     </p>
-    {% if obj.error_message %}
-    <details class="text-start mb-4">
-      <summary class="text-secondary small" style="cursor:pointer;">
-        {% if obj.language == 'en' %}Technical details{% else %}Tekniska detaljer{% endif %}
-      </summary>
-      <pre class="mt-2 text-danger small rounded-2 p-3" style="background:rgba(255,255,255,.04);white-space:pre-wrap;word-break:break-all;font-size:.72rem;">{{ obj.error_message }}</pre>
-    </details>
+    {% if obj.public_error_message %}
+    <p class="text-secondary small mb-4">{{ obj.public_error_message }}</p>
     {% endif %}
     <a href="{% if obj.language == 'en' %}{% url 'analysis_en' %}{% else %}{% url 'analysis' %}{% endif %}"
        class="btn-forge">

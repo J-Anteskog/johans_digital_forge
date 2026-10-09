@@ -3,7 +3,7 @@
           {% for c in categories %}
           <div>
             <div class="d-flex justify-content-between text-secondary small mb-1">
-              <span>{{ c.label }}{% if c.tag %}<span class="d-block" style="font-size:.7rem;opacity:.75;">{{ c.tag }}</span>{% endif %}</span>
+              <span>{{ c.label }}{% if c.tag %}<span class="d-block" style="font-size:.7rem;opacity:.75;">{{ c.tag }}</span>{% endif %}{% if c.key == 'seo' and coverage %}<span class="d-block text-warning" style="font-size:.7rem;">{% if obj.language == 'en' %}uncertain – few pages could be fetched{% else %}osäker – få sidor kunde hämtas{% endif %}</span>{% endif %}</span>
               {% if c.measured %}
               <span class="text-light fw-semibold">{{ c.score }}</span>
               {% else %}

@@ -1,4 +1,4 @@
-{% load static %}
+{% load static analysis_report %}
 <!DOCTYPE html>
 <html lang="{{ obj.language|default:'sv' }}">
 <head>
@@ -295,7 +295,7 @@
         <div class="row-label">SSL-certifikat</div>
         <div class="row-detail">
           {% if ssl.valid %}Giltigt · utgår {{ ssl.expiry_date }} ({{ ssl.days_remaining }} dagar kvar){% if ssl.expires_soon %} — förnya snart!{% endif %}
-          {% elif ssl.error %}{{ ssl.error }}
+          {% elif ssl.error %}{{ ssl|readable_ssl_error:obj.language }}
           {% else %}Certifikatet är ogiltigt.{% endif %}
         </div>
       </div>

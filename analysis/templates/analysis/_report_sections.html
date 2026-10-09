@@ -56,8 +56,9 @@
                   &nbsp;·&nbsp;
                   {{ http.redirect_count }} {% if obj.language == 'en' %}redirect{% if http.redirect_count != 1 %}s{% endif %}{% else %}omdirigering{% if http.redirect_count != 1 %}ar{% endif %}{% endif %}
                 {% endif %}
-              {% elif http.error %}
-                {{ http.error|truncatechars:160 }}
+              {% elif errors.http %}
+                {{ errors.http.text }}
+                <span class="tech-only d-block" style="font-size:.72rem;opacity:.75;word-break:break-all;">{% if shared %}{{ errors.http.kind_label }}{% else %}{{ errors.http.kind_label }}{% if errors.http.detail %}: {{ errors.http.detail|truncatechars:300 }}{% endif %}{% endif %}</span>
               {% else %}–{% endif %}
             </span>
           </div>
@@ -80,8 +81,9 @@
                     — {% if obj.language == 'en' %}renew soon!{% else %}förnya snart!{% endif %}
                   </span>
                 {% endif %}
-              {% elif ssl.error %}
-                {{ ssl.error|truncatechars:160 }}
+              {% elif errors.ssl %}
+                {{ errors.ssl.text }}
+                {% if errors.ssl.detail %}<span class="tech-only d-block" style="font-size:.72rem;opacity:.75;word-break:break-all;">{% if shared %}{{ errors.ssl.kind_label }}{% else %}{{ errors.ssl.kind_label }}{% if errors.ssl.detail %}: {{ errors.ssl.detail|truncatechars:300 }}{% endif %}{% endif %}</span>{% endif %}
               {% else %}
                 {% if obj.language == 'en' %}Certificate not valid{% else %}Certifikatet är ogiltigt{% endif %}
               {% endif %}
@@ -131,6 +133,13 @@
       {% endif %}
 
       <ul class="list-unstyled mb-0">
+
+        {% if coverage %}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
+          <i class="fas fa-info-circle text-warning mt-1 flex-shrink-0"></i>
+          <div><span class="text-secondary" style="font-size:.8rem;">{{ coverage.text }}</span></div>
+        </li>
+        {% endif %}
 
         {# Title #}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
@@ -648,7 +657,8 @@
         {% endfor %}
         {% if hdr.error %}
         <li class="px-4 py-3 text-secondary small">
-          <i class="fas fa-exclamation-triangle text-warning me-2"></i>{{ hdr.error }}
+          <i class="fas fa-exclamation-triangle text-warning me-2"></i>{{ errors.headers.text }}
+          <span class="tech-only d-block" style="font-size:.72rem;opacity:.75;word-break:break-all;">{% if shared %}{{ errors.headers.kind_label }}{% else %}{{ errors.headers.kind_label }}{% if errors.headers.detail %}: {{ errors.headers.detail|truncatechars:300 }}{% endif %}{% endif %}</span>
         </li>
         {% endif %}
       </ul>

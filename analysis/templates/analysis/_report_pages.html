@@ -28,7 +28,7 @@
               <tr style="border-color:rgba(255,255,255,.07);">
                 <td style="border-color:rgba(255,255,255,.07);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                   {% if page.error %}
-                    <span class="text-danger small">{{ page.url|truncatechars:50 }} — fel</span>
+                    <span class="text-secondary small" title="{{ page.url }}">{{ page.url|truncatechars:50 }}</span>
                   {% else %}
                     {% if page.is_start %}<span class="badge bg-secondary me-1" style="font-size:.65rem;">{% if obj.language == 'en' %}Home page{% else %}Startsidan{% endif %}</span>{% endif %}
                     <a href="{{ page.url }}" target="_blank" rel="noopener"
@@ -85,7 +85,10 @@
                   </span>
                 </td>
                 {% else %}
-                <td colspan="6" class="text-danger small" style="border-color:rgba(255,255,255,.07);">{{ page.error|truncatechars:60 }}</td>
+                <td colspan="6" class="small" style="border-color:rgba(255,255,255,.07);">
+                  <span class="{% if page.error_info.kind == 'http' %}text-danger{% else %}text-warning{% endif %}">{{ page.error_info.text }}</span>
+                  <span class="tech-only d-block" style="font-size:.72rem;opacity:.75;word-break:break-all;">{% if shared %}{{ page.error_info.kind_label }}{% else %}{{ page.error_info.kind_label }}{% if page.error_info.detail %}: {{ page.error_info.detail|truncatechars:300 }}{% endif %}{% endif %}</span>
+                </td>
                 {% endif %}
               </tr>
               {% endfor %}

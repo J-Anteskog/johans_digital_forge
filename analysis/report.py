@@ -264,14 +264,154 @@ def page_count(results: dict, lang: str = 'sv') -> dict | None:
     return {'subpages': subs, 'total': total, 'failed': failed, 'text': text, 'failed_text': failed_text}
 
 
-def page_rows(results: dict) -> list:
-    """Rader i sidtabellen: startsidan först, sedan undersidorna (även de som inte kunde hämtas)."""
+def page_rows(results: dict, lang: str = 'sv') -> list:
+    """
+    Rader i sidtabellen: startsidan först, sedan undersidorna (även de som inte
+    kunde hämtas). Fel får en läsbar text i 'error_info' (se error_info).
+    """
     results = results or {}
     if not results.get('seo'):
         return []
     start = {'url': (results.get('http') or {}).get('final_url') or '', 'is_start': True,
              'seo': results['seo'], 'accessibility': results.get('accessibility') or {}}
-    return [start] + list(results.get('pages') or [])
+    rows = [start]
+    for page in results.get('pages') or []:
+        if page.get('error'):
+            page = dict(page, error_info=error_info(page.get('error'), page.get('error_kind'),
+                                                    page.get('status_code'), lang))
+        rows.append(page)
+    return rows
+
+
+# ── Läsbara feltexter ──────────────────────────────────────────────────────
+# Läsaren ser aldrig tekniska felmeddelanden eller klassnamn: 'text' visas för
+# alla, 'kind_label' i teknisk vy (även i delningsvyn) och 'detail' – den
+# tekniska texten utan nycklar – bara i teknisk vy i den vanliga rapporten.
+
+_ERROR_TEXTS = {
+    'connection':       (('Sidan svarade inte vid kontrollen', 'The page did not respond during the check'),
+                         ('Anslutningsfel', 'Connection error')),
+    'timeout':          (('Sidan svarade inte vid kontrollen', 'The page did not respond during the check'),
+                         ('Timeout', 'Timeout')),
+    'host_unavailable': (('Inte kontrollerad – servern slutade svara', 'Not checked – the server stopped responding'),
+                         ('Servern slutade svara', 'Server stopped responding')),
+    'ssl':              (('Säker anslutning (SSL) kunde inte upprättas', 'A secure connection (SSL) could not be established'),
+                         ('SSL-fel', 'SSL error')),
+    'blocked':          (('Adressen kunde inte kontrolleras', 'The address could not be checked'),
+                         ('Blockerad adress', 'Blocked address')),
+    'too_large':        (('Sidan är för stor för att kontrolleras (över 2 MB)', 'The page is too large to check (over 2 MB)'),
+                         ('För stor sida', 'Page too large')),
+    'empty':            (('Sidan var tom', 'The page was empty'), ('Tomt svar', 'Empty response')),
+    'other':            (('Sidan kunde inte kontrolleras', 'The page could not be checked'),
+                         ('Annat fel', 'Other error')),
+}
+
+_HTTP_REASONS = {
+    401: ('åtkomst nekad', 'access denied'), 403: ('åtkomst nekad', 'access denied'),
+    404: ('sidan finns inte', 'page not found'), 410: ('sidan är borttagen', 'page removed'),
+}
+
+
+def _guess_kind(error: str):
+    """Feltyp för rapporter som bara sparade texten (före error_kind)."""
+    e = error or ''
+    if e.startswith('HTTP '):
+        try:
+            return 'http', int(e.split()[1])
+        except (IndexError, ValueError):
+            return 'http', None
+    for prefix, kind in (('Timeout', 'timeout'), ('SSL-fel', 'ssl'), ('Blockerad adress', 'blocked'),
+                         ('Anslutningsfel', 'connection'), ('Svaret är för stort', 'too_large'),
+                         ('Tomt svar', 'empty')):
+        if e.startswith(prefix):
+            return kind, None
+    return 'other', None
+
+
+def error_info(error, kind=None, status=None, lang: str = 'sv') -> dict | None:
+    """Läsbar text, feltyp och teknisk text för ett sparat fel."""
+    if not error and not kind:
+        return None
+    i = 1 if lang == 'en' else 0
+    if not kind:
+        kind, guessed_status = _guess_kind(error)
+        status = status or guessed_status
+    if kind == 'http':
+        reason = _HTTP_REASONS.get(status)
+        if status and status >= 500:
+            reason = ('fel på servern', 'server error')
+        if status:
+            text = (f'Sidan svarade med felkod {status}', f'The page responded with error code {status}')[i]
+        else:
+            text = ('Sidan svarade med en felkod', 'The page responded with an error code')[i]
+        if reason:
+            text += f' ({reason[i]})'
+        return {'kind': 'http', 'text': text, 'kind_label': f'HTTP {status}' if status else 'HTTP', 'detail': error or ''}
+    texts, labels = _ERROR_TEXTS.get(kind, _ERROR_TEXTS['other'])
+    return {'kind': kind, 'text': texts[i], 'kind_label': labels[i], 'detail': error or ''}
+
+
+def ssl_error_info(ssl: dict, lang: str = 'sv') -> dict | None:
+    """SSL-kontrollens fel: 'ingen HTTPS' är ett fynd och visas som det är; övrigt görs läsbart."""
+    error = (ssl or {}).get('error')
+    if not error:
+        return None
+    i = 1 if lang == 'en' else 0
+    if error.startswith('Sidan använder inte HTTPS'):
+        return {'kind': 'no_https', 'text': ('Sidan använder inte HTTPS – ingen certifikatkontroll',
+                                             'The site does not use HTTPS – no certificate check')[i],
+                'kind_label': 'HTTP', 'detail': ''}
+    if error.startswith('Ogiltigt certifikat'):
+        return {'kind': 'ssl', 'text': ('Certifikatet är ogiltigt', 'The certificate is invalid')[i],
+                'kind_label': ('SSL-fel', 'SSL error')[i], 'detail': error}
+    if error.startswith('Blockerad adress'):
+        return error_info(error, 'blocked', lang=lang)
+    return {'kind': 'other', 'text': ('Certifikatet kunde inte kontrolleras', 'The certificate could not be checked')[i],
+            'kind_label': ('Annat fel', 'Other error')[i], 'detail': error}
+
+
+def report_errors(results: dict, lang: str = 'sv') -> dict:
+    """Läsbara fel för startsidans hämtning, HTTP-status, SSL och säkerhetsheaders."""
+    results = results or {}
+    http = results.get('http') or {}
+    i = 1 if lang == 'en' else 0
+    headers = None
+    if (results.get('headers') or {}).get('error'):
+        headers = error_info(results['headers']['error'], http.get('error_kind'), lang=lang)
+        headers['text'] = ('Servern svarade inte, så säkerhetsheaders kunde inte kontrolleras',
+                           'The server did not respond, so security headers could not be checked')[i]
+    return {
+        'html': error_info(results.get('html_fetch_error'), results.get('html_fetch_error_kind'), lang=lang)
+        if results.get('html_fetch_error') else None,
+        'http': error_info(http.get('error'), http.get('error_kind'), lang=lang) if http.get('error') else None,
+        'ssl': ssl_error_info(results.get('ssl'), lang),
+        'headers': headers,
+    }
+
+
+# ── Täckning: hur många av de funna undersidorna som gick att hämta ─────────
+
+def coverage_warning(results: dict, lang: str = 'sv') -> dict | None:
+    """
+    Varning när minst en undersida hittades men färre än hälften kunde hämtas.
+    Påverkar inte poäng, fynd eller sortering – den är bara en upplysning.
+    Undersidor som robots.txt inte tillåter eller som är tekniska adresser
+    räknas inte som funna (de hämtas aldrig).
+    """
+    results = results or {}
+    if not results.get('seo'):
+        return None
+    found = len(results.get('pages') or [])
+    checked = len(checked_subpages(results))
+    if found < 1 or checked * 2 >= found:
+        return None
+    en = lang == 'en'
+    noun = (('subpage' if found == 1 else 'subpages') if en else ('undersida' if found == 1 else 'undersidor'))
+    text = (f'The review is based on fewer pages than usual: {checked} of {found} {noun} could be fetched. '
+            'The SEO score and the findings are therefore less certain than usual.' if en else
+            f'Genomgången bygger på färre sidor än vanligt: {checked} av {found} {noun} kunde hämtas. '
+            'SEO-poängen och fynden är därför osäkrare än vanligt.')
+    return {'found': found, 'checked': checked, 'text': text}
 
 
 def site_findings(results: dict, lang: str = 'sv') -> list:
@@ -435,3 +575,21 @@ def pagespeed_status_text(results: dict, lang: str = 'sv') -> str:
         prefix = 'PageSpeed failed' if en else 'PageSpeed misslyckades'
         return f"{prefix} – {', '.join(parts)}." if parts else ''
     return ''
+
+
+def public_error_message(message: str, lang: str = 'sv') -> str:
+    """
+    Text som läsaren får se när hela analysen misslyckades. En traceback eller
+    annan teknisk text visas aldrig – den finns kvar i databasen och admin.
+    Valideringsfel (t.ex. "Privata, interna eller reserverade IP-adresser
+    tillåts inte.") är skrivna för läsaren och visas som de är.
+    """
+    msg = (message or '').strip()
+    if not msg:
+        return ''
+    if 'Traceback' in msg or '\n' in msg or len(msg) > 200:
+        return ('An unexpected error occurred during the analysis. Please try again in a while.' if lang == 'en'
+                else 'Ett oväntat fel uppstod under analysen. Försök igen om en stund.')
+    if msg.startswith("['") and msg.endswith("']"):      # str(ValidationError)
+        msg = msg[2:-2]
+    return msg

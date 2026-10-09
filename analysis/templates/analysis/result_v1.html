@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static analysis_report %}
 
 {% block title %}
 {% if obj.language == 'en' %}Analysis: {{ obj.url }}{% else %}Analys: {{ obj.url }}{% endif %} – Johans Digital Forge
@@ -27,13 +27,8 @@
     <p class="text-secondary mb-4">
       {% if obj.language == 'en' %}The site could not be reached or an unexpected error occurred.{% else %}Sidan kunde inte nås eller ett oväntat fel uppstod.{% endif %}
     </p>
-    {% if obj.error_message %}
-    <details class="text-start mb-4">
-      <summary class="text-secondary small" style="cursor:pointer;">
-        {% if obj.language == 'en' %}Technical details{% else %}Tekniska detaljer{% endif %}
-      </summary>
-      <pre class="mt-2 text-danger small rounded-2 p-3" style="background:rgba(255,255,255,.04);white-space:pre-wrap;word-break:break-all;font-size:.72rem;">{{ obj.error_message }}</pre>
-    </details>
+    {% if obj.public_error_message %}
+    <p class="text-secondary small mb-4">{{ obj.public_error_message }}</p>
     {% endif %}
     <a href="{% if obj.language == 'en' %}{% url 'analysis_en' %}{% else %}{% url 'analysis' %}{% endif %}"
        class="btn-forge">
@@ -322,7 +317,7 @@
                   {{ http.redirect_count }} {% if obj.language == 'en' %}redirect{% if http.redirect_count != 1 %}s{% endif %}{% else %}omdirigering{% if http.redirect_count != 1 %}ar{% endif %}{% endif %}
                 {% endif %}
               {% elif http.error %}
-                {{ http.error }}
+                {{ http.error|readable_error:obj.language }}
               {% else %}–{% endif %}
             </span>
           </div>
@@ -366,7 +361,7 @@
                   </span>
                 {% endif %}
               {% elif ssl.error %}
-                {{ ssl.error }}
+                {{ ssl|readable_ssl_error:obj.language }}
               {% else %}
                 {% if obj.language == 'en' %}Certificate not valid{% else %}Certifikatet är ogiltigt{% endif %}
               {% endif %}
@@ -801,7 +796,7 @@
         {% endfor %}
         {% if hdr.error %}
         <li class="px-4 py-3 text-secondary small">
-          <i class="fas fa-exclamation-triangle text-warning me-2"></i>{{ hdr.error }}
+          <i class="fas fa-exclamation-triangle text-warning me-2"></i>{{ hdr.error|readable_error:obj.language }}
         </li>
         {% endif %}
       </ul>
@@ -1158,7 +1153,7 @@
                   </span>
                 </td>
                 {% else %}
-                <td colspan="6" class="text-danger small" style="border-color:rgba(255,255,255,.07);">{{ page.error|truncatechars:60 }}</td>
+                <td colspan="6" class="text-danger small" style="border-color:rgba(255,255,255,.07);">{{ page.error|readable_error:obj.language }}</td>
                 {% endif %}
               </tr>
               {% endfor %}

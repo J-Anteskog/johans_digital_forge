@@ -73,7 +73,12 @@ class FakeWeb:
         return self.pages.get(url, (404, {}, b''))
 
     def fetch_limited(self, url, *, max_bytes, timeout=None, session=None, fail_on_too_large=False):
-        status, headers, body = self._lookup(url)
+        value = self._lookup(url)
+        if value[0] == 'error':
+            # ('error', error_kind, teknisk text) – simulerar t.ex. ett anslutningsfel
+            _, kind, text = value
+            return FetchResult(url=url, error=text, error_kind=kind)
+        status, headers, body = value
         headers = {k.lower(): v for k, v in headers.items()}
         ctype = headers.get('content-type', '')
         enc = ctype.split('charset=')[-1].strip() if 'charset=' in ctype else None

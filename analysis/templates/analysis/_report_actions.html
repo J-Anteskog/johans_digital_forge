@@ -16,6 +16,12 @@
         </div>
       </div>
       <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+        {% if coverage %}
+        <li class="d-flex align-items-start gap-2" data-coverage-warning>
+          <span class="action-badge bg-secondary text-white">INFO</span>
+          <span class="text-light" style="font-size:.85rem;">{{ coverage.text }}</span>
+        </li>
+        {% endif %}
         {% if r.http and not r.http.is_https %}
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
@@ -44,7 +50,8 @@
         {% if r.html_fetch_error %}
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge bg-secondary text-white">INFO</span>
-          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}The page's HTML could not be read ({{ r.html_fetch_error|truncatechars:80 }}) — categories that need it are shown as not measured{% else %}Sidans HTML kunde inte läsas ({{ r.html_fetch_error|truncatechars:80 }}) — kategorier som kräver den visas som ej mätta{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}The page's HTML could not be read ({{ errors.html.text }}) — categories that need it are shown as not measured{% else %}Sidans HTML kunde inte läsas ({{ errors.html.text|lower }}) — kategorier som kräver den visas som ej mätta{% endif %}
+            <span class="tech-only d-block" style="font-size:.72rem;opacity:.75;word-break:break-all;">{% if shared %}{{ errors.html.kind_label }}{% else %}{{ errors.html.kind_label }}{% if errors.html.detail %}: {{ errors.html.detail|truncatechars:300 }}{% endif %}{% endif %}</span></span>
         </li>
         {% endif %}
         {% if cats.performance.measured and obj.score_performance < 50 %}

@@ -108,6 +108,12 @@ class SiteAnalysis(models.Model):
         return self.analyzer_version < ANALYZER_VERSION
 
     @property
+    def public_error_message(self):
+        """Felmeddelande som får visas för läsaren (aldrig en traceback)."""
+        from .report import public_error_message
+        return public_error_message(self.error_message, self.language)
+
+    @property
     def scoring(self):
         return (self.results or {}).get('scoring') or {}
 

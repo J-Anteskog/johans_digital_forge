@@ -179,6 +179,7 @@
   <div class="cover-url">{{ obj.url }}</div>
   <div class="cover-date">Analyserades: {{ obj.completed_at|date:"Y-m-d H:i" }} (svensk tid)</div>
   {% if page_count %}<div class="cover-date" style="margin-top:-4mm;">Kontrollerade: {{ page_count.text }}{% if page_count.failed_text %} · {{ page_count.failed_text }}{% endif %}</div>{% endif %}
+  {% if coverage %}<div style="margin:0 0 5mm;padding:2.5mm 4mm;background:#fff8e1;border:1px solid #e6a817;border-radius:4pt;font-size:8.5pt;color:#444;">{{ coverage.text }}</div>{% endif %}
 
   {# Score overview #}
   <table class="score-table">
@@ -260,7 +261,7 @@
       {% if http.ok %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
       <div>
         <div class="row-label">HTTP-status</div>
-        <div class="row-detail">{% if http.status_code %}{{ http.status_code }}{% if http.redirect_count %} · {{ http.redirect_count }} omdirigering{% if http.redirect_count != 1 %}ar{% endif %}{% endif %}{% else %}{{ http.error|default_if_none:"–"|truncatechars:160 }}{% endif %}</div>
+        <div class="row-detail">{% if http.status_code %}{{ http.status_code }}{% if http.redirect_count %} · {{ http.redirect_count }} omdirigering{% if http.redirect_count != 1 %}ar{% endif %}{% endif %}{% elif errors.http %}{{ errors.http.text }}{% else %}–{% endif %}</div>
       </div>
     </div>
     <div class="section-row">
@@ -270,7 +271,7 @@
         <div class="row-label">SSL-certifikat</div>
         <div class="row-detail">
           {% if ssl.valid %}Giltigt · utgår {{ ssl.expiry_date }} ({{ ssl.days_remaining }} dagar kvar){% if ssl.expires_soon %} — förnya snart!{% endif %}
-          {% elif ssl.error %}{{ ssl.error|truncatechars:160 }}
+          {% elif errors.ssl %}{{ errors.ssl.text }}
           {% else %}Certifikatet är ogiltigt.{% endif %}
         </div>
       </div>

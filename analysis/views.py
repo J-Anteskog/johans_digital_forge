@@ -15,8 +15,8 @@ from .email import send_report_email
 from .forms import AnalysisForm
 from .models import SiteAnalysis
 from .report import (
-    build_categories, page_count, page_rows, pagespeed_status_text, pagespeed_summary, site_findings,
-    site_tips,
+    build_categories, coverage_warning, page_count, page_rows, pagespeed_status_text, pagespeed_summary,
+    report_errors, site_findings, site_tips,
 )
 from .scoring import ANALYZER_VERSION
 from .tasks import start_analysis
@@ -226,7 +226,9 @@ def _report_context(obj):
         'findings': site_findings(obj.results, obj.language),
         'tips': site_tips(obj.results, obj.language),
         'page_count': page_count(obj.results, obj.language),
-        'page_rows': page_rows(obj.results),
+        'page_rows': page_rows(obj.results, obj.language),
+        'errors': report_errors(obj.results, obj.language),
+        'coverage': coverage_warning(obj.results, obj.language),
     }
 
 
@@ -265,7 +267,7 @@ def analysis_status_json(request, token):
             if started:
                 payload['phase_seconds'] = max(0, int((timezone.now() - started).total_seconds()))
     if obj.status == 'error' and obj.error_message:
-        payload['error_message'] = obj.error_message
+        payload['error_message'] = obj.public_error_message   # aldrig tracebacken
     return JsonResponse(payload)
 
 
