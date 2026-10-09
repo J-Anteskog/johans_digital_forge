@@ -3,6 +3,7 @@
 <html lang="{{ obj.language|default:'sv' }}">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
 <title>Webbplatsanalys – {{ obj.url }}</title>
 <style>
   @page {
@@ -162,6 +163,7 @@
     <div style="color:#aaa;font-size:8pt;">Webbplatsanalys</div>
   </div>
 
+  {% if not shared %}
   <div style="text-align:center;margin:10mm 0 6mm;">
     <div class="grade-circle bg-{{ obj.grade_color }}">{{ obj.grade }}</div>
     <div style="font-size:24pt;font-weight:800;color:#1a1a2e;line-height:1.1;">
@@ -169,6 +171,9 @@
     </div>
     <div style="font-size:8.5pt;color:#888;margin-top:1.5mm;">Sammanlagt betyg</div>
   </div>
+  {% else %}
+  <div style="margin:10mm 0 4mm;font-size:8.5pt;color:#666;">Automatisk genomgång av webbplatsen. Under varje kategori står vad som kontrollerades, och det som inte gick att mäta är markerat.</div>
+  {% endif %}
 
   <div class="cover-title">Webbplatsanalys</div>
   <div class="cover-url">{{ obj.url }}</div>
@@ -193,16 +198,16 @@
       {% endfor %}
     </tbody>
   </table>
-  {% if obj.scoring.category_count %}
+  {% if obj.scoring.category_count and not shared %}
   <div style="font-size:7.5pt;color:#888;margin-top:1.5mm;">
     Totalbetyget bygger på {{ obj.scoring.measured_count }} av {{ obj.scoring.category_count }} kategorier{% if obj.scoring.not_measured %} — kategorier som inte kunde mätas räknas inte in{% endif %}.
   </div>
   {% endif %}
 
   {# ── Åtgärdslista på framsidan ──────────────────────────────────── #}
-  {% if obj.score_overall == None or obj.score_overall < 85 %}
+  {% if shared or obj.score_overall == None or obj.score_overall < 85 %}
   <div style="margin-top:5mm;padding:3.5mm 5mm;background:#fffbf0;border:1px solid #f0d080;border-radius:4pt;">
-    <div style="font-size:9pt;font-weight:700;color:#1a1a2e;margin-bottom:2.5mm;">Viktigast att åtgärda</div>
+    <div style="font-size:9pt;font-weight:700;color:#1a1a2e;margin-bottom:2.5mm;">{% if shared %}Fynd{% else %}Viktigast att åtgärda{% endif %}</div>
     <table style="width:100%;border-collapse:collapse;">
       {% if r.http and not r.http.is_https %}
       <tr><td style="width:15mm;padding:1.2mm 0;vertical-align:top;"><span style="background:#dc3545;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">KRITISK</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">HTTPS saknas — all besökardata skickas okrypterat</td></tr>
@@ -214,7 +219,7 @@
       <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#dc3545;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">KRITISK</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Sidtitel saknas — sökmotorer vet inte vad sidan handlar om</td></tr>
       {% endif %}
       {% if r.seo and r.seo.meta_description and not r.seo.meta_description.found %}
-      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Meta-beskrivning saknas — Google saknar text att visa i sökresultaten</td></tr>
+      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Ingen egen metabeskrivning är satt — Google väljer själv vilken text från sidan som visas i sökresultaten</td></tr>
       {% endif %}
       {% if cats.performance.measured and obj.score_performance < 50 %}
       <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">{% if obj.scoring.performance_source == 'pagespeed' %}PageSpeed bedömer sidan som långsam — besökare tappar tålamodet och lämnar{% else %}Tung sida eller långsamt serversvar — se "Sidvikt och svarstid"{% endif %}</td></tr>
@@ -247,7 +252,7 @@
     <span class="title">{{ cats.security.label }}</span>
     <span class="score">{% if cats.security.measured %}{{ obj.score_security }}/100{% else %}ej mätt{% endif %}</span>
   </div>
-  <div class="section-summary">{% if cats.security.measured %}{% if obj.score_security >= 85 %}HTTPS och certifikatet är i ordning.{% elif obj.score_security >= 50 %}Det finns brister i HTTPS eller certifikatet.{% else %}Allvarliga brister — HTTPS saknas eller certifikatet är ogiltigt.{% endif %} {% endif %}{{ cats.security.measures }}</div>
+  <div class="section-summary">{% if cats.security.measured and not shared %}{% if obj.score_security >= 85 %}HTTPS och certifikatet är i ordning.{% elif obj.score_security >= 50 %}Det finns brister i HTTPS eller certifikatet.{% else %}Allvarliga brister — HTTPS saknas eller certifikatet är ogiltigt.{% endif %} {% endif %}{{ cats.security.measures }}</div>
   <div class="section-body">
     <div class="section-row">
       {% if http.is_https %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
@@ -286,7 +291,7 @@
     <span class="title">SEO</span>
     <span class="score">{{ obj.score_seo|default_if_none:"–" }}/100</span>
   </div>
-  {% if obj.score_seo != None %}
+  {% if obj.score_seo != None and not shared %}
   <div class="section-summary">{% if obj.score_seo >= 85 %}Sidan är väl optimerad för sökmotorer.{% elif obj.score_seo >= 50 %}SEO kan förbättras för bättre synlighet i Google.{% else %}Dålig synlighet i Google — du missar potentiella kunder.{% endif %}</div>
   {% endif %}
   <div class="section-body">
@@ -532,7 +537,7 @@
 
 
 {# ── VÄGEN TILL BETYG A ───────────────────────────────────────────────────── #}
-{% if obj.grade != 'A' %}
+{% if not shared and obj.grade != 'A' %}
 <div class="grade-a-section">
   <div class="grade-a-header">
     <span class="title">Vägen till betyg A</span>
@@ -578,7 +583,7 @@
 
 {# ── DOCUMENT FOOTER ───────────────────────────────────────────────────────── #}
 <div class="doc-footer">
-  <span>Johans Digital Forge · johans-digital-forge.se</span>
+  <span>{% if shared %}Rapport från Johans Digital Forge, johans-digital-forge.se{% else %}Johans Digital Forge · johans-digital-forge.se{% endif %}</span>
   <span>Rapporten genererades {{ obj.completed_at|date:"Y-m-d" }}</span>
 </div>
 

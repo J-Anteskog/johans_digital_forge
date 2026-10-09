@@ -1,0 +1,36 @@
+{% extends 'analysis/shared_base.html' %}
+
+{% block title %}{% if obj.language == 'en' %}Report not available{% else %}Rapporten kan inte visas{% endif %}{% endblock %}
+
+{% block content %}
+<section class="py-5 min-vh-100" style="background:linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);">
+  <div class="container text-center" style="max-width:640px;padding-top:4rem;">
+    <i class="fas fa-circle-info text-secondary mb-3" style="font-size:3rem;"></i>
+    <h1 class="h4 text-light fw-bold mb-3">
+      {% if reason == 'legacy' %}
+        {% if obj.language == 'en' %}This report cannot be shown in the shared view{% else %}Rapporten kan inte visas i delningsvyn{% endif %}
+      {% elif reason == 'running' %}
+        {% if obj.language == 'en' %}The report is not ready yet{% else %}Rapporten är inte klar ännu{% endif %}
+      {% else %}
+        {% if obj.language == 'en' %}The analysis could not be completed{% else %}Analysen kunde inte genomföras{% endif %}
+      {% endif %}
+    </h1>
+    <p class="text-secondary mb-0">
+      {% if reason == 'legacy' %}
+        {% if obj.language == 'en' %}
+          It was created with an older version of the analysis tool, whose results were partly estimated. Only reports created with the current version can be shared. Run a new analysis of {{ obj.url }} and share that report instead.
+        {% else %}
+          Den skapades med en äldre version av analysverktyget, där vissa resultat var uppskattade. Bara rapporter från den nuvarande versionen kan delas. Kör en ny analys av {{ obj.url }} och dela den rapporten i stället.
+        {% endif %}
+      {% elif reason == 'running' %}
+        {% if obj.language == 'en' %}The analysis is still running. Try again in a few minutes.{% else %}Analysen pågår fortfarande. Försök igen om några minuter.{% endif %}
+      {% else %}
+        {% if obj.language == 'en' %}The website could not be analysed, so there is nothing to show.{% else %}Webbplatsen gick inte att analysera, så det finns inget att visa.{% endif %}
+      {% endif %}
+    </p>
+    <p class="text-secondary mt-5 mb-0" style="font-size:.8rem;">
+      {% if obj.language == 'en' %}Report from Johans Digital Forge, johans-digital-forge.se{% else %}Rapport från Johans Digital Forge, johans-digital-forge.se{% endif %}
+    </p>
+  </div>
+</section>
+{% endblock %}

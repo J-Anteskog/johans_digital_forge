@@ -1,0 +1,93 @@
+{# Fyndlista + vyväljare (Enkel/Teknisk). shared=True döljer omdömen som bygger på totalbetyget. #}
+    {# ── Åtgärdslista + vyväljare ──────────────────────────────────────── #}
+    {% if r %}
+    <div class="rounded-4 mb-4 p-4" style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.09);">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+        <h2 class="h6 text-light fw-bold mb-0">
+          <i class="fas fa-bolt text-warning me-2"></i>
+          {% if shared %}{% if obj.language == 'en' %}Findings{% else %}Fynd{% endif %}{% else %}{% if obj.language == 'en' %}Priority actions{% else %}Viktigast att åtgärda{% endif %}{% endif %}
+        </h2>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-secondary" style="font-size:.75rem;">{% if obj.language == 'en' %}View:{% else %}Vy:{% endif %}</span>
+          <div class="btn-group btn-group-sm">
+            <button id="btn-simple" onclick="setView('simple')" class="btn btn-warning" style="font-size:.78rem;padding:.25rem .7rem;">{% if obj.language == 'en' %}Simple{% else %}Enkel{% endif %}</button>
+            <button id="btn-tech" onclick="setView('tech')" class="btn btn-outline-secondary" style="font-size:.78rem;padding:.25rem .7rem;">{% if obj.language == 'en' %}Technical{% else %}Teknisk{% endif %}</button>
+          </div>
+        </div>
+      </div>
+      <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+        {% if r.http and not r.http.is_https %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}HTTPS missing — all visitor data is transmitted unencrypted{% else %}HTTPS saknas — all besökardata skickas okrypterat{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.ssl and not r.ssl.valid %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}SSL certificate invalid — browsers warn visitors "Not secure"{% else %}SSL-certifikatet är ogiltigt — webbläsare varnar besökarna "Osäker sida"{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.seo and r.seo.title and not r.seo.title.found %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Page title missing — search engines don't know what the page is about{% else %}Sidtitel saknas — sökmotorer vet inte vad sidan handlar om{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.seo and r.seo.meta_description and not r.seo.meta_description.found %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}No meta description set — Google picks text from the page itself to show in search results{% else %}Ingen egen metabeskrivning är satt — Google väljer själv vilken text från sidan som visas i sökresultaten{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.html_fetch_error %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-secondary text-white">INFO</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}The page's HTML could not be read ({{ r.html_fetch_error|truncatechars:80 }}) — categories that need it are shown as not measured{% else %}Sidans HTML kunde inte läsas ({{ r.html_fetch_error|truncatechars:80 }}) — kategorier som kräver den visas som ej mätta{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if cats.performance.measured and obj.score_performance < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">
+            {% if obj.scoring.performance_source == 'pagespeed' %}
+              {% if obj.language == 'en' %}PageSpeed rates the page as slow — visitors lose patience and bounce{% else %}PageSpeed bedömer sidan som långsam — besökare tappar tålamodet och lämnar{% endif %}
+            {% else %}
+              {% if obj.language == 'en' %}Heavy page or slow server response — see "Page weight & response time"{% else %}Tung sida eller långsamt serversvar — se "Sidvikt och svarstid"{% endif %}
+            {% endif %}
+          </span>
+        </li>
+        {% endif %}
+        {% if cats.mobile.measured and obj.score_mobile < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Basic mobile adaptations are missing (e.g. viewport or media queries) — over half of all visitors browse on mobile{% else %}Grundläggande mobilanpassning saknas (t.ex. viewport eller media queries) — mer än hälften av besökarna surfar på mobil{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if cats.seo.measured and obj.score_seo < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Low SEO score ({{ obj.score_seo }}/100) — several basic search engine signals are missing{% else %}Låg SEO-poäng ({{ obj.score_seo }}/100) — flera grundläggande signaler för sökmotorer saknas{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if cats.headers.measured and obj.score_headers < 50 %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Several security headers missing — relatively easy to fix{% else %}Flera säkerhetsheaders saknas — relativt enkelt att åtgärda{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if r.accessibility.images.missing_alt %}
+        <li class="d-flex align-items-start gap-2">
+          <span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}{{ r.accessibility.images.missing_alt }} image{{ r.accessibility.images.missing_alt|pluralize }} without an alt attribute — invisible to screen readers{% else %}{{ r.accessibility.images.missing_alt }} bild{{ r.accessibility.images.missing_alt|pluralize:"er" }} saknar alt-attribut — osynliga för skärmläsare{% endif %}</span>
+        </li>
+        {% endif %}
+        {% if not shared and obj.score_overall >= 85 and r.http.is_https %}
+        <li class="d-flex align-items-center gap-2">
+          <i class="fas fa-check-circle text-success flex-shrink-0"></i>
+          <span class="text-secondary" style="font-size:.85rem;">{% if obj.language == 'en' %}Great result! No major issues found.{% else %}Bra resultat! Inga allvarliga problem hittades.{% endif %}</span>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}

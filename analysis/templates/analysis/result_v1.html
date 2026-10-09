@@ -5,6 +5,8 @@
 {% if obj.language == 'en' %}Analysis: {{ obj.url }}{% else %}Analys: {{ obj.url }}{% endif %} – Johans Digital Forge
 {% endblock %}
 
+{% block extra_meta %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
 {% block content %}
 <style>
   #analysis-container.simple-mode .tech-only{display:none!important}

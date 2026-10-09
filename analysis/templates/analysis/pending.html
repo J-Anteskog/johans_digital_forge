@@ -3,6 +3,8 @@
 
 {% block title %}{% if obj.language == 'en' %}Analysing…{% else %}Analyserar…{% endif %} – Johans Digital Forge{% endblock %}
 
+{% block extra_meta %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
 {% block content %}
 
 <section class="py-5 min-vh-100 d-flex align-items-start"

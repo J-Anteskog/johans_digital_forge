@@ -1,6 +1,7 @@
 import json
 import time
 from datetime import timedelta
+from functools import wraps
 
 from django.core import signing
 from django.http import JsonResponse
@@ -32,6 +33,16 @@ _PENDING_STEPS = [
 
 _RATE_LIMIT = 30      # analyser per IP per timme
 _CACHE_HOURS = 24     # återanvänd resultat om nyare än så
+
+
+def _noindex(view):
+    """Rapporter och historik ska inte indexeras av sökmotorer (header + meta i mallarna)."""
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        response = view(request, *args, **kwargs)
+        response['X-Robots-Tag'] = 'noindex, nofollow'
+        return response
+    return wrapper
 
 
 def _get_client_ip(request):
@@ -131,6 +142,7 @@ def analysis_form_en(request):
     return _analysis_view(request, language='en')
 
 
+@_noindex
 def analysis_result(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token)
     if obj.status in ('pending', 'running'):
@@ -148,6 +160,31 @@ def analysis_result(request, token):
         'opt_in_button': _OPT_IN_BUTTON,
         **_report_context(obj),
     })
+
+
+@_noindex
+def analysis_shared(request, token):
+    """
+    Delningsvy för utskick till företag som inte själva beställt analysen:
+    fynd och uppmätta värden per kategori, utan bokstavsbetyg, totalpoäng,
+    "vägen till betyg A", erbjudanden eller e-postformulär. Samma id som rapporten.
+    Rör inte e-post-/spårningsfälten på analysen.
+    """
+    obj = get_object_or_404(SiteAnalysis, pk=token)
+    reason = _shared_unavailable_reason(obj)
+    if reason:
+        return render(request, 'analysis/shared_unavailable.html', {'obj': obj, 'reason': reason})
+    return render(request, 'analysis/shared.html', {'obj': obj, **_report_context(obj)})
+
+
+def _shared_unavailable_reason(obj):
+    if obj.status in ('pending', 'running'):
+        return 'running'
+    if obj.status != 'complete' or not obj.results:
+        return 'error'
+    if obj.is_legacy:
+        return 'legacy'   # gamla rapporter har delvis uppskattade värden – delas inte
+    return None
 
 
 def _report_context(obj):
@@ -201,6 +238,7 @@ def analysis_status_json(request, token):
     return JsonResponse(payload)
 
 
+@_noindex
 def domain_history(request, domain):
     analyses = (
         SiteAnalysis.objects
@@ -242,7 +280,18 @@ def domain_history(request, domain):
     })
 
 
+@_noindex
 def analysis_pdf(request, token):
+    if request.GET.get('delad') == '1':
+        # Delningsvyns PDF: samma regler som analysis_shared
+        obj = get_object_or_404(SiteAnalysis, pk=token)
+        reason = _shared_unavailable_reason(obj)
+        if reason:
+            return render(request, 'analysis/shared_unavailable.html', {'obj': obj, 'reason': reason})
+        return render(request, 'analysis/report_pdf.html', {
+            'obj': obj, 'r': obj.results, 'shared': True, **_report_context(obj),
+        })
+
     obj = get_object_or_404(SiteAnalysis, pk=token, status='complete')
     template = 'analysis/report_pdf_v1.html' if obj.is_legacy else 'analysis/report_pdf.html'
     return render(request, template, {

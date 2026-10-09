@@ -1,0 +1,80 @@
+{% extends 'analysis/shared_base.html' %}
+
+{% block title %}{% if obj.language == 'en' %}Website review: {{ obj.url }}{% else %}Genomgång av webbplats: {{ obj.url }}{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+  #analysis-container.simple-mode .tech-only{display:none!important}
+  #analysis-container:not(.simple-mode) .simple-only{display:none!important}
+  .cat-summary{font-size:.82rem;padding:.6rem 1rem .5rem;border-top:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.5)}
+  .action-badge{font-size:.65rem;padding:.2em .52em;border-radius:.3rem;font-weight:700;white-space:nowrap;align-self:flex-start;margin-top:.18rem}
+</style>
+{% with r=obj.results shared=True %}
+<section class="py-5 min-vh-100" style="background:linear-gradient(160deg, #14171B 0%, #0B0D10 60%, #0F1215 100%);">
+  <div id="analysis-container" class="container simple-mode" style="max-width:920px;">
+
+    {# ── Rubrik: adress, datum och poäng per kategori (inget bokstavsbetyg, ingen totalpoäng) ── #}
+    <div class="row g-4 align-items-start mb-5">
+      <div class="col">
+        <p class="text-secondary small mb-1">
+          {% if obj.language == 'en' %}Automated review of the website{% else %}Automatisk genomgång av webbplatsen{% endif %}
+        </p>
+        <h1 class="h4 text-light fw-bold mb-1" style="word-break:break-all;">{{ obj.url }}</h1>
+        <p class="text-secondary small mb-2">
+          {% if obj.language == 'en' %}Analysed{% else %}Analyserades{% endif %}
+          {{ obj.completed_at|date:"Y-m-d H:i" }}
+          {% if r.pages %}&nbsp;·&nbsp;{% if obj.language == 'en' %}{{ r.pages|length }} page{{ r.pages|length|pluralize }} checked{% else %}{{ r.pages|length }} sidor kontrollerade{% endif %}{% endif %}
+        </p>
+        <p class="text-secondary mb-0" style="font-size:.8rem;max-width:460px;">
+          {% if obj.language == 'en' %}
+            The review shows what could be measured automatically from the outside. Each category explains what was checked; items that could not be measured are marked as such.
+          {% else %}
+            Genomgången visar det som gick att mäta automatiskt utifrån. Under varje kategori står vad som kontrollerades, och det som inte gick att mäta är markerat.
+          {% endif %}
+        </p>
+      </div>
+      <div class="col-12 col-lg-5">
+        {% include "analysis/_report_bars.html" %}
+      </div>
+    </div>
+
+    {% include "analysis/_report_actions.html" %}
+
+    {% include "analysis/_report_sections.html" %}
+
+    {% include "analysis/_report_pages.html" %}
+
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <a href="{% url 'analysis_pdf' obj.id %}?delad=1" target="_blank" rel="noopener"
+         class="btn btn-outline-light btn-sm">
+        <i class="fas fa-file-pdf me-1"></i>
+        {% if obj.language == 'en' %}Print / Save as PDF{% else %}Skriv ut / Spara som PDF{% endif %}
+      </a>
+    </div>
+
+    <p class="text-secondary text-center mt-5 mb-0" style="font-size:.8rem;">
+      {% if obj.language == 'en' %}Report from Johans Digital Forge, johans-digital-forge.se{% else %}Rapport från Johans Digital Forge, johans-digital-forge.se{% endif %}
+    </p>
+
+  </div>
+</section>
+{% endwith %}
+
+<script>
+function setView(mode) {
+  var c = document.getElementById('analysis-container');
+  var btnSimple = document.getElementById('btn-simple');
+  var btnTech = document.getElementById('btn-tech');
+  if (!c) return;
+  if (mode === 'simple') {
+    c.classList.add('simple-mode');
+    if (btnSimple) { btnSimple.classList.add('btn-warning'); btnSimple.classList.remove('btn-outline-secondary'); }
+    if (btnTech)   { btnTech.classList.add('btn-outline-secondary'); btnTech.classList.remove('btn-warning'); }
+  } else {
+    c.classList.remove('simple-mode');
+    if (btnTech)   { btnTech.classList.add('btn-warning'); btnTech.classList.remove('btn-outline-secondary'); }
+    if (btnSimple) { btnSimple.classList.add('btn-outline-secondary'); btnSimple.classList.remove('btn-warning'); }
+  }
+}
+</script>
+{% endblock %}

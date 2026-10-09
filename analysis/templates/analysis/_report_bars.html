@@ -1,0 +1,21 @@
+{# Kategoristaplar: poäng per kategori, inga bokstavsbetyg. Används av result.html och shared.html. #}
+<div class="d-flex flex-column gap-2">
+          {% for c in categories %}
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>{{ c.label }}</span>
+              {% if c.measured %}
+              <span class="text-light fw-semibold">{{ c.score }}</span>
+              {% else %}
+              <span class="text-secondary fst-italic">{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}</span>
+              {% endif %}
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              {% if c.measured %}
+              <div class="progress-bar rounded-pill"
+                   style="width:{{ c.score }}%;background:{{ c.color }};transition:width .8s ease;"></div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+</div>
