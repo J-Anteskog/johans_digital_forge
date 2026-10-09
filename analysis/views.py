@@ -13,7 +13,9 @@ from django.views.decorators.http import require_POST
 from .email import send_report_email
 from .forms import AnalysisForm
 from .models import SiteAnalysis
-from .report import build_categories, pagespeed_status_text, pagespeed_summary, site_findings
+from .report import (
+    build_categories, pagespeed_status_text, pagespeed_summary, site_findings, site_tips,
+)
 from .scoring import ANALYZER_VERSION
 from .tasks import start_analysis
 
@@ -198,6 +200,7 @@ def _report_context(obj):
         'psp_status_text': pagespeed_status_text(obj.results, obj.language),
         'psp_summary': pagespeed_summary(obj.results, obj.language),
         'findings': site_findings(obj.results, obj.language),
+        'tips': site_tips(obj.results, obj.language),
     }
 
 

@@ -290,10 +290,10 @@
   {% endif %}
   <div class="section-body">
     <div class="section-row">
-      {% if seo.title.found and seo.title.ok %}<span class="icon-ok">✓</span>{% elif seo.title.found %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      {% if seo.title.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
       <div>
         <div class="row-label">Sidtitel</div>
-        <div class="row-detail">{% if seo.title.found %}"{{ seo.title.value }}" ({{ seo.title.length }} tecken{% if not seo.title.ok %} · idealt 30–60{% endif %}){% else %}Saknas — kritiskt för SEO.{% endif %}</div>
+        <div class="row-detail">{% if seo.title.found %}"{{ seo.title.value }}" ({{ seo.title.length }} tecken{% if not seo.title.ok %} · tips: 30–60 tecken brukar visas helt i Google{% endif %}){% else %}Saknas — kritiskt för SEO.{% endif %}</div>
       </div>
     </div>
     <div class="section-row">
@@ -311,12 +311,21 @@
       </div>
     </div>
     <div class="section-row">
-      {% if seo.og_title.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
+      {% if tips.social.ok %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">i</span>{% endif %}
       <div>
-        <div class="row-label">Open Graph</div>
-        <div class="row-detail">og:title {% if seo.og_title.found %}✓{% else %}saknas{% endif %} · og:image {% if seo.og_image.found %}✓{% else %}saknas{% endif %}</div>
+        <div class="row-label">Delning i sociala medier (låg prioritet)</div>
+        <div class="row-detail">{{ tips.social.text }}.</div>
       </div>
     </div>
+    {% if tips.title_length %}
+    <div class="section-row">
+      <span class="icon-warn">i</span>
+      <div>
+        <div class="row-label">Tips (ingår inte i poängen)</div>
+        <div class="row-detail">{% for t in tips.title_length %}{{ t.text }}.{% if not forloop.last %}<br>{% endif %}{% endfor %}</div>
+      </div>
+    </div>
+    {% endif %}
     <div class="section-row">
       {% if seo.robots_txt.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
       <div>

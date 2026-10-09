@@ -1,7 +1,7 @@
 """
 Poängsystem v3  (0–100 per kategori, eller None = ej mätt):
   HTTPS och certifikat  20 %  – HTTPS, giltigt certifikat, >30 dagar kvar
-  SEO                   22 %  – title, meta desc, H1, viewport, OG (startsidan 40 %,
+  SEO                   22 %  – titel (finns + unik), meta desc, H1, viewport, OG (startsidan 40 %,
                                 undersidornas medel 60 %) + robots.txt, sitemap
   Prestanda             20 %  – PageSpeed (mobil 70 %, dator 30 %) om tillgängligt,
                                 annars "Sidvikt och svarstid" (svarstid, HTML-storlek,
@@ -101,30 +101,53 @@ def _score_security(results):
 
 # ── SEO (max 100) ─────────────────────────────────────────────────────────
 
-def page_seo_points(seo: dict) -> int:
-    """Sidnivåns SEO-poäng för EN sida (max SEO_PAGE_MAX)."""
+def title_key(seo: dict):
+    """Jämförelsenyckel för sidtiteln (None om titel saknas)."""
+    title = seo.get('title', {})
+    if not title.get('found'):
+        return None
+    return ((title.get('value') or '').strip().lower(), title.get('length'))
+
+
+def duplicate_titles(results) -> set:
+    """Titlar som används på mer än en av de kontrollerade sidorna."""
+    pages = [results.get('seo') or {}] + [p['seo'] for p in checked_subpages(results)]
+    keys = [k for k in (title_key(s) for s in pages) if k]
+    return {k for k in keys if keys.count(k) > 1}
+
+
+def page_seo_points(seo: dict, duplicates: set = frozenset()) -> int:
+    """
+    Sidnivåns SEO-poäng för EN sida (max SEO_PAGE_MAX = 85):
+      sidtitel 20 (finns 10 + unik bland de kontrollerade sidorna 10; längden är bara ett tips)
+      metabeskrivning 30 (finns 20 + 50–160 tecken 10)
+      H1 20 (finns 15 + exakt en 5)
+      viewport 10
+      Open Graph 5 (både og:title och og:image – låg prioritet)
+    """
     pts = 0
     title = seo.get('title', {})
     if title.get('found'):
         pts += 10
-        if title.get('ok'):       # 30–60 tecken
+        if title_key(seo) not in duplicates:
             pts += 10
 
     desc = seo.get('meta_description', {})
     if desc.get('found'):
-        pts += 10
+        pts += 20
         if desc.get('ok'):        # 50–160 tecken
             pts += 10
 
     h1 = seo.get('h1', {})
     if h1.get('found'):
-        pts += 10
+        pts += 15
         if h1.get('unique'):      # exakt 1 st
             pts += 5
 
     if seo.get('viewport', {}).get('found'):    pts += 10
-    if seo.get('og_title', {}).get('found'):    pts += 10
-    if seo.get('og_image', {}).get('found'):    pts += 10
+    # Open Graph har låg prioritet (egen rad "Delning i sociala medier", inte i fyndlistan)
+    if seo.get('og_title', {}).get('found') and seo.get('og_image', {}).get('found'):
+        pts += 5
     return pts
 
 
@@ -146,8 +169,9 @@ def seo_breakdown(results) -> dict | None:
     if seo.get('robots_txt', {}).get('found'):  site += 10
     if seo.get('sitemap', {}).get('found'):     site += 5
 
-    start = page_seo_points(seo)
-    subs = [page_seo_points(p['seo']) for p in checked_subpages(results)]
+    dups = duplicate_titles(results)
+    start = page_seo_points(seo, dups)
+    subs = [page_seo_points(p['seo'], dups) for p in checked_subpages(results)]
     if subs:
         sub_mean = sum(subs) / len(subs)
         page_part = SEO_START_WEIGHT * start + (1 - SEO_START_WEIGHT) * sub_mean

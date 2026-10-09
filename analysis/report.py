@@ -5,8 +5,8 @@ de alltid säger samma sak.
 """
 
 from .scoring import (
-    PSP_WEIGHTS, SEO_START_WEIGHT, WEIGHTS, checked_subpages, pagespeed_breakdown,
-    performance_source,
+    PSP_WEIGHTS, SEO_START_WEIGHT, WEIGHTS, checked_subpages, duplicate_titles, pagespeed_breakdown,
+    performance_source, title_key,
 )
 
 _COLORS = {
@@ -187,15 +187,9 @@ _PAGE_CHECKS = [
      'H1-rubrik saknas', 'H1 heading missing'),
     ('h1_multiple', 'medium', lambda s: (s.get('h1', {}).get('count') or 0) > 1,
      'Fler än en H1-rubrik', 'More than one H1 heading'),
-    ('title_length', 'medium', lambda s: s.get('title', {}).get('found') and not s.get('title', {}).get('ok'),
-     'Sidtiteln har inte 30–60 tecken', 'Page title is not 30–60 characters'),
     ('desc_length', 'medium',
      lambda s: s.get('meta_description', {}).get('found') and not s.get('meta_description', {}).get('ok'),
      'Metabeskrivningen har inte 50–160 tecken', 'Meta description is not 50–160 characters'),
-    ('og_missing', 'medium',
-     lambda s: not (s.get('og_title', {}).get('found') and s.get('og_image', {}).get('found')),
-     'Open Graph (titel/bild för delning i sociala medier) saknas',
-     'Open Graph (title/image for social sharing) missing'),
 ]
 
 
@@ -206,6 +200,8 @@ _HINTS = {
     'desc_missing': ('ingen egen beskrivning är satt, så Google väljer själv vilken text från sidan som visas i sökresultaten',
                      'no description is set, so Google picks text from the page itself for search results'),
     'alt_missing': ('bilderna är osynliga för skärmläsare', 'the images are invisible to screen readers'),
+    'title_duplicate': ('varje sida bör ha en egen titel så att den kan visas och hittas för sig i Google',
+                        'each page should have its own title so it can be shown and found on its own in Google'),
 }
 
 
@@ -215,6 +211,13 @@ def _where(count: int, total: int, en: bool) -> str:
                 else 'på startsidan, den enda sida som kontrollerades')
     return (f'on {count} of the {total} pages checked' if en
             else f'på {count} av de {total} sidor som kontrollerades')
+
+
+def _checked_pages(results):
+    start_url = (results.get('http') or {}).get('final_url') or ''
+    pages = [(start_url, results['seo'], results.get('accessibility') or {})]
+    pages += [(p['url'], p['seo'], p.get('accessibility') or {}) for p in checked_subpages(results)]
+    return pages
 
 
 def site_findings(results: dict, lang: str = 'sv') -> list:
@@ -227,9 +230,7 @@ def site_findings(results: dict, lang: str = 'sv') -> list:
     if not results.get('seo'):
         return []
     en = lang == 'en'
-    start_url = (results.get('http') or {}).get('final_url') or ''
-    pages = [(start_url, results['seo'], results.get('accessibility') or {})]
-    pages += [(p['url'], p['seo'], p.get('accessibility') or {}) for p in checked_subpages(results)]
+    pages = _checked_pages(results)
     total = len(pages)
 
     findings = []
@@ -241,6 +242,16 @@ def site_findings(results: dict, lang: str = 'sv') -> list:
                 'text': f'{en_text if en else sv} {_where(len(urls), total, en)}',
                 'hint': _HINTS.get(key, ('', ''))[1 if en else 0],
             })
+
+    dups = duplicate_titles(results)
+    dup_urls = [url for url, seo, _ in pages if title_key(seo) in dups]
+    if dup_urls:
+        findings.append({
+            'key': 'title_duplicate', 'severity': 'medium', 'pages': dup_urls,
+            'text': (f'The same page title is used on {len(dup_urls)} of the {total} pages checked' if en
+                     else f'Samma sidtitel används på {len(dup_urls)} av de {total} sidor som kontrollerades'),
+            'hint': _HINTS['title_duplicate'][1 if en else 0],
+        })
 
     alt_pages = [(url, (a11y.get('images') or {}).get('missing_alt') or 0) for url, _, a11y in pages]
     alt_pages = [(u, n) for u, n in alt_pages if n]
@@ -256,6 +267,50 @@ def site_findings(results: dict, lang: str = 'sv') -> list:
 
     findings.sort(key=lambda f: _SEVERITY_ORDER[f['severity']])
     return findings
+
+
+def site_tips(results: dict, lang: str = 'sv') -> dict:
+    """
+    Lågprioriterade iakttagelser som INTE hör hemma i "Viktigast att åtgärda":
+      social – Open Graph (titel/bild vid delning i sociala medier) per sida
+      title_length – sidtitlar kortare än 30 eller längre än 60 tecken (ingår inte i poängen)
+    """
+    results = results or {}
+    if not results.get('seo'):
+        return {}
+    en = lang == 'en'
+    pages = _checked_pages(results)
+    total = len(pages)
+
+    og_missing = [url for url, s, _ in pages
+                  if not (s.get('og_title', {}).get('found') and s.get('og_image', {}).get('found'))]
+    if og_missing:
+        social = {'ok': False, 'pages': og_missing,
+                  'text': (f'Open Graph (title and image shown when the page is shared) is missing '
+                           f'{_where(len(og_missing), total, en)}' if en else
+                           f'Open Graph (titel och bild som visas när sidan delas) saknas '
+                           f'{_where(len(og_missing), total, en)}')}
+    else:
+        social = {'ok': True, 'pages': [],
+                  'text': ('Open Graph is set on all pages checked' if en
+                           else 'Open Graph finns på alla sidor som kontrollerades')}
+
+    short = [url for url, s, _ in pages if s.get('title', {}).get('found') and (s['title'].get('length') or 0) < 30]
+    long_ = [url for url, s, _ in pages if s.get('title', {}).get('found') and (s['title'].get('length') or 0) > 60]
+    title_tips = []
+    if short:
+        title_tips.append({'pages': short, 'text': (
+            f'The page title is shorter than 30 characters {_where(len(short), total, en)} – '
+            'a slightly longer title can describe the page better in search results' if en else
+            f'Sidtiteln är kortare än 30 tecken {_where(len(short), total, en)} – '
+            'en något längre titel kan beskriva sidan bättre i sökresultaten')})
+    if long_:
+        title_tips.append({'pages': long_, 'text': (
+            f'The page title is longer than 60 characters {_where(len(long_), total, en)} – '
+            'Google may shorten it in search results' if en else
+            f'Sidtiteln är längre än 60 tecken {_where(len(long_), total, en)} – '
+            'Google kan korta av den i sökresultaten')})
+    return {'social': social, 'title_length': title_tips}
 
 
 def pagespeed_summary(results: dict, lang: str = 'sv') -> dict | None:

@@ -38,10 +38,8 @@
                 </td>
                 {% if not page.error %}
                 <td class="text-center" style="border-color:rgba(255,255,255,.07);">
-                  {% if page.seo.title.found and page.seo.title.ok %}
+                  {% if page.seo.title.found %}
                     <span class="text-success">✓</span>
-                  {% elif page.seo.title.found %}
-                    <span class="text-warning" title="{% if obj.language == 'en' %}Found but length off{% else %}Finns men fel längd{% endif %}">~</span>
                   {% else %}
                     <span class="text-danger">✗</span>
                   {% endif %}
@@ -65,10 +63,10 @@
                   {% endif %}
                 </td>
                 <td class="text-center" style="border-color:rgba(255,255,255,.07);">
-                  {% if page.seo.og_title.found %}
+                  {% if page.seo.og_title.found and page.seo.og_image.found %}
                     <span class="text-success">✓</span>
                   {% else %}
-                    <span class="text-danger">✗</span>
+                    <span class="text-secondary" title="{% if obj.language == 'en' %}Open Graph missing – low priority{% else %}Open Graph saknas – låg prioritet{% endif %}">–</span>
                   {% endif %}
                 </td>
                 <td class="text-center" style="border-color:rgba(255,255,255,.07);">

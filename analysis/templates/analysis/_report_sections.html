@@ -134,8 +134,7 @@
 
         {# Title #}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if seo.title.found and seo.title.ok %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif seo.title.found %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
+          {% if seo.title.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div class="overflow-hidden">
             <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Page title{% else %}Sidtitel{% endif %}</span><br>
@@ -145,7 +144,7 @@
               &nbsp;·&nbsp; {{ seo.title.length }} {% if obj.language == 'en' %}characters{% else %}tecken{% endif %}
               {% if not seo.title.ok %}
                 &nbsp;·&nbsp;
-                <span class="text-warning">{% if obj.language == 'en' %}ideal 30–60 characters{% else %}idealt 30–60 tecken{% endif %}</span>
+                <span>{% if obj.language == 'en' %}tip: 30–60 characters are usually shown in full by Google{% else %}tips: 30–60 tecken brukar visas helt i Google{% endif %}</span>
               {% endif %}
             </span>
             {% else %}
@@ -213,28 +212,16 @@
           </div>
         </li>
 
-        {# OG title #}
+        {# Delning i sociala medier (låg prioritet, ingår inte i "Viktigast att åtgärda") #}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if seo.og_title.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
+          {% if tips.social.ok %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-info-circle text-secondary mt-1 flex-shrink-0"></i>{% endif %}
           <div class="overflow-hidden">
-            <span class="text-light small fw-semibold"><span class="tech-only">Open Graph title</span><span class="simple-only">{% if obj.language == 'en' %}Social media title{% else %}Titel på sociala medier{% endif %}</span></span><br>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Sharing on social media{% else %}Delning i sociala medier{% endif %}</span>
+            <span class="text-secondary" style="font-size:.72rem;">&nbsp;· {% if obj.language == 'en' %}low priority{% else %}låg prioritet{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
-              {% if seo.og_title.found %}"{{ seo.og_title.value }}"
-              {% else %}{% if obj.language == 'en' %}Missing — social media shares may look plain{% else %}Saknas — delning i sociala medier kan se intetsägande ut{% endif %}{% endif %}
-            </span>
-          </div>
-        </li>
-
-        {# OG image #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if seo.og_image.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
-          <div class="overflow-hidden">
-            <span class="text-light small fw-semibold"><span class="tech-only">Open Graph image</span><span class="simple-only">{% if obj.language == 'en' %}Social media preview image{% else %}Förhandsvisningsbild på sociala medier{% endif %}</span></span><br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {% if seo.og_image.found %}<span style="word-break:break-all;">{{ seo.og_image.value|truncatechars:90 }}</span>
-              {% else %}{% if obj.language == 'en' %}Missing — no preview image when sharing on social media{% else %}Saknas — ingen förhandsvisningsbild vid delning i sociala medier{% endif %}{% endif %}
+              {{ tips.social.text }}
+              {% if tips.social.pages %}<span class="tech-only d-block mt-1">{% for u in tips.social.pages|slice:":20" %}<code class="text-secondary" style="font-size:.72rem;word-break:break-all;">{{ u }}</code>{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>{% endif %}
             </span>
           </div>
         </li>
@@ -258,6 +245,22 @@
             </span>
           </div>
         </li>
+
+        {% if tips.title_length %}
+        {# Tips om titellängd – lägsta nivå, ingår varken i poängen eller i "Viktigast att åtgärda" #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark tech-only">
+          <i class="fas fa-lightbulb text-secondary mt-1 flex-shrink-0"></i>
+          <div class="overflow-hidden">
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Tip{% else %}Tips{% endif %}</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% for t in tips.title_length %}
+                {{ t.text }}.
+                <span class="d-block mb-1">{% for u in t.pages|slice:":20" %}<code class="text-secondary" style="font-size:.72rem;word-break:break-all;">{{ u }}</code>{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+              {% endfor %}
+            </span>
+          </div>
+        </li>
+        {% endif %}
 
         {# Sitemap #}
         <li class="px-4 py-3 d-flex align-items-start gap-3">

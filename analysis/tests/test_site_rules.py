@@ -13,7 +13,7 @@ from django.urls import reverse
 
 from analysis.checks.performance import check_performance
 from analysis.models import SiteAnalysis
-from analysis.report import category_measures, pagespeed_summary, site_findings
+from analysis.report import category_measures, pagespeed_summary, site_findings, site_tips
 from analysis.scoring import ANALYZER_VERSION, calculate_scores, pagespeed_breakdown, seo_breakdown
 from analysis.tasks import collect_results
 
@@ -80,8 +80,9 @@ class SiteWideSeoTests(NoNetworkMixin, SimpleTestCase):
         self.assertEqual(b['site'], 15)
         self.assertEqual(b['start'], 85)
         self.assertEqual(b['subpages_count'], 3)                       # 404-sidan räknas inte
-        self.assertEqual(b['subpages_mean'], round((85 + 65 + 70) / 3, 1))
-        expected = round(15 + 0.4 * 85 + 0.6 * (85 + 65 + 70) / 3)
+        # tjanster 85 · om-oss utan metabeskrivning 85−30 = 55 · kontakt utan H1 85−20 = 65
+        self.assertEqual(b['subpages_mean'], round((85 + 55 + 65) / 3, 1))
+        expected = round(15 + 0.4 * 85 + 0.6 * (85 + 55 + 65) / 3)
         self.assertEqual(self.r['scores']['seo'], expected)
         self.assertLess(self.r['scores']['seo'], 100)                   # startsidan ensam hade gett 100
 
@@ -113,7 +114,7 @@ class HomePageOnlyTests(NoNetworkMixin, SimpleTestCase):
         r['seo'].update({'robots_txt': {'found': True}, 'sitemap': {'found': False}})
         b = seo_breakdown(r)
         self.assertEqual(b['subpages_count'], 0)
-        self.assertEqual(b['score'], 10 + 65)
+        self.assertEqual(b['score'], 10 + 55)   # robots.txt + sidan utan metabeskrivning (85 − 30)
         self.assertEqual(site_findings(r)[0]['text'],
                          'Metabeskrivning saknas på startsidan, den enda sida som kontrollerades')
 
@@ -233,3 +234,93 @@ class ReportRenderingTests(NoNetworkMixin, TestCase):
         self.assertIn('medelvärde av mobil och dator', html)
         self.assertNotIn('Mobil väger 70 %', html)
         self.assertNotIn('startsidan (40 %)', html)
+
+
+class TitleAndSocialTests(SimpleTestCase):
+    """Titellängd är bara ett tips; Open Graph är låg prioritet – ingen av dem i "Viktigast att åtgärda"."""
+
+    def _results(self, *subpages):
+        r = {'seo': soup_seo('site_sub_good.html'), 'http': {'final_url': SITE},
+             'pages': [{'url': SITE + name.split('.')[0], 'seo': soup_seo(name)} for name in subpages]}
+        r['seo'].update({'robots_txt': {'found': True}, 'sitemap': {'found': True}})
+        return r
+
+    def test_short_unique_title_costs_no_points_and_is_not_a_finding(self):
+        r = self._results('title_short_no_og.html')
+        short = r['pages'][0]['seo']
+        self.assertFalse(short['title']['ok'])                         # 7 tecken
+        b = seo_breakdown(r)
+        # 85 möjliga − 5 för saknad Open Graph; titeln ger full poäng trots längden
+        self.assertEqual(b['subpages_mean'], 80.0)
+        keys = [f['key'] for f in site_findings(r)]
+        self.assertNotIn('title_length', keys)
+        self.assertNotIn('og_missing', keys)
+        self.assertEqual(keys, [])
+
+    def test_title_length_and_open_graph_are_low_priority_tips(self):
+        tips = site_tips(self._results('title_short_no_og.html'))
+        self.assertFalse(tips['social']['ok'])
+        self.assertEqual(tips['social']['text'],
+                         'Open Graph (titel och bild som visas när sidan delas) saknas '
+                         'på 1 av de 2 sidor som kontrollerades')
+        self.assertEqual(len(tips['title_length']), 1)
+        self.assertTrue(tips['title_length'][0]['text'].startswith(
+            'Sidtiteln är kortare än 30 tecken på 1 av de 2 sidor som kontrollerades'))
+        self.assertTrue(site_tips(self._results())['social']['ok'])
+
+    def test_duplicate_title_costs_points_and_is_a_finding(self):
+        r = self._results('site_sub_nodesc.html', 'title_duplicate.html')
+        f = {x['key']: x for x in site_findings(r)}
+        self.assertEqual(f['title_duplicate']['text'],
+                         'Samma sidtitel används på 2 av de 3 sidor som kontrollerades')
+        self.assertEqual(f['title_duplicate']['severity'], 'medium')
+        unique = self._results('site_sub_nodesc.html')
+        self.assertEqual(seo_breakdown(unique)['subpages_mean'], 55.0)      # om-oss: saknar bara beskrivning (−30)
+        # med dubbletten tappar båda sidorna 10 p för titeln: 55−10 och 85−10
+        self.assertEqual(seo_breakdown(r)['subpages_mean'], round((45 + 75) / 2, 1))
+
+
+@override_settings(PAGESPEED_API_KEY='')
+class TipsRenderingTests(NoNetworkMixin, TestCase):
+
+    def test_tips_are_not_in_priority_list(self):
+        r = _collect(_site_web())
+        r['seo']['og_title'] = {'found': False, 'value': None}
+        r['seo']['title'].update(length=12, ok=False)
+        scores = r.pop('scores')
+        obj = SiteAnalysis.objects.create(
+            url=SITE, domain='example-site.se', status='complete', results=r,
+            analyzer_version=ANALYZER_VERSION, language='sv', **{f'score_{k}': v for k, v in scores.items()})
+        html = self.client.get(reverse('analysis_result', kwargs={'token': obj.id})).content.decode()
+        start = html.index('Viktigast att åtgärda')
+        priority = html[start:html.index('HTTPS och certifikat', start)]   # fyndlistan slutar där sektionerna börjar
+        self.assertNotIn('Open Graph', priority)
+        self.assertNotIn('30 tecken', priority)
+        self.assertIn('Delning i sociala medier', html)
+        self.assertIn('låg prioritet', html)
+        self.assertIn('Sidtiteln är kortare än 30 tecken på 1 av de 4 sidor som kontrollerades', html)
+        self.assertIn('tips: 30–60 tecken brukar visas helt i Google', html)
+        self.assertNotIn('idealt 30–60 tecken', html)
+        pdf = self.client.get(reverse('analysis_pdf', kwargs={'token': obj.id})).content.decode()
+        self.assertIn('Delning i sociala medier (låg prioritet)', pdf)
+        self.assertIn('Tips (ingår inte i poängen)', pdf)
+
+
+class PagePointWeightTests(SimpleTestCase):
+    """Sidpoängen ska följa fyndlistans prioritering: metabeskrivning och H1 väger tungt, Open Graph lätt."""
+
+    def _pts(self, **missing):
+        from analysis.scoring import page_seo_points
+        seo = soup_seo('site_sub_good.html')
+        for key in missing:
+            seo[key] = {'found': False}
+        return page_seo_points(seo)
+
+    def test_weights(self):
+        self.assertEqual(self._pts(), 85)
+        self.assertEqual(85 - self._pts(title=1), 20)
+        self.assertEqual(85 - self._pts(meta_description=1), 30)
+        self.assertEqual(85 - self._pts(h1=1), 20)
+        self.assertEqual(85 - self._pts(viewport=1), 10)
+        self.assertEqual(85 - self._pts(og_image=1), 5)                 # Open Graph: bara 5 p totalt
+        self.assertEqual(85 - self._pts(og_title=1, og_image=1), 5)
