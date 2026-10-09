@@ -132,8 +132,33 @@ class RetryTests(LocalServerMixin, SimpleTestCase):
         srv, base = self.server(mode='keepalive_close')
         s = safe_session()
         codes = [safe_request('GET', f'{base}sida-{i}', timeout=3, session=s).status_code for i in range(6)]
-        self.assertEqual(codes, [200] * 6)                        # utan retry: vartannat anrop misslyckades
-        self.assertTrue(any(1.0 <= x <= 1.0 + net.RETRY_JITTER for x in self.sleeps))   # backoff före försök 2
+        # Utan retry misslyckades vartannat anrop i det lokala experimentet. Om
+        # klienten hinner märka den stängda anslutningen innan den återanvänds
+        # behövs ingen retry – därför kontrolleras bara resultatet här, och själva
+        # retryn i testet nedan.
+        self.assertEqual(codes, [200] * 6)
+
+    def test_failed_attempt_is_retried_after_backoff(self):
+        srv, base = self.server()
+        s = safe_session()
+        real_request = s.request
+        calls = []
+
+        def flaky(*args, **kwargs):
+            calls.append(args)
+            if len(calls) == 1:
+                raise requests.exceptions.ConnectionError(
+                    "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))")
+            return real_request(*args, **kwargs)
+
+        with patch.object(s, 'request', side_effect=flaky):
+            resp = safe_request('GET', base, timeout=3, session=s)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(calls), 2)
+        backoffs = [x for x in self.sleeps if x >= 1.0]
+        self.assertEqual(len(backoffs), 1)
+        self.assertLessEqual(backoffs[0], 1.0 + net.RETRY_JITTER)        # första backoff ≈ 1 s
+        self.assertEqual(net._host_state(s, 'public.example')['failures'], 0)
 
     def test_host_is_given_up_after_two_failed_requests_in_a_row(self):
         srv, base = self.server(mode='refuse_after', n=1)
