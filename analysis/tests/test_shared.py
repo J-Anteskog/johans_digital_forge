@@ -74,7 +74,7 @@ class SharedViewTests(NoNetworkMixin, TestCase):
         self.assertIn('Mäter att sidan serveras via HTTPS', html)
         self.assertIn('4 CSS', html)
         self.assertIn('Hoppa till innehåll', html)
-        self.assertIn('Ingen egen metabeskrivning är satt', html)
+        self.assertIn('Metabeskrivning saknas på startsidan, den enda sida som kontrollerades', html)
         self.assertIn('Rapport från Johans Digital Forge, johans-digital-forge.se', html)
 
     def test_shared_view_does_not_touch_tracking_fields(self):
@@ -90,7 +90,7 @@ class SharedViewTests(NoNetworkMixin, TestCase):
 
     def test_new_meta_description_wording_in_regular_report(self):
         html = self._get('analysis_result').content.decode()
-        self.assertIn('Ingen egen metabeskrivning är satt — Google väljer själv', html)
+        self.assertIn('ingen egen beskrivning är satt, så Google väljer själv', html)
         self.assertNotIn('Google saknar text att visa', html)
 
     def test_shared_pdf_has_no_grade_or_sales(self):

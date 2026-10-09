@@ -3,7 +3,7 @@
           {% for c in categories %}
           <div>
             <div class="d-flex justify-content-between text-secondary small mb-1">
-              <span>{{ c.label }}</span>
+              <span>{{ c.label }}{% if c.tag %}<span class="d-block" style="font-size:.7rem;opacity:.75;">{{ c.tag }}</span>{% endif %}</span>
               {% if c.measured %}
               <span class="text-light fw-semibold">{{ c.score }}</span>
               {% else %}

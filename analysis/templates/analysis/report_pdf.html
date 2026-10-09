@@ -191,7 +191,7 @@
     <tbody>
       {% for c in categories %}
       <tr>
-        <td>{{ c.label }}</td>
+        <td>{{ c.label }}{% if c.tag %}<div style="font-size:7pt;color:#888;">{{ c.tag }}</div>{% endif %}</td>
         <td><div class="bar-wrap">{% if c.measured %}<div class="bar-fill" style="width:{{ c.score }}%;background:{{ c.color }};"></div>{% endif %}</div></td>
         <td>{% if c.measured %}{{ c.score }}{% else %}<span style="font-weight:400;color:#888;">ej mätt</span>{% endif %}</td>
       </tr>
@@ -215,12 +215,9 @@
       {% if r.ssl and not r.ssl.valid %}
       <tr><td style="width:15mm;padding:1.2mm 0;vertical-align:top;"><span style="background:#dc3545;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">KRITISK</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">SSL-certifikatet är ogiltigt — webbläsare varnar besökarna "Osäker sida"</td></tr>
       {% endif %}
-      {% if r.seo and r.seo.title and not r.seo.title.found %}
-      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#dc3545;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">KRITISK</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Sidtitel saknas — sökmotorer vet inte vad sidan handlar om</td></tr>
-      {% endif %}
-      {% if r.seo and r.seo.meta_description and not r.seo.meta_description.found %}
-      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Ingen egen metabeskrivning är satt — Google väljer själv vilken text från sidan som visas i sökresultaten</td></tr>
-      {% endif %}
+      {% for f in findings %}
+      <tr><td style="padding:1.2mm 0;vertical-align:top;">{% if f.severity == 'critical' %}<span style="background:#dc3545;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">KRITISK</span>{% elif f.severity == 'high' %}<span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span>{% else %}<span style="background:#fd7e14;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">MEDEL</span>{% endif %}</td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">{{ f.text }}{% if f.hint %} — {{ f.hint }}{% endif %}</td></tr>
+      {% endfor %}
       {% if cats.performance.measured and obj.score_performance < 50 %}
       <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">{% if obj.scoring.performance_source == 'pagespeed' %}PageSpeed bedömer sidan som långsam — besökare tappar tålamodet och lämnar{% else %}Tung sida eller långsamt serversvar — se "Sidvikt och svarstid"{% endif %}</td></tr>
       {% endif %}
@@ -229,9 +226,6 @@
       {% endif %}
       {% if cats.headers.measured and obj.score_headers < 50 %}
       <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#fd7e14;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">MEDEL</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Flera säkerhetsheaders saknas — relativt enkelt att åtgärda</td></tr>
-      {% endif %}
-      {% if r.accessibility.images.missing_alt %}
-      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#fd7e14;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">MEDEL</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">{{ r.accessibility.images.missing_alt }} bild{{ r.accessibility.images.missing_alt|pluralize:"er" }} saknar alt-attribut — osynliga för skärmläsare</td></tr>
       {% endif %}
     </table>
   </div>
@@ -338,10 +332,10 @@
 {% with perf=r.performance res=r.resources http=r.http psp=r.pagespeed src=obj.scoring.performance_source %}
 <div class="section">
   <div class="section-header">
-    <span class="title">{{ cats.performance.label }}</span>
+    <span class="title">{{ cats.performance.label }}{% if psp_summary %} · mobil {{ psp_summary.mobile|default_if_none:"ej mätt" }} · dator {{ psp_summary.desktop|default_if_none:"ej mätt" }}{% endif %}</span>
     <span class="score">{% if cats.performance.measured %}{{ obj.score_performance }}/100{% else %}ej mätt{% endif %}</span>
   </div>
-  <div class="section-summary">{{ cats.performance.measures }}</div>
+  <div class="section-summary">{% if psp_summary.weakest_text %}<strong>{{ psp_summary.weakest_text }}.</strong> {% endif %}{{ cats.performance.measures }}</div>
   <div class="section-body">
     {% for strategy, d in psp.items %}{% if d.score != None and strategy != 'status' %}
     <div class="section-row">
@@ -391,10 +385,10 @@
       </div>
     </div>
     <div class="section-row">
-      {% if perf.images_large %}<span class="icon-warn">!</span>{% elif perf.images_checked_for_size %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">–</span>{% endif %}
+      {% if perf.images_large %}<span class="icon-warn">!</span>{% elif perf.images_checked_for_size and not perf.images_size_unknown and not perf.images_not_checked and not perf.images_blocked %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">–</span>{% endif %}
       <div>
         <div class="row-label">Bildernas filstorlek (ingår inte i poängen)</div>
-        <div class="row-detail">{% if perf.images_checked_for_size %}{{ perf.images_checked_for_size }} kontrollerade · {% if perf.images_large %}{{ perf.images_large }} över {{ perf.images_size_limit_kb }} KB{% else %}ingen över {{ perf.images_size_limit_kb }} KB{% endif %}{% elif r.images.total %}Ej mätt — servern angav inte bildernas storlek{% else %}Inga bilder på sidan{% endif %}{% if perf.images_size_unknown %} · {{ perf.images_size_unknown }} med okänd storlek{% endif %}</div>
+        <div class="row-detail">{% if perf.images_checked_for_size %}{{ perf.images_checked_for_size }} uppmätta: {% if perf.images_large %}{{ perf.images_large }} över {{ perf.images_size_limit_kb }} KB{% else %}ingen över {{ perf.images_size_limit_kb }} KB{% endif %}.{% elif not r.images.total %}Inga bilder på sidan.{% endif %}{% if perf.images_size_unknown %} {{ perf.images_size_unknown }} kunde inte mätas (servern angav inte storleken).{% endif %}{% if perf.images_not_checked %} {{ perf.images_not_checked }} ej kontrollerade (högst 20 per sida).{% endif %}{% if perf.images_blocked %} {{ perf.images_blocked }} ej kontrollerade (adressen är inte publik).{% endif %}</div>
       </div>
     </div>
     {% endif %}
@@ -456,7 +450,7 @@
 {% with hdr=r.headers %}
 <div class="section">
   <div class="section-header">
-    <span class="title">{{ cats.headers.label }}</span>
+    <span class="title">{{ cats.headers.label }}{% if cats.headers.tag %} <span style="font-weight:400;font-size:8pt;color:#ccc;">({{ cats.headers.tag }})</span>{% endif %}</span>
     <span class="score">{% if cats.headers.measured %}{{ obj.score_headers }}/100{% else %}ej mätt{% endif %}</span>
   </div>
   <div class="section-summary">{% if cats.headers.measured %}{{ hdr.found_count }} av {{ hdr.headers|length }} kontrollerade headers skickas. {% endif %}{{ cats.headers.measures }}</div>

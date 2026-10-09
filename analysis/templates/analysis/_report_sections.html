@@ -118,6 +118,17 @@
         {% endif %}
       </div>
       {% endif %}
+      {% if cats.seo.measures %}
+      <div class="cat-summary">
+        <div style="font-size:.75rem;">{{ cats.seo.measures }}</div>
+        {% if r.seo_breakdown and r.seo_breakdown.subpages_count %}
+        <div class="mt-1" style="font-size:.75rem;">
+          {% if obj.language == 'en' %}Raw page points: home page {{ r.seo_breakdown.start }}/85 · subpages average {{ r.seo_breakdown.subpages_mean }}/85 · robots.txt and sitemap {{ r.seo_breakdown.site }}/15. The rows below apply to the home page; subpages are in the findings above and the table further down.
+          {% else %}Sidpoäng: startsidan {{ r.seo_breakdown.start }}/85 · undersidornas medel {{ r.seo_breakdown.subpages_mean }}/85 · robots.txt och sitemap {{ r.seo_breakdown.site }}/15. Raderna nedan gäller startsidan; undersidorna finns i fynden ovan och i tabellen längre ned.{% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -283,6 +294,13 @@
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
         </svg>
         <span class="text-light fw-bold">{{ cats.performance.label }}</span>
+        {% if psp_summary %}
+        <span class="text-secondary small">
+          {% if obj.language == 'en' %}mobile{% else %}mobil{% endif %} {% if psp_summary.mobile != None %}<strong class="text-light">{{ psp_summary.mobile }}</strong>{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}
+          &nbsp;·&nbsp;
+          {% if obj.language == 'en' %}desktop{% else %}dator{% endif %} {% if psp_summary.desktop != None %}<strong class="text-light">{{ psp_summary.desktop }}</strong>{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}
+        </span>
+        {% endif %}
         <span class="ms-auto text-secondary small fw-semibold">{% if cats.performance.measured %}{{ obj.score_performance }}/100{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}</span>
       </div>
       <div class="cat-summary">
@@ -297,6 +315,7 @@
             {% else %}{% if obj.language == 'en' %}Heavy page or slow server response.{% else %}Tung sida eller långsamt serversvar.{% endif %}{% endif %}
           {% endif %}
         {% endif %}
+        {% if psp_summary.weakest_text %}<div class="mt-1 text-warning" style="font-size:.8rem;">{{ psp_summary.weakest_text }}.</div>{% endif %}
         <div class="mt-1" style="font-size:.75rem;">{{ cats.performance.measures }}</div>
       </div>
 
@@ -408,23 +427,25 @@
         {# Bildstorlekar #}
         <li class="px-4 py-3 d-flex align-items-start gap-3">
           {% if perf.images_large %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
-          {% elif perf.images_checked_for_size %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% elif perf.images_checked_for_size and not perf.images_size_unknown and not perf.images_not_checked and not perf.images_blocked %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-minus-circle text-secondary mt-1 flex-shrink-0"></i>{% endif %}
           <div>
             <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Image file sizes{% else %}Bildernas filstorlek{% endif %}</span>
             <span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {% if obj.language == 'en' %}not included in the score{% else %}ingår inte i poängen{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if perf.images_checked_for_size %}
-                {{ perf.images_checked_for_size }} {% if obj.language == 'en' %}checked{% else %}kontrollerade{% endif %}
-                &nbsp;·&nbsp;
+                {{ perf.images_checked_for_size }} {% if obj.language == 'en' %}measured{% else %}uppmätta{% endif %}:
                 {% if perf.images_large %}<span class="text-warning">{{ perf.images_large }} {% if obj.language == 'en' %}over{% else %}över{% endif %} {{ perf.images_size_limit_kb }} KB</span>
                 {% else %}{% if obj.language == 'en' %}none over{% else %}ingen över{% endif %} {{ perf.images_size_limit_kb }} KB{% endif %}
-              {% elif r.images.total %}
-                {% if obj.language == 'en' %}Not measured — the server did not report image sizes{% else %}Ej mätt — servern angav inte bildernas storlek{% endif %}
-              {% else %}
+              {% elif not r.images.total %}
                 {% if obj.language == 'en' %}No images on the page{% else %}Inga bilder på sidan{% endif %}
               {% endif %}
-              {% if perf.images_size_unknown %}&nbsp;·&nbsp;{{ perf.images_size_unknown }} {% if obj.language == 'en' %}with unknown size{% else %}med okänd storlek{% endif %}{% endif %}
+              {% if perf.images_size_unknown %}{% if perf.images_checked_for_size %}<br>{% endif %}<span class="text-light">{{ perf.images_size_unknown }} {% if obj.language == 'en' %}could not be measured{% else %}kunde inte mätas{% endif %}</span> — {% if obj.language == 'en' %}the server did not report their size{% else %}servern angav inte deras storlek{% endif %}{% endif %}
+              {% if perf.images_not_checked %}<br>{{ perf.images_not_checked }} {% if obj.language == 'en' %}not checked (we check at most 20 per page){% else %}ej kontrollerade (vi kontrollerar högst 20 per sida){% endif %}{% endif %}
+              {% if perf.images_blocked %}<br>{{ perf.images_blocked }} {% if obj.language == 'en' %}not checked (address not public){% else %}ej kontrollerade (adressen är inte publik){% endif %}{% endif %}
+              {% if r.images.total and not perf.images_checked_for_size and not perf.images_size_unknown and not perf.images_not_checked and not perf.images_blocked %}
+                {% if obj.language == 'en' %}Not measured{% else %}Ej mätt{% endif %}
+              {% endif %}
             </span>
           </div>
         </li>
@@ -580,6 +601,7 @@
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
         <span class="text-light fw-bold">{{ cats.headers.label }}</span>
+        {% if cats.headers.tag %}<span class="badge rounded-pill" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);font-weight:500;font-size:.7rem;">{{ cats.headers.tag }}</span>{% endif %}
         <span class="ms-auto text-secondary small fw-semibold">{% if cats.headers.measured %}{{ obj.score_headers }}/100{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}</span>
       </div>
       {% if cats.headers.measured %}

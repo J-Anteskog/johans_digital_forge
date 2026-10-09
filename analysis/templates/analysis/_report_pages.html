@@ -96,6 +96,13 @@
         <p class="text-secondary mt-2 mb-0" style="font-size:.75rem;">
           ✓ = OK &nbsp;·&nbsp; ~ = {% if obj.language == 'en' %}exists but needs improvement{% else %}finns men behöver förbättras{% endif %} &nbsp;·&nbsp; ✗ = {% if obj.language == 'en' %}missing{% else %}saknas{% endif %} &nbsp;·&nbsp; ○ = {% if obj.language == 'en' %}images with alt="" (decorative){% else %}bilder med alt="" (dekorativa){% endif %}
         </p>
+        {% if r.pages_skipped %}
+        <p class="text-secondary mt-2 mb-0 tech-only" style="font-size:.75rem;">
+          {% if obj.language == 'en' %}Skipped (not regular pages):{% else %}Hoppade över (inte vanliga sidor):{% endif %}
+          {% for s in r.pages_skipped %}<code class="text-secondary" style="word-break:break-all;">{{ s.url }}</code>
+          ({% if s.reason == 'duplicate' %}{% if obj.language == 'en' %}same as the home page{% else %}samma som startsidan{% endif %}{% elif s.reason == 'file' %}{% if obj.language == 'en' %}file{% else %}fil{% endif %}{% else %}{% if obj.language == 'en' %}technical address{% else %}teknisk adress{% endif %}{% endif %}){% if not forloop.last %}, {% endif %}{% endfor %}
+        </p>
+        {% endif %}
       </div>
     </div>
     {% endif %}

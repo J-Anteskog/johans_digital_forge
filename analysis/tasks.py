@@ -25,7 +25,8 @@ from .checks.pagespeed import check_pagespeed
 from .checks.headers import check_headers
 from .checks.accessibility import check_accessibility
 from .scoring import (
-    ANALYZER_VERSION, basic_performance_breakdown, calculate_scores, scoring_summary,
+    ANALYZER_VERSION, basic_performance_breakdown, calculate_scores, pagespeed_breakdown,
+    scoring_summary, seo_breakdown,
 )
 
 
@@ -75,7 +76,7 @@ def collect_results(url: str, progress=None) -> dict:
             results['mobile']        = check_mobile(soup, resources, session)
             results['accessibility'] = check_accessibility(soup, images)
             report('crawl')
-            results['pages']         = _crawl_internal_pages(final_url, soup, session)
+            results['pages'], results['pages_skipped'] = _crawl_internal_pages(final_url, soup, session)
         else:
             results['seo']           = {}
             results['performance']   = {}
@@ -95,6 +96,8 @@ def collect_results(url: str, progress=None) -> dict:
     report('scoring')
     if results.get('seo'):
         results['performance']['basic'] = basic_performance_breakdown(results)
+        results['seo_breakdown'] = seo_breakdown(results)
+    results['pagespeed_breakdown'] = pagespeed_breakdown(results)
     scores = calculate_scores(results)
     results['scoring'] = scoring_summary(scores, results)
     results['scores'] = scores
@@ -159,24 +162,75 @@ def _set_phase(pk, phase: str) -> None:
     )
 
 
-def _crawl_internal_pages(base_url: str, root_soup, session=None, max_pages: int = 20) -> list:
-    """Crawlar interna sidor och kör SEO + tillgänglighet på var och en."""
-    base_netloc = urlparse(base_url).netloc
+# Tekniska adresser som inte är riktiga sidor (t.ex. Cloudflares mejlskydd) –
+# hoppas över och visas aldrig som sidfel
+_TECHNICAL_PATH_PREFIXES = (
+    '/cdn-cgi/', '/wp-admin', '/wp-login', '/wp-json', '/xmlrpc.php',
+    '/wp-content/', '/wp-includes/', '/feed', '/comments/feed',
+)
+_TECHNICAL_QUERY_KEYS = ('replytocom', 'add-to-cart', 'share')
+_FILE_EXTENSIONS = (
+    '.pdf', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico', '.zip', '.rar',
+    '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.xml', '.json', '.txt', '.csv',
+    '.mp4', '.mp3', '.mov', '.ics', '.css', '.js',
+)
 
-    visited = {base_url.rstrip('/')}
-    to_visit = []
+
+def _page_key(url: str) -> str:
+    """Jämförelsenyckel: samma sida oavsett http/https, www. och avslutande snedstreck."""
+    p = urlparse(url)
+    host = (p.hostname or '').lower()
+    host = host[4:] if host.startswith('www.') else host
+    path = p.path.rstrip('/') or '/'
+    return f'{host}{path}' + (f'?{p.query}' if p.query else '')
+
+
+def _skip_reason(url: str) -> str | None:
+    p = urlparse(url)
+    path = p.path.lower()
+    if path.startswith(_TECHNICAL_PATH_PREFIXES):
+        return 'technical'
+    if path.endswith(_FILE_EXTENSIONS):
+        return 'file'
+    query_keys = {part.split('=', 1)[0].lower() for part in p.query.split('&') if part}
+    if query_keys & set(_TECHNICAL_QUERY_KEYS):
+        return 'technical'
+    return None
+
+
+def _crawl_internal_pages(base_url: str, root_soup, session=None, max_pages: int = 20):
+    """
+    Crawlar interna sidor och kör SEO + tillgänglighet på var och en.
+    Returnerar (sidor, överhoppade). Tekniska adresser, filer och dubbletter av
+    startsidan hoppas över och redovisas separat – aldrig som sidfel.
+    """
+    base_host = urlparse(base_url).hostname or ''
+    base_site = base_host[4:] if base_host.startswith('www.') else base_host
+
+    seen = {_page_key(base_url)}
+    to_visit, skipped = [], []
 
     for a in root_soup.find_all('a', href=True):
         href = a['href'].strip()
         if not href or href.startswith(('#', 'mailto:', 'tel:', 'javascript:')):
             continue
-        absolute = urljoin(base_url, href).split('#')[0].rstrip('/')
+        absolute = urljoin(base_url, href).split('#')[0]
         p = urlparse(absolute)
-        if (p.netloc == base_netloc
-                and p.scheme in ('http', 'https')
-                and absolute not in visited):
-            visited.add(absolute)
-            to_visit.append(absolute)
+        host = (p.hostname or '').lower()
+        if p.scheme not in ('http', 'https') or (host[4:] if host.startswith('www.') else host) != base_site:
+            continue
+        key = _page_key(absolute)
+        if key in seen:
+            if (key == _page_key(base_url) and absolute.rstrip('/') != base_url.rstrip('/')
+                    and all(x['url'] != absolute for x in skipped)):
+                skipped.append({'url': absolute, 'reason': 'duplicate'})
+            continue
+        seen.add(key)
+        reason = _skip_reason(absolute)
+        if reason:
+            skipped.append({'url': absolute, 'reason': reason})
+            continue
+        to_visit.append(absolute.rstrip('/'))
 
     pages = []
     for url in to_visit[:max_pages]:
@@ -192,7 +246,7 @@ def _crawl_internal_pages(base_url: str, root_soup, session=None, max_pages: int
             'accessibility': check_accessibility(soup, images),
         })
 
-    return pages
+    return pages, skipped[:30]
 
 
 def start_analysis(analysis_id: str) -> threading.Thread:

@@ -94,7 +94,16 @@ class SiteAnalysis(models.Model):
 
     @property
     def is_legacy(self):
-        """True för rapporter skapade med en äldre version av analysverktyget."""
+        """
+        True för rapporter från v1 – de visas med *_v1-mallarna och kan inte
+        delas. Rapporter från v2 och senare använder de nuvarande mallarna.
+        """
+        from .scoring import FIRST_CURRENT_TEMPLATE_VERSION
+        return self.analyzer_version < FIRST_CURRENT_TEMPLATE_VERSION
+
+    @property
+    def is_outdated(self):
+        """True om poängen räknades med en äldre metod än den nuvarande (även v2)."""
         from .scoring import ANALYZER_VERSION
         return self.analyzer_version < ANALYZER_VERSION
 

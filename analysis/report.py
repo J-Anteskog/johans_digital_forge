@@ -4,7 +4,10 @@ och om den är uppmätt. Används av webbrapporten, PDF:en och e-posten så att
 de alltid säger samma sak.
 """
 
-from .scoring import WEIGHTS, performance_source
+from .scoring import (
+    PSP_WEIGHTS, SEO_START_WEIGHT, WEIGHTS, checked_subpages, pagespeed_breakdown,
+    performance_source,
+)
 
 _COLORS = {
     'security': '#ffc107',
@@ -34,7 +37,8 @@ _MEASURES = {
         'Mäter sidtitel, metabeskrivning, H1, viewport, Open Graph, robots.txt och sitemap.',
         'Measures page title, meta description, H1, viewport, Open Graph, robots.txt and sitemap.',
     ),
-    'performance_pagespeed': (
+    # v2: medelvärde av mobil och dator
+    'performance_pagespeed_v2': (
         'Googles PageSpeed Insights-poäng (prestanda), medelvärde av mobil och dator.',
         "Google PageSpeed Insights performance score, average of mobile and desktop.",
     ),
@@ -83,12 +87,51 @@ def category_label(key: str, results: dict, lang: str = 'sv') -> str:
     return _LABELS[key][i]
 
 
+# Etikett på kategorier som webbplatsägaren oftast inte kan åtgärda själv
+_TAGS = {
+    'headers': ('kräver serverinställning (ofta hos webbhotellet)',
+                'requires server configuration (often at the web host)'),
+}
+
+
+def _version(results) -> int:
+    return (results or {}).get('analyzer_version') or 1
+
+
 def category_measures(key: str, results: dict, lang: str = 'sv') -> str:
+    """Vad kategorin mäter – för v3 med den faktiska viktningen och antalet sidor."""
     i = 1 if lang == 'en' else 0
+    results = results or {}
+    v3 = _version(results) >= 3
     if key == 'performance':
-        src = performance_source(results or {}) or 'none'
+        src = performance_source(results) or 'none'
+        if src == 'pagespeed':
+            if not v3:
+                return _MEASURES['performance_pagespeed_v2'][i]
+            m, d = round(PSP_WEIGHTS['mobile'] * 100), round(PSP_WEIGHTS['desktop'] * 100)
+            return (f'Googles PageSpeed Insights-poäng (prestanda). Mobil väger {m} % och dator {d} %, '
+                    'eftersom Google i första hand bedömer mobilversionen.',
+                    f'Google PageSpeed Insights performance score. Mobile weighs {m} % and desktop {d} %, '
+                    'since Google primarily assesses the mobile version.')[i]
         return _MEASURES[f'performance_{src}'][i]
+    if key == 'seo' and v3:
+        n = len(checked_subpages(results))
+        start = round(SEO_START_WEIGHT * 100)
+        if n:
+            return (f'Mäter sidtitel, metabeskrivning, H1, viewport och Open Graph på startsidan ({start} %) och '
+                    f'på {n} undersidor ({100 - start} %, medelvärde), samt robots.txt och sitemap för hela webbplatsen.',
+                    f'Measures page title, meta description, H1, viewport and Open Graph on the home page ({start} %) and '
+                    f'on {n} subpages ({100 - start} %, average), plus robots.txt and sitemap for the whole site.')[i]
+        return ('Mäter sidtitel, metabeskrivning, H1, viewport och Open Graph på startsidan (inga undersidor '
+                'kunde kontrolleras), samt robots.txt och sitemap.',
+                'Measures page title, meta description, H1, viewport and Open Graph on the home page (no subpages '
+                'could be checked), plus robots.txt and sitemap.')[i]
     return _MEASURES[key][i]
+
+
+def category_tag(key: str, lang: str = 'sv') -> str:
+    tag = _TAGS.get(key)
+    return tag[1 if lang == 'en' else 0] if tag else ''
 
 
 _LEGACY_LABELS = {
@@ -125,8 +168,109 @@ def build_categories(obj) -> list:
             'score': score,
             'measured': score is not None,
             'color': _COLORS[key],
+            'tag': '' if legacy else category_tag(key, lang),
         })
     return out
+
+
+# ── Fynd över alla kontrollerade sidor ─────────────────────────────────────
+
+_SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2}
+
+# (nyckel, allvarlighet, test på en sidas SEO-resultat, text sv, text en)
+_PAGE_CHECKS = [
+    ('title_missing', 'critical', lambda s: not s.get('title', {}).get('found'),
+     'Sidtitel saknas', 'Page title missing'),
+    ('desc_missing', 'high', lambda s: not s.get('meta_description', {}).get('found'),
+     'Metabeskrivning saknas', 'Meta description missing'),
+    ('h1_missing', 'high', lambda s: not s.get('h1', {}).get('found'),
+     'H1-rubrik saknas', 'H1 heading missing'),
+    ('h1_multiple', 'medium', lambda s: (s.get('h1', {}).get('count') or 0) > 1,
+     'Fler än en H1-rubrik', 'More than one H1 heading'),
+    ('title_length', 'medium', lambda s: s.get('title', {}).get('found') and not s.get('title', {}).get('ok'),
+     'Sidtiteln har inte 30–60 tecken', 'Page title is not 30–60 characters'),
+    ('desc_length', 'medium',
+     lambda s: s.get('meta_description', {}).get('found') and not s.get('meta_description', {}).get('ok'),
+     'Metabeskrivningen har inte 50–160 tecken', 'Meta description is not 50–160 characters'),
+    ('og_missing', 'medium',
+     lambda s: not (s.get('og_title', {}).get('found') and s.get('og_image', {}).get('found')),
+     'Open Graph (titel/bild för delning i sociala medier) saknas',
+     'Open Graph (title/image for social sharing) missing'),
+]
+
+
+# Förklaring som visas efter fyndet
+_HINTS = {
+    'title_missing': ('sökmotorer vet inte vad sidan handlar om',
+                      "search engines don't know what the page is about"),
+    'desc_missing': ('ingen egen beskrivning är satt, så Google väljer själv vilken text från sidan som visas i sökresultaten',
+                     'no description is set, so Google picks text from the page itself for search results'),
+    'alt_missing': ('bilderna är osynliga för skärmläsare', 'the images are invisible to screen readers'),
+}
+
+
+def _where(count: int, total: int, en: bool) -> str:
+    if total == 1:
+        return ('on the home page, the only page checked' if en
+                else 'på startsidan, den enda sida som kontrollerades')
+    return (f'on {count} of the {total} pages checked' if en
+            else f'på {count} av de {total} sidor som kontrollerades')
+
+
+def site_findings(results: dict, lang: str = 'sv') -> list:
+    """
+    SEO- och alt-textfynd räknade över startsidan och alla undersidor som gick
+    att kontrollera, t.ex. "Metabeskrivning saknas på 3 av de 11 sidor som
+    kontrollerades". Varje fynd har listan över berörda sidor.
+    """
+    results = results or {}
+    if not results.get('seo'):
+        return []
+    en = lang == 'en'
+    start_url = (results.get('http') or {}).get('final_url') or ''
+    pages = [(start_url, results['seo'], results.get('accessibility') or {})]
+    pages += [(p['url'], p['seo'], p.get('accessibility') or {}) for p in checked_subpages(results)]
+    total = len(pages)
+
+    findings = []
+    for key, severity, failing, sv, en_text in _PAGE_CHECKS:
+        urls = [url for url, seo, _ in pages if failing(seo)]
+        if urls:
+            findings.append({
+                'key': key, 'severity': severity, 'pages': urls,
+                'text': f'{en_text if en else sv} {_where(len(urls), total, en)}',
+                'hint': _HINTS.get(key, ('', ''))[1 if en else 0],
+            })
+
+    alt_pages = [(url, (a11y.get('images') or {}).get('missing_alt') or 0) for url, _, a11y in pages]
+    alt_pages = [(u, n) for u, n in alt_pages if n]
+    if alt_pages:
+        n_images = sum(n for _, n in alt_pages)
+        what = (f'{n_images} image{"s" if n_images != 1 else ""} without an alt attribute' if en
+                else f'{n_images} bild{"er" if n_images != 1 else ""} utan alt-attribut')
+        findings.append({
+            'key': 'alt_missing', 'severity': 'medium', 'pages': [u for u, _ in alt_pages],
+            'text': f'{what} {_where(len(alt_pages), total, en)}',
+            'hint': _HINTS['alt_missing'][1 if en else 0],
+        })
+
+    findings.sort(key=lambda f: _SEVERITY_ORDER[f['severity']])
+    return findings
+
+
+def pagespeed_summary(results: dict, lang: str = 'sv') -> dict | None:
+    """Mobil och dator var för sig, samt vilken som drar ned totalen."""
+    b = pagespeed_breakdown(results or {})
+    if not b:
+        return None
+    en = lang == 'en'
+    names = {'mobile': ('mobil', 'mobile'), 'desktop': ('dator', 'desktop')}
+    weakest_text = ''
+    if b['weakest']:
+        name = names[b['weakest']][1 if en else 0]
+        weakest_text = (f'{name.capitalize()} ({b[b["weakest"]]}) pulls the result down' if en
+                        else f'{name.capitalize()} ({b[b["weakest"]]}) drar ned resultatet')
+    return {**b, 'weakest_text': weakest_text}
 
 
 def pagespeed_status_text(results: dict, lang: str = 'sv') -> str:

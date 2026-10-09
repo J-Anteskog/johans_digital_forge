@@ -28,18 +28,19 @@
           <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}SSL certificate invalid — browsers warn visitors "Not secure"{% else %}SSL-certifikatet är ogiltigt — webbläsare varnar besökarna "Osäker sida"{% endif %}</span>
         </li>
         {% endif %}
-        {% if r.seo and r.seo.title and not r.seo.title.found %}
+        {% for f in findings %}
         <li class="d-flex align-items-start gap-2">
-          <span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
-          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Page title missing — search engines don't know what the page is about{% else %}Sidtitel saknas — sökmotorer vet inte vad sidan handlar om{% endif %}</span>
+          {% if f.severity == 'critical' %}<span class="action-badge bg-danger text-white">{% if obj.language == 'en' %}CRITICAL{% else %}KRITISK{% endif %}</span>
+          {% elif f.severity == 'high' %}<span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
+          {% else %}<span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>{% endif %}
+          <span class="text-light" style="font-size:.85rem;">
+            {{ f.text }}{% if f.hint %} — {{ f.hint }}{% endif %}
+            {% if f.pages|length > 1 or f.pages.0 != r.http.final_url %}
+            <span class="tech-only d-block mt-1">{% for u in f.pages|slice:":20" %}<code class="text-secondary" style="font-size:.72rem;word-break:break-all;">{{ u }}</code>{% if not forloop.last %}<br>{% endif %}{% endfor %}{% if f.pages|length > 20 %}<br>…{% endif %}</span>
+            {% endif %}
+          </span>
         </li>
-        {% endif %}
-        {% if r.seo and r.seo.meta_description and not r.seo.meta_description.found %}
-        <li class="d-flex align-items-start gap-2">
-          <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
-          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}No meta description set — Google picks text from the page itself to show in search results{% else %}Ingen egen metabeskrivning är satt — Google väljer själv vilken text från sidan som visas i sökresultaten{% endif %}</span>
-        </li>
-        {% endif %}
+        {% endfor %}
         {% if r.html_fetch_error %}
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge bg-secondary text-white">INFO</span>
@@ -74,12 +75,6 @@
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>
           <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Several security headers missing — relatively easy to fix{% else %}Flera säkerhetsheaders saknas — relativt enkelt att åtgärda{% endif %}</span>
-        </li>
-        {% endif %}
-        {% if r.accessibility.images.missing_alt %}
-        <li class="d-flex align-items-start gap-2">
-          <span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>
-          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}{{ r.accessibility.images.missing_alt }} image{{ r.accessibility.images.missing_alt|pluralize }} without an alt attribute — invisible to screen readers{% else %}{{ r.accessibility.images.missing_alt }} bild{{ r.accessibility.images.missing_alt|pluralize:"er" }} saknar alt-attribut — osynliga för skärmläsare{% endif %}</span>
         </li>
         {% endif %}
         {% if not shared and obj.score_overall >= 85 and r.http.is_https %}

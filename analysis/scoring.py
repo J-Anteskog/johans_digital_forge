@@ -1,8 +1,9 @@
 """
-Poängsystem v2  (0–100 per kategori, eller None = ej mätt):
+Poängsystem v3  (0–100 per kategori, eller None = ej mätt):
   HTTPS och certifikat  20 %  – HTTPS, giltigt certifikat, >30 dagar kvar
-  SEO                   22 %  – title, meta desc, H1, viewport, OG, robots, sitemap
-  Prestanda             20 %  – PageSpeed (mobil + dator) om tillgängligt,
+  SEO                   22 %  – title, meta desc, H1, viewport, OG (startsidan 40 %,
+                                undersidornas medel 60 %) + robots.txt, sitemap
+  Prestanda             20 %  – PageSpeed (mobil 70 %, dator 30 %) om tillgängligt,
                                 annars "Sidvikt och svarstid" (svarstid, HTML-storlek,
                                 antal CSS/JS-filer, renderblockerande skript)
   Mobilanpassning       15 %  – viewport, zoom, media queries, skalbara bilder
@@ -13,9 +14,23 @@ En kategori som inte kunde mätas (None) räknas INTE in i totalbetyget – vikt
 för de mätta kategorierna skalas om så att de summerar till 100 %.
 
 Betyg: A ≥85 · B ≥70 · C ≥50 · D <50
+
+Versioner:
+  1 – första versionen (delvis uppskattade värden; visas med *_v1-mallarna)
+  2 – ärliga kategorier; SEO bara på startsidan, PageSpeed som medel av mobil/dator
+  3 – SEO över alla kontrollerade sidor, PageSpeed viktat mot mobil
 """
 
-ANALYZER_VERSION = 2
+ANALYZER_VERSION = 3
+FIRST_CURRENT_TEMPLATE_VERSION = 2   # v2+ visas med result.html / report_pdf.html
+
+# SEO: startsidans andel av sidnivåpoängen; resten är undersidornas medelvärde
+SEO_START_WEIGHT = 0.4
+SEO_PAGE_MAX = 85      # titel, metabeskrivning, H1, viewport, Open Graph
+SEO_SITE_MAX = 15      # robots.txt, sitemap
+
+# PageSpeed: mobil väger tyngre (Google indexerar mobilversionen först)
+PSP_WEIGHTS = {'mobile': 0.7, 'desktop': 0.3}
 
 WEIGHTS = {
     'security':      0.20,
@@ -86,12 +101,9 @@ def _score_security(results):
 
 # ── SEO (max 100) ─────────────────────────────────────────────────────────
 
-def _score_seo(results):
-    if not _has_html(results):
-        return None
+def page_seo_points(seo: dict) -> int:
+    """Sidnivåns SEO-poäng för EN sida (max SEO_PAGE_MAX)."""
     pts = 0
-    seo = results.get('seo', {})
-
     title = seo.get('title', {})
     if title.get('found'):
         pts += 10
@@ -113,10 +125,48 @@ def _score_seo(results):
     if seo.get('viewport', {}).get('found'):    pts += 10
     if seo.get('og_title', {}).get('found'):    pts += 10
     if seo.get('og_image', {}).get('found'):    pts += 10
-    if seo.get('robots_txt', {}).get('found'):  pts += 10
-    if seo.get('sitemap', {}).get('found'):     pts += 5
+    return pts
 
-    return min(100, pts)
+
+def checked_subpages(results) -> list:
+    """Undersidor som gick att hämta och analysera (fel och överhoppade räknas inte)."""
+    return [p for p in results.get('pages') or [] if p.get('seo') and not p.get('error')]
+
+
+def seo_breakdown(results) -> dict | None:
+    """
+    SEO = webbplatsnivå (robots.txt 10 + sitemap 5) + sidnivå (max 85), där
+    sidnivån = startsidan 40 % + undersidornas medel 60 %. Utan undersidor
+    räknas bara startsidan.
+    """
+    if not _has_html(results):
+        return None
+    seo = results.get('seo', {})
+    site = 0
+    if seo.get('robots_txt', {}).get('found'):  site += 10
+    if seo.get('sitemap', {}).get('found'):     site += 5
+
+    start = page_seo_points(seo)
+    subs = [page_seo_points(p['seo']) for p in checked_subpages(results)]
+    if subs:
+        sub_mean = sum(subs) / len(subs)
+        page_part = SEO_START_WEIGHT * start + (1 - SEO_START_WEIGHT) * sub_mean
+    else:
+        sub_mean = None
+        page_part = start
+    return {
+        'site': site,
+        'start': start,
+        'subpages_mean': round(sub_mean, 1) if sub_mean is not None else None,
+        'subpages_count': len(subs),
+        'start_weight': SEO_START_WEIGHT,
+        'score': min(100, int(round(site + page_part))),
+    }
+
+
+def _score_seo(results):
+    b = seo_breakdown(results)
+    return b['score'] if b else None
 
 
 # ── Prestanda (max 100) ───────────────────────────────────────────────────
@@ -130,11 +180,30 @@ def performance_source(results):
     return None
 
 
+def pagespeed_breakdown(results) -> dict | None:
+    """
+    PageSpeed-poäng per strategi och viktad total (mobil 70 %, dator 30 %).
+    Om bara en strategi gav poäng används den. 'weakest' anger vilken som drar
+    ned totalen när skillnaden är minst 5 poäng.
+    """
+    psp = results.get('pagespeed') or {}
+    scores = {s: (psp.get(s) or {}).get('score') for s in PSP_WEIGHTS}
+    measured = {s: v for s, v in scores.items() if v is not None}
+    if not measured:
+        return None
+    total_w = sum(PSP_WEIGHTS[s] for s in measured)
+    score = int(round(sum(v * PSP_WEIGHTS[s] for s, v in measured.items()) / total_w))
+    weakest = None
+    if len(measured) == 2 and abs(measured['mobile'] - measured['desktop']) >= 5:
+        weakest = min(measured, key=measured.get)
+    return {'mobile': scores['mobile'], 'desktop': scores['desktop'],
+            'weights': PSP_WEIGHTS, 'score': score, 'weakest': weakest}
+
+
 def _score_performance(results):
     source = performance_source(results)
     if source == 'pagespeed':
-        vals = _psp_scores(results)
-        return int(round(sum(vals) / len(vals)))
+        return pagespeed_breakdown(results)['score']
     if source == 'basic':
         return basic_performance_breakdown(results)['score']
     return None

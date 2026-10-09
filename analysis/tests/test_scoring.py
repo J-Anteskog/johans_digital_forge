@@ -46,7 +46,7 @@ class PerformanceTests(SimpleTestCase):
     def test_pagespeed_used_when_available(self):
         r = _results(pagespeed={'status': 'ok', 'mobile': {'score': 50}, 'desktop': {'score': 90}})
         self.assertEqual(performance_source(r), 'pagespeed')
-        self.assertEqual(calculate_scores(r)['performance'], 70)
+        self.assertEqual(calculate_scores(r)['performance'], 62)   # 0,7 × 50 + 0,3 × 90
         self.assertEqual(category_label('performance', r), 'Prestanda (PageSpeed)')
 
     def test_not_measured_without_html(self):
