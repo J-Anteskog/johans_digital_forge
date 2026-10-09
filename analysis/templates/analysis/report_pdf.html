@@ -344,7 +344,7 @@
     <span class="title">{{ cats.performance.label }}{% if psp_summary %} · mobil {{ psp_summary.mobile|default_if_none:"ej mätt" }} · dator {{ psp_summary.desktop|default_if_none:"ej mätt" }}{% endif %}</span>
     <span class="score">{% if cats.performance.measured %}{{ obj.score_performance }}/100{% else %}ej mätt{% endif %}</span>
   </div>
-  <div class="section-summary">{% if psp_summary.weakest_text %}<strong>{{ psp_summary.weakest_text }}.</strong> {% endif %}{{ cats.performance.measures }}</div>
+  <div class="section-summary">{% if psp_summary.weakest_text %}<strong>{{ psp_summary.weakest_text }}.</strong> {% endif %}{{ cats.performance.measures }}{% if psp_summary %}<br>{% if psp_summary.measured_at %}Mätt av Google {{ psp_summary.measured_at }}. {% endif %}{{ psp_summary.variation_text }}{% endif %}</div>
   <div class="section-body">
     {% for strategy, d in psp.items %}{% if d.score != None and strategy != 'status' %}
     <div class="section-row">

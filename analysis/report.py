@@ -4,6 +4,9 @@ och om den är uppmätt. Används av webbrapporten, PDF:en och e-posten så att
 de alltid säger samma sak.
 """
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from .scoring import (
     PSP_WEIGHTS, SEO_START_WEIGHT, WEIGHTS, checked_subpages, duplicate_titles, pagespeed_breakdown,
     performance_source, title_key,
@@ -313,8 +316,26 @@ def site_tips(results: dict, lang: str = 'sv') -> dict:
     return {'social': social, 'title_length': title_tips}
 
 
+_LOCAL_TZ = ZoneInfo('Europe/Stockholm')
+
+
+def _measured_at(psp: dict, lang: str) -> str:
+    """Senaste tidpunkten då Google mätte (fetchTime), i svensk tid. Tom om den saknas (t.ex. v2)."""
+    times = []
+    for strategy in ('mobile', 'desktop'):
+        raw = (psp.get(strategy) or {}).get('fetch_time')
+        try:
+            times.append(datetime.fromisoformat(raw.replace('Z', '+00:00')))
+        except (AttributeError, ValueError):
+            continue
+    if not times:
+        return ''
+    local = max(times).astimezone(_LOCAL_TZ)
+    return local.strftime('%Y-%m-%d %H:%M') + (' (Swedish time)' if lang == 'en' else ' (svensk tid)')
+
+
 def pagespeed_summary(results: dict, lang: str = 'sv') -> dict | None:
-    """Mobil och dator var för sig, samt vilken som drar ned totalen."""
+    """Mobil och dator var för sig, vilken som drar ned totalen och när Google mätte."""
     b = pagespeed_breakdown(results or {})
     if not b:
         return None
@@ -325,7 +346,12 @@ def pagespeed_summary(results: dict, lang: str = 'sv') -> dict | None:
         name = names[b['weakest']][1 if en else 0]
         weakest_text = (f'{name.capitalize()} ({b[b["weakest"]]}) pulls the result down' if en
                         else f'{name.capitalize()} ({b[b["weakest"]]}) drar ned resultatet')
-    return {**b, 'weakest_text': weakest_text}
+    return {**b, 'weakest_text': weakest_text,
+            'measured_at': _measured_at((results or {}).get('pagespeed') or {}, lang),
+            'variation_text': ('Google’s values vary between measurements, sometimes by more than 10 points. '
+                               'Look at the trend over time rather than single scores.' if en else
+                               'Googles värden varierar mellan mätningar, ibland mer än 10 poäng. '
+                               'Se hellre trenden över tid än enstaka poäng.')}
 
 
 def pagespeed_status_text(results: dict, lang: str = 'sv') -> str:

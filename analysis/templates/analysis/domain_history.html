@@ -71,14 +71,16 @@
               <th class="px-4 py-3 fw-semibold text-end">HTTPS</th>
               <th class="px-4 py-3 fw-semibold text-end">SEO</th>
               <th class="px-4 py-3 fw-semibold text-end">Prestanda</th>
-              <th class="px-4 py-3 fw-semibold text-end">Mobil</th>
+              <th class="px-4 py-3 fw-semibold text-end" title="Googles PageSpeed-poäng för mobil">PageSpeed mobil</th>
+              <th class="px-4 py-3 fw-semibold text-end" title="Googles PageSpeed-poäng för dator">PageSpeed dator</th>
+              <th class="px-4 py-3 fw-semibold text-end" title="Mobilanpassning (grundkontroll)">Mobilanp.</th>
               <th class="px-4 py-3 fw-semibold text-end">Headers</th>
               <th class="px-4 py-3 fw-semibold text-end">Tillg.</th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
-            {% for a in analyses reversed %}
+            {% for row in rows reversed %}{% with a=row.a %}
             <tr class="history-row" style="border-bottom:1px solid rgba(255,255,255,.05);">
               <td class="px-4 py-3 text-secondary">
                 {{ a.completed_at|date:"Y-m-d H:i" }}
@@ -91,6 +93,8 @@
               <td class="px-4 py-3 text-end text-secondary">{{ a.score_security|default_if_none:"–" }}</td>
               <td class="px-4 py-3 text-end text-secondary">{{ a.score_seo|default_if_none:"–" }}</td>
               <td class="px-4 py-3 text-end text-secondary">{{ a.score_performance|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ row.psp_mobile|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ row.psp_desktop|default_if_none:"–" }}</td>
               <td class="px-4 py-3 text-end text-secondary">{{ a.score_mobile|default_if_none:"–" }}</td>
               <td class="px-4 py-3 text-end text-secondary">{{ a.score_headers|default_if_none:"–" }}</td>
               <td class="px-4 py-3 text-end text-secondary">{{ a.score_accessibility|default_if_none:"–" }}</td>
@@ -100,14 +104,14 @@
                 </a>
               </td>
             </tr>
-            {% endfor %}
+            {% endwith %}{% endfor %}
           </tbody>
         </table>
       </div>
     </div>
 
     <p class="text-secondary mt-2 mb-0" style="font-size:.75rem;">
-      – = ej mätt. Analyser märkta <em>äldre version</em> räknades med en tidigare version av analysverktyget och är inte direkt jämförbara med nyare.
+      – = ej mätt. PageSpeed-värden varierar mellan mätningar, ibland mer än 10 poäng – se hellre trenden än enstaka värden. Analyser märkta <em>äldre version</em> räknades med en tidigare version av analysverktyget och är inte direkt jämförbara med nyare.
     </p>
 
     {% endif %}
@@ -130,7 +134,9 @@
     { label: 'HTTPS',      data: {{ chart_security|safe }},      borderColor: '#ffc107', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
     { label: 'SEO',         data: {{ chart_seo|safe }},           borderColor: '#6f42c1', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
     { label: 'Prestanda',  data: {{ chart_performance|safe }},   borderColor: '#0d6efd', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
-    { label: 'Mobil',       data: {{ chart_mobile|safe }},        borderColor: '#20c997', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
+    { label: 'PageSpeed mobil', data: {{ chart_psp_mobile|safe }},  borderColor: '#0d6efd', backgroundColor: 'transparent', borderDash: [6, 4], tension: .3, pointRadius: 3 },
+    { label: 'PageSpeed dator', data: {{ chart_psp_desktop|safe }}, borderColor: '#6ea8fe', backgroundColor: 'transparent', borderDash: [2, 3], tension: .3, pointRadius: 3 },
+    { label: 'Mobilanp.',   data: {{ chart_mobile|safe }},        borderColor: '#20c997', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
     { label: 'Headers',     data: {{ chart_headers|safe }},       borderColor: '#fd7e14', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
     { label: 'Tillg.',      data: {{ chart_accessibility|safe }}, borderColor: '#0dcaf0', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
   ];

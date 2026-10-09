@@ -319,6 +319,11 @@
           {% endif %}
         {% endif %}
         {% if psp_summary.weakest_text %}<div class="mt-1 text-warning" style="font-size:.8rem;">{{ psp_summary.weakest_text }}.</div>{% endif %}
+        {% if psp_summary %}
+        <div class="mt-1" style="font-size:.75rem;">
+          {% if psp_summary.measured_at %}{% if obj.language == 'en' %}Measured by Google{% else %}Mätt av Google{% endif %} {{ psp_summary.measured_at }}. {% endif %}{{ psp_summary.variation_text }}
+        </div>
+        {% endif %}
         <div class="mt-1" style="font-size:.75rem;">{{ cats.performance.measures }}</div>
       </div>
 

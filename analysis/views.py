@@ -258,9 +258,18 @@ def domain_history(request, domain):
     chart_mobile = []
     chart_headers = []
     chart_accessibility = []
+    chart_psp_mobile = []
+    chart_psp_desktop = []
+    rows = []
 
     # None (ej mätt) blir null i JSON → glapp i grafen i stället för en påhittad nolla
     for a in analyses:
+        psp = (a.results or {}).get('pagespeed') or {}
+        psp_mobile = (psp.get('mobile') or {}).get('score')
+        psp_desktop = (psp.get('desktop') or {}).get('score')
+        rows.append({'a': a, 'psp_mobile': psp_mobile, 'psp_desktop': psp_desktop})
+        chart_psp_mobile.append(psp_mobile)
+        chart_psp_desktop.append(psp_desktop)
         label = a.completed_at.strftime('%Y-%m-%d') if a.completed_at else str(a.created_at.date())
         chart_labels.append(label)
         chart_overall.append(a.score_overall)
@@ -274,6 +283,7 @@ def domain_history(request, domain):
     return render(request, 'analysis/domain_history.html', {
         'domain': domain,
         'analyses': analyses,
+        'rows': rows,
         'chart_labels': json.dumps(chart_labels),
         'chart_overall': json.dumps(chart_overall),
         'chart_security': json.dumps(chart_security),
@@ -282,6 +292,8 @@ def domain_history(request, domain):
         'chart_mobile': json.dumps(chart_mobile),
         'chart_headers': json.dumps(chart_headers),
         'chart_accessibility': json.dumps(chart_accessibility),
+        'chart_psp_mobile': json.dumps(chart_psp_mobile),
+        'chart_psp_desktop': json.dumps(chart_psp_desktop),
     })
 
 

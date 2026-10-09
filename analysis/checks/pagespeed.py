@@ -65,8 +65,9 @@ def _run_strategy(url: str, strategy: str, api_key: str) -> dict:
         data = resp.json()
     except ValueError:
         return {'error_kind': 'error', 'error': 'Ogiltigt svar från PageSpeed'}
-    cats = data.get('lighthouseResult', {}).get('categories', {})
-    audits = data.get('lighthouseResult', {}).get('audits', {})
+    lighthouse = data.get('lighthouseResult', {})
+    cats = lighthouse.get('categories', {})
+    audits = lighthouse.get('audits', {})
 
     raw_score = cats.get('performance', {}).get('score')
     if raw_score is None:
@@ -87,4 +88,5 @@ def _run_strategy(url: str, strategy: str, api_key: str) -> dict:
         'inp_ms': _ms('interaction-to-next-paint'),
         'fcp_ms': _ms('first-contentful-paint'),
         'tbt_ms': _ms('total-blocking-time'),
+        'fetch_time': lighthouse.get('fetchTime'),   # när Google gjorde mätningen (UTC, ISO 8601)
     }
