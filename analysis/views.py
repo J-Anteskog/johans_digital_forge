@@ -15,7 +15,8 @@ from .email import send_report_email
 from .forms import AnalysisForm
 from .models import SiteAnalysis
 from .report import (
-    build_categories, pagespeed_status_text, pagespeed_summary, site_findings, site_tips,
+    build_categories, page_count, page_rows, pagespeed_status_text, pagespeed_summary, site_findings,
+    site_tips,
 )
 from .scoring import ANALYZER_VERSION
 from .tasks import start_analysis
@@ -219,6 +220,8 @@ def _report_context(obj):
         'psp_summary': pagespeed_summary(obj.results, obj.language),
         'findings': site_findings(obj.results, obj.language),
         'tips': site_tips(obj.results, obj.language),
+        'page_count': page_count(obj.results, obj.language),
+        'page_rows': page_rows(obj.results),
     }
 
 

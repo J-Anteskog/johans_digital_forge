@@ -1,6 +1,8 @@
 """
 Svensk tid för "Analyserades" (samma som "Mätt av Google") i rapport, delningsvy,
-PDF och historik – även över midnatt och under omställningsnatten till vintertid.
+PDF och historik – även över midnatt och under omställningsnatten till vintertid –
+samt samma sidräkning i rubrik, tabell och fynd: startsidan + undersidorna som
+gick att hämta.
 """
 
 import json
@@ -11,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from analysis.models import SiteAnalysis
+from analysis.report import page_count, site_findings
 from analysis.scoring import ANALYZER_VERSION
 
 from .helpers import NoNetworkMixin
@@ -21,7 +24,7 @@ COMPLETED_UTC = datetime(2026, 10, 9, 13, 5, tzinfo=dt_timezone.utc)   # 15:05 s
 
 
 @override_settings(PAGESPEED_API_KEY='')
-class SwedishTimeTests(NoNetworkMixin, TestCase):
+class SwedishTimeAndPageCountTests(NoNetworkMixin, TestCase):
 
     def setUp(self):
         super().setUp()
@@ -62,6 +65,39 @@ class SwedishTimeTests(NoNetworkMixin, TestCase):
     def test_swedish_time_does_not_leak_to_rest_of_site(self):
         self._html('analysis_result')
         self.assertEqual(timezone.get_current_timezone_name(), 'UTC')
+
+    # ── 2. Samma sidräkning överallt ───────────────────────────────────────
+    def test_page_count_matches_findings(self):
+        pc = page_count(self.r)
+        self.assertEqual((pc['subpages'], pc['total'], pc['failed']), (3, 4, 1))
+        self.assertEqual(pc['text'], 'startsidan + 3 undersidor (4 sidor)')
+        self.assertEqual(pc['failed_text'], '1 sida kunde inte hämtas')
+        desc = next(f for f in site_findings(self.r) if f['key'] == 'desc_missing')
+        self.assertIn(f'av de {pc["total"]} sidor som kontrollerades', desc['text'])
+
+    def test_same_count_in_header_table_and_findings(self):
+        for name in ('analysis_result', 'analysis_shared'):
+            with self.subTest(view=name):
+                html = self._html(name)
+                self.assertEqual(html.count('startsidan + 3 undersidor (4 sidor)'), 2)   # rubrik + tabell
+                self.assertIn('1 sida kunde inte hämtas', html)
+                self.assertIn('på 1 av de 4 sidor som kontrollerades', html)
+                self.assertNotIn('sidor kontrollerade', html)                          # gamla räkningen
+        self.assertIn('Kontrollerade: startsidan + 3 undersidor (4 sidor)', self._html('analysis_pdf'))
+
+    def test_start_page_is_its_own_row_in_the_table(self):
+        html = self._html('analysis_result')
+        table = html[html.index('Alla sidor vi kontrollerade'):]
+        first_row = table[table.index('<tbody>'):table.index('</tr>', table.index('<tbody>'))]
+        self.assertIn('Startsidan', first_row)
+        self.assertIn(f'href="{SITE}"', first_row)
+        self.assertEqual(table.count('<tr style="border-color:rgba(255,255,255,.07);">'), 5)   # 1 + 3 + 1 fel
+
+    def test_singular_forms(self):
+        r = dict(self.r, pages=[p for p in self.r['pages'] if p['url'].endswith('tjanster')])
+        self.assertEqual(page_count(r)['text'], 'startsidan + 1 undersida (2 sidor)')
+        self.assertEqual(page_count(dict(self.r, pages=[]))['text'], 'startsidan (1 sida)')
+        self.assertEqual(page_count(r, 'en')['text'], 'home page + 1 subpage (2 pages)')
 
 
 class DaylightSavingTests(TestCase):

@@ -23,7 +23,7 @@
         <p class="text-secondary small mb-2">
           {% if obj.language == 'en' %}Analysed{% else %}Analyserades{% endif %}
           {{ obj.completed_at|date:"Y-m-d H:i" }} {% if obj.language == 'en' %}(Swedish time){% else %}(svensk tid){% endif %}
-          {% if r.pages %}&nbsp;·&nbsp;{% if obj.language == 'en' %}{{ r.pages|length }} page{{ r.pages|length|pluralize }} checked{% else %}{{ r.pages|length }} sidor kontrollerade{% endif %}{% endif %}
+          {% if page_count %}<br>{% if page_count %}{% if obj.language == 'en' %}Checked: {% else %}Kontrollerade: {% endif %}{{ page_count.text }}{% if page_count.failed_text %} · {{ page_count.failed_text }}{% endif %}{% endif %}{% endif %}
         </p>
         <p class="text-secondary mb-0" style="font-size:.8rem;max-width:460px;">
           {% if obj.language == 'en' %}

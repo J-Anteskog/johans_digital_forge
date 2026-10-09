@@ -94,10 +94,10 @@
             <i class="fas fa-share-nodes me-1"></i>
             {% if obj.language == 'en' %}Share without grade{% else %}Dela utan betyg{% endif %}
           </a>
-          {% if r.pages %}
+          {% if page_count %}
           <span class="text-secondary small">
             <i class="fas fa-sitemap me-1"></i>
-            {% if obj.language == 'en' %}{{ r.pages|length }} page{{ r.pages|length|pluralize }} checked{% else %}{{ r.pages|length }} sidor kontrollerade{% endif %}
+            {% if page_count %}{% if obj.language == 'en' %}Checked: {% else %}Kontrollerade: {% endif %}{{ page_count.text }}{% if page_count.failed_text %} · {{ page_count.failed_text }}{% endif %}{% endif %}
           </span>
           {% endif %}
         </div>

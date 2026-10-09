@@ -1,13 +1,13 @@
-{# Tabell över kontrollerade undersidor. #}
-    {# ── Crawlade undersidor ──────────────────────────────────────────── #}
-    {% if r.pages %}
+{# Tabell över kontrollerade sidor: startsidan först, sedan undersidorna. #}
+    {# ── Kontrollerade sidor ──────────────────────────────────────────── #}
+    {% if page_rows %}
     <div class="rounded-4 mb-4 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
       <div class="d-flex align-items-center gap-2 px-4 py-3" style="background:rgba(255,255,255,.05);">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-secondary">
           <path d="M10 13l4-4-4-4M4 7l-4 4 4 4"/></svg>
         <span class="text-light fw-bold">{% if obj.language == 'en' %}All pages we checked{% else %}Alla sidor vi kontrollerade{% endif %}</span>
-        <span class="ms-auto text-secondary small">{{ r.pages|length }} {% if obj.language == 'en' %}pages{% else %}sidor{% endif %}</span>
+        <span class="ms-auto text-secondary small text-end">{{ page_count.text }}{% if page_count.failed_text %}<br>{{ page_count.failed_text }}{% endif %}</span>
       </div>
       <div class="px-4 py-3">
         <div class="table-responsive">
@@ -24,12 +24,13 @@
               </tr>
             </thead>
             <tbody>
-              {% for page in r.pages %}
+              {% for page in page_rows %}
               <tr style="border-color:rgba(255,255,255,.07);">
                 <td style="border-color:rgba(255,255,255,.07);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                   {% if page.error %}
                     <span class="text-danger small">{{ page.url|truncatechars:50 }} — fel</span>
                   {% else %}
+                    {% if page.is_start %}<span class="badge bg-secondary me-1" style="font-size:.65rem;">{% if obj.language == 'en' %}Home page{% else %}Startsidan{% endif %}</span>{% endif %}
                     <a href="{{ page.url }}" target="_blank" rel="noopener"
                        class="text-secondary small" title="{{ page.url }}">
                       {{ page.url|truncatechars:50 }}

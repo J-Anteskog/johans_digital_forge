@@ -223,6 +223,40 @@ def _checked_pages(results):
     return pages
 
 
+def page_count(results: dict, lang: str = 'sv') -> dict | None:
+    """
+    Antal kontrollerade sidor – samma räkning som fynden använder: startsidan +
+    de undersidor som gick att hämta. Sidor som inte kunde hämtas räknas inte,
+    men anges separat.
+    """
+    results = results or {}
+    if not results.get('seo'):
+        return None
+    en = lang == 'en'
+    subs = len(checked_subpages(results))
+    failed = len([p for p in results.get('pages') or [] if p.get('error')])
+    total = subs + 1
+    if en:
+        text = 'home page' if not subs else f'home page + {subs} subpage{"s" if subs != 1 else ""}'
+        text += f' ({total} page{"s" if total != 1 else ""})'
+        failed_text = f'{failed} page{"s" if failed != 1 else ""} could not be fetched' if failed else ''
+    else:
+        text = 'startsidan' if not subs else f'startsidan + {subs} undersid{"or" if subs != 1 else "a"}'
+        text += f' ({total} sid{"or" if total != 1 else "a"})'
+        failed_text = f'{failed} sid{"or" if failed != 1 else "a"} kunde inte hämtas' if failed else ''
+    return {'subpages': subs, 'total': total, 'failed': failed, 'text': text, 'failed_text': failed_text}
+
+
+def page_rows(results: dict) -> list:
+    """Rader i sidtabellen: startsidan först, sedan undersidorna (även de som inte kunde hämtas)."""
+    results = results or {}
+    if not results.get('seo'):
+        return []
+    start = {'url': (results.get('http') or {}).get('final_url') or '', 'is_start': True,
+             'seo': results['seo'], 'accessibility': results.get('accessibility') or {}}
+    return [start] + list(results.get('pages') or [])
+
+
 def site_findings(results: dict, lang: str = 'sv') -> list:
     """
     SEO- och alt-textfynd räknade över startsidan och alla undersidor som gick

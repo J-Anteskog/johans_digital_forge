@@ -178,6 +178,7 @@
   <div class="cover-title">Webbplatsanalys</div>
   <div class="cover-url">{{ obj.url }}</div>
   <div class="cover-date">Analyserades: {{ obj.completed_at|date:"Y-m-d H:i" }} (svensk tid)</div>
+  {% if page_count %}<div class="cover-date" style="margin-top:-4mm;">Kontrollerade: {{ page_count.text }}{% if page_count.failed_text %} · {{ page_count.failed_text }}{% endif %}</div>{% endif %}
 
   {# Score overview #}
   <table class="score-table">
