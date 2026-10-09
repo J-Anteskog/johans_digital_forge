@@ -2,6 +2,7 @@ import json
 import time
 from datetime import timedelta
 from functools import wraps
+from zoneinfo import ZoneInfo
 
 from django.core import signing
 from django.http import JsonResponse
@@ -35,6 +36,21 @@ _PENDING_STEPS = [
 
 _RATE_LIMIT = 30      # analyser per IP per timme
 _CACHE_HOURS = 24     # återanvänd resultat om nyare än så
+
+
+_SWEDISH_TIME = ZoneInfo('Europe/Stockholm')
+
+
+def _swedish_time(view):
+    """
+    Rapporter och historik visar tider i svensk tid (servern kör i UTC).
+    Gäller bara de här vyerna – resten av sajten påverkas inte.
+    """
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        with timezone.override(_SWEDISH_TIME):
+            return view(request, *args, **kwargs)
+    return wrapper
 
 
 def _noindex(view):
@@ -145,6 +161,7 @@ def analysis_form_en(request):
 
 
 @_noindex
+@_swedish_time
 def analysis_result(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token)
     if obj.status in ('pending', 'running'):
@@ -165,6 +182,7 @@ def analysis_result(request, token):
 
 
 @_noindex
+@_swedish_time
 def analysis_shared(request, token):
     """
     Delningsvy för utskick till företag som inte själva beställt analysen:
@@ -244,6 +262,7 @@ def analysis_status_json(request, token):
 
 
 @_noindex
+@_swedish_time
 def domain_history(request, domain):
     analyses = (
         SiteAnalysis.objects
@@ -270,7 +289,8 @@ def domain_history(request, domain):
         rows.append({'a': a, 'psp_mobile': psp_mobile, 'psp_desktop': psp_desktop})
         chart_psp_mobile.append(psp_mobile)
         chart_psp_desktop.append(psp_desktop)
-        label = a.completed_at.strftime('%Y-%m-%d') if a.completed_at else str(a.created_at.date())
+        when = a.completed_at or a.created_at
+        label = timezone.localtime(when).strftime('%Y-%m-%d')   # svensk tid (se _swedish_time)
         chart_labels.append(label)
         chart_overall.append(a.score_overall)
         chart_security.append(a.score_security)
@@ -298,6 +318,7 @@ def domain_history(request, domain):
 
 
 @_noindex
+@_swedish_time
 def analysis_pdf(request, token):
     if request.GET.get('delad') == '1':
         # Delningsvyns PDF: samma regler som analysis_shared
