@@ -7,6 +7,8 @@ import threading
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
+from .report import build_categories
+
 
 _FROM = 'Johan @ Johans Digital Forge <analys@johans-digital-forge.se>'
 _REPLY_TO = 'analys@johans-digital-forge.se'
@@ -30,8 +32,12 @@ def _send(to: str, subject: str, html: str, text: str) -> None:
 
 def send_report_email(analysis) -> None:
     """Skickar rapport-e-post till analysis.email i bakgrundstråd."""
-    ctx = {'obj': analysis, 'r': analysis.results or {}}
+    categories = build_categories(analysis)
+    ctx = {'obj': analysis, 'r': analysis.results or {}, 'categories': categories}
     html = render_to_string('analysis/email_report.html', ctx)
+    score_lines = ''.join(
+        f"{c['label']}: {c['score'] if c['measured'] else 'ej mätt'}\n" for c in categories
+    )
 
     domain = analysis.domain or analysis.url
     subject = f'Din webbplatsanalys – {domain}'
@@ -39,12 +45,7 @@ def send_report_email(analysis) -> None:
         f'Hej!\n\n'
         f'Här är din analys av {analysis.url}.\n\n'
         f'Sammanlagt betyg: {analysis.score_overall}/100 ({analysis.grade})\n'
-        f'Säkerhet: {analysis.score_security or "–"}\n'
-        f'SEO: {analysis.score_seo or "–"}\n'
-        f'Prestanda: {analysis.score_performance or "–"}\n'
-        f'Mobilanpassning: {analysis.score_mobile or "–"}\n'
-        f'Säkerhetsheaders: {analysis.score_headers or "–"}\n'
-        f'Tillgänglighet: {analysis.score_accessibility or "–"}\n\n'
+        f'{score_lines}\n'
         f'Se hela rapporten: https://www.johans-digital-forge.se/analys/r/{analysis.id}/\n\n'
         f'– Johan\nJohans Digital Forge\njohans-digital-forge.se'
     )
@@ -58,7 +59,7 @@ def send_report_email(analysis) -> None:
 
 def send_followup_email(analysis, sync=False) -> None:
     """Skickar uppföljningsmejl dag 3. sync=True för management commands."""
-    ctx = {'obj': analysis}
+    ctx = {'obj': analysis, 'categories': build_categories(analysis)}
     html = render_to_string('analysis/email_followup.html', ctx)
 
     domain = analysis.domain or analysis.url

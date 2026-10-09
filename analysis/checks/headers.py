@@ -1,7 +1,3 @@
-from ..net import safe_request
-
-_TIMEOUT = 10
-
 _HEADERS_CONFIG = [
     {
         'key': 'strict-transport-security',
@@ -48,39 +44,35 @@ _HEADERS_CONFIG = [
 ]
 
 
-def check_headers(url: str) -> dict:
-    """Kontrollerar säkerhetsrelaterade HTTP-svarshuvuden."""
+def check_headers(page) -> dict:
+    """
+    Kontrollerar säkerhetsrelaterade HTTP-svarshuvuden i samma GET-svar
+    som resten av analysen bygger på (FetchResult från fetch_page).
+    """
     result = {
         'headers': [],
-        'score': 0,
+        'score': None,
         'error': None,
     }
+    if page.status_code is None:
+        result['error'] = page.error or 'Inget svar från servern.'
+        return result
 
-    try:
-        resp = safe_request('HEAD', url, timeout=_TIMEOUT)
-        response_headers = {k.lower(): v for k, v in resp.headers.items()}
-
-        total_points = 0
-        headers_detail = []
-        for cfg in _HEADERS_CONFIG:
-            found = cfg['key'] in response_headers
-            value = response_headers.get(cfg['key'], '')
-            if found:
-                total_points += cfg['points']
-            headers_detail.append({
-                'key': cfg['key'],
-                'label': cfg['label'],
-                'found': found,
-                'value': value,
-                'points': cfg['points'],
-                'description_sv': cfg['description_sv'],
-                'description_en': cfg['description_en'],
-            })
-
-        result['headers'] = headers_detail
-        result['score'] = min(100, total_points)
-
-    except Exception as e:
-        result['error'] = str(e)
-
+    response_headers = page.headers
+    total_points = 0
+    for cfg in _HEADERS_CONFIG:
+        found = cfg['key'] in response_headers
+        if found:
+            total_points += cfg['points']
+        result['headers'].append({
+            'key': cfg['key'],
+            'label': cfg['label'],
+            'found': found,
+            'value': response_headers.get(cfg['key'], ''),
+            'points': cfg['points'],
+            'description_sv': cfg['description_sv'],
+            'description_en': cfg['description_en'],
+        })
+    result['score'] = min(100, total_points)
+    result['found_count'] = sum(1 for h in result['headers'] if h['found'])
     return result

@@ -54,6 +54,29 @@
       </a>
     </div>
 
+    {# ── Äldre version ─────────────────────────────────────────────────── #}
+    <div class="rounded-4 mb-4 p-4 d-flex flex-column flex-md-row align-items-md-center gap-3"
+         role="note"
+         style="background:rgba(255,193,7,.10);border:1px solid rgba(255,193,7,.45);">
+      <i class="fas fa-history text-warning flex-shrink-0" style="font-size:1.6rem;"></i>
+      <div class="flex-grow-1">
+        <div class="text-light fw-bold mb-1">
+          {% if obj.language == 'en' %}This report was created with an older version of the analysis tool{% else %}Den här rapporten skapades med en äldre version av analysverktyget{% endif %}
+        </div>
+        <div class="text-secondary" style="font-size:.85rem;">
+          {% if obj.language == 'en' %}
+            Some results below were calculated in a way we have since corrected: Performance and Mobile were partly estimated, CSS/JS files on the site's own domain were not counted, and a score of 0 could be shown as "–". Run a new analysis for an up-to-date report.
+          {% else %}
+            Vissa resultat nedan räknades på ett sätt som vi sedan har rättat: Prestanda och Mobilanpassning var delvis uppskattade, CSS/JS-filer på sidans egen domän räknades inte och poängen 0 kunde visas som "–". Kör en ny analys för en uppdaterad rapport.
+          {% endif %}
+        </div>
+      </div>
+      <a href="{% if obj.language == 'en' %}{% url 'analysis_en' %}{% else %}{% url 'analysis' %}{% endif %}?site={{ obj.url|urlencode }}"
+         class="btn btn-warning btn-sm fw-bold flex-shrink-0">
+        {% if obj.language == 'en' %}Run a new analysis{% else %}Kör en ny analys{% endif %}
+      </a>
+    </div>
+
     {# ── Grade + category bars ─────────────────────────────────────────── #}
     <div class="row g-4 align-items-center mb-5">
 
@@ -64,13 +87,8 @@
                style="width:108px;height:108px;">
             <span class="display-4 fw-bold text-dark">{{ obj.grade }}</span>
           </div>
-          <span class="text-light fw-bold fs-3">{{ obj.score_overall|default_if_none:"–" }}<small class="text-secondary fs-5 fw-normal">/100</small></span>
+          <span class="text-light fw-bold fs-3">{{ obj.score_overall }}<small class="text-secondary fs-5 fw-normal">/100</small></span>
           <span class="text-secondary small">{% if obj.language == 'en' %}Overall score{% else %}Sammanlagt betyg{% endif %}</span>
-          {% if obj.scoring.category_count %}
-          <span class="text-secondary" style="font-size:.72rem;max-width:180px;">
-            {% if obj.language == 'en' %}Based on {{ obj.scoring.measured_count }} of {{ obj.scoring.category_count }} categories{% else %}Bygger på {{ obj.scoring.measured_count }} av {{ obj.scoring.category_count }} kategorier{% endif %}{% if obj.scoring.not_measured %} — {% if obj.language == 'en' %}categories that could not be measured are not counted{% else %}kategorier som inte kunde mätas räknas inte in{% endif %}{% endif %}
-          </span>
-          {% endif %}
         </div>
       </div>
 
@@ -99,28 +117,76 @@
       {# Category progress bars #}
       <div class="col-12 col-lg-5">
         <div class="d-flex flex-column gap-2">
-          {% for c in categories %}
+
           <div>
             <div class="d-flex justify-content-between text-secondary small mb-1">
-              <span>{{ c.label }}</span>
-              {% if c.measured %}
-              <span class="text-light fw-semibold">{{ c.score }}</span>
-              {% else %}
-              <span class="text-secondary fst-italic">{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}</span>
-              {% endif %}
+              <span>{% if obj.language == 'en' %}Security{% else %}Säkerhet{% endif %}</span>
+              <span class="text-light fw-semibold">{{ obj.score_security|default:"–" }}</span>
             </div>
             <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
-              {% if c.measured %}
-              <div class="progress-bar rounded-pill"
-                   style="width:{{ c.score }}%;background:{{ c.color }};transition:width .8s ease;"></div>
-              {% endif %}
+              <div class="progress-bar bg-warning rounded-pill"
+                   style="width:{{ obj.score_security|default:0 }}%;transition:width .8s ease;"></div>
             </div>
           </div>
-          {% endfor %}
+
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>SEO</span>
+              <span class="text-light fw-semibold">{{ obj.score_seo|default:"–" }}</span>
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              <div class="progress-bar rounded-pill" style="width:{{ obj.score_seo|default:0 }}%;background:#6f42c1;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>{% if obj.language == 'en' %}Performance{% else %}Prestanda{% endif %}</span>
+              <span class="text-light fw-semibold">{{ obj.score_performance|default:"–" }}</span>
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              <div class="progress-bar bg-primary rounded-pill"
+                   style="width:{{ obj.score_performance|default:0 }}%;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>{% if obj.language == 'en' %}Mobile{% else %}Mobilanpassning{% endif %}</span>
+              <span class="text-light fw-semibold">{{ obj.score_mobile|default:"–" }}</span>
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              <div class="progress-bar bg-success rounded-pill"
+                   style="width:{{ obj.score_mobile|default:0 }}%;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>{% if obj.language == 'en' %}Security headers{% else %}Säkerhetsheaders{% endif %}</span>
+              <span class="text-light fw-semibold">{{ obj.score_headers|default:"–" }}</span>
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              <div class="progress-bar rounded-pill"
+                   style="width:{{ obj.score_headers|default:0 }}%;background:#fd7e14;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between text-secondary small mb-1">
+              <span>{% if obj.language == 'en' %}Accessibility{% else %}Tillgänglighet{% endif %}</span>
+              <span class="text-light fw-semibold">{{ obj.score_accessibility|default:"–" }}</span>
+            </div>
+            <div class="progress rounded-pill" style="height:7px;background:rgba(255,255,255,.1);">
+              <div class="progress-bar rounded-pill"
+                   style="width:{{ obj.score_accessibility|default:0 }}%;background:#0dcaf0;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
         </div>
       </div>
 
-        </div>{# /row #}
+    </div>{# /row #}
 
     {# ── Åtgärdslista + vyväljare ──────────────────────────────────────── #}
     {% if r %}
@@ -163,46 +229,28 @@
           <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Meta description missing — Google has no snippet to show in search results{% else %}Meta-beskrivning saknas — Google saknar text att visa i sökresultaten{% endif %}</span>
         </li>
         {% endif %}
-        {% if r.html_fetch_error %}
-        <li class="d-flex align-items-start gap-2">
-          <span class="action-badge bg-secondary text-white">INFO</span>
-          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}The page's HTML could not be read ({{ r.html_fetch_error|truncatechars:80 }}) — categories that need it are shown as not measured{% else %}Sidans HTML kunde inte läsas ({{ r.html_fetch_error|truncatechars:80 }}) — kategorier som kräver den visas som ej mätta{% endif %}</span>
-        </li>
-        {% endif %}
-        {% if cats.performance.measured and obj.score_performance < 50 %}
+        {% if obj.score_performance < 50 %}
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
-          <span class="text-light" style="font-size:.85rem;">
-            {% if obj.scoring.performance_source == 'pagespeed' %}
-              {% if obj.language == 'en' %}PageSpeed rates the page as slow — visitors lose patience and bounce{% else %}PageSpeed bedömer sidan som långsam — besökare tappar tålamodet och lämnar{% endif %}
-            {% else %}
-              {% if obj.language == 'en' %}Heavy page or slow server response — see "Page weight & response time"{% else %}Tung sida eller långsamt serversvar — se "Sidvikt och svarstid"{% endif %}
-            {% endif %}
-          </span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Page loads too slowly — visitors lose patience and bounce{% else %}Sidan laddar för långsamt — besökare tappar tålamodet och lämnar{% endif %}</span>
         </li>
         {% endif %}
-        {% if cats.mobile.measured and obj.score_mobile < 50 %}
+        {% if obj.score_mobile < 50 %}
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
-          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Basic mobile adaptations are missing (e.g. viewport or media queries) — over half of all visitors browse on mobile{% else %}Grundläggande mobilanpassning saknas (t.ex. viewport eller media queries) — mer än hälften av besökarna surfar på mobil{% endif %}</span>
+          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Poor mobile experience — over half of all visitors browse on mobile{% else %}Dålig mobilupplevelse — mer än hälften av besökarna surfar på mobil{% endif %}</span>
         </li>
         {% endif %}
-        {% if cats.seo.measured and obj.score_seo < 50 %}
+        {% if obj.score_seo < 50 %}
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge bg-warning text-dark">{% if obj.language == 'en' %}HIGH{% else %}HÖG{% endif %}</span>
           <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Low SEO score — the site is not visible enough in Google search{% else %}Lågt SEO-betyg — sidan syns inte tillräckligt bra i Google{% endif %}</span>
         </li>
         {% endif %}
-        {% if cats.headers.measured and obj.score_headers < 50 %}
+        {% if obj.score_headers < 50 %}
         <li class="d-flex align-items-start gap-2">
           <span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>
           <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}Several security headers missing — relatively easy to fix{% else %}Flera säkerhetsheaders saknas — relativt enkelt att åtgärda{% endif %}</span>
-        </li>
-        {% endif %}
-        {% if r.accessibility.images.missing_alt %}
-        <li class="d-flex align-items-start gap-2">
-          <span class="action-badge" style="background:rgba(253,126,20,.9);color:#fff;">{% if obj.language == 'en' %}MEDIUM{% else %}MEDEL{% endif %}</span>
-          <span class="text-light" style="font-size:.85rem;">{% if obj.language == 'en' %}{{ r.accessibility.images.missing_alt }} image{{ r.accessibility.images.missing_alt|pluralize }} without an alt attribute — invisible to screen readers{% else %}{{ r.accessibility.images.missing_alt }} bild{{ r.accessibility.images.missing_alt|pluralize:"er" }} saknar alt-attribut — osynliga för skärmläsare{% endif %}</span>
         </li>
         {% endif %}
         {% if obj.score_overall >= 85 and r.http.is_https %}
@@ -216,7 +264,7 @@
     {% endif %}
 
     {# ════════════════════════════════════════════════════════════════════ #}
-    {# HTTPS OCH CERTIFIKAT / HTTPS & CERTIFICATE                           #}
+    {# SÄKERHET / SECURITY                                                  #}
     {# ════════════════════════════════════════════════════════════════════ #}
     {% with http=r.http ssl=r.ssl %}
     <div class="rounded-4 mb-4 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
@@ -227,18 +275,17 @@
              fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        <span class="text-light fw-bold">{{ cats.security.label }}</span>
-        <span class="ms-auto text-secondary small fw-semibold">{% if cats.security.measured %}{{ obj.score_security }}/100{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}</span>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}Security{% else %}Säkerhet{% endif %}</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_security|default:"–" }}/100</span>
       </div>
+      {% if obj.score_security != None %}
       <div class="cat-summary">
-        {% if cats.security.measured %}
-          {% if obj.score_security >= 85 %}{% if obj.language == 'en' %}HTTPS and the certificate are in order.{% else %}HTTPS och certifikatet är i ordning.{% endif %}
-          {% elif obj.score_security >= 50 %}{% if obj.language == 'en' %}There are problems with HTTPS or the certificate.{% else %}Det finns brister i HTTPS eller certifikatet.{% endif %}
-          {% else %}{% if obj.language == 'en' %}Serious problems — HTTPS is missing or the certificate is invalid.{% else %}Allvarliga brister — HTTPS saknas eller certifikatet är ogiltigt.{% endif %}
-          {% endif %}
+        {% if obj.score_security >= 85 %}{% if obj.language == 'en' %}Your site is well protected.{% else %}Din sida är välskyddad.{% endif %}
+        {% elif obj.score_security >= 50 %}{% if obj.language == 'en' %}There are security issues that should be addressed.{% else %}Det finns säkerhetsbrister som bör åtgärdas.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Serious security issues — fix these as soon as possible.{% else %}Allvarliga säkerhetsbrister — åtgärda snarast.{% endif %}
         {% endif %}
-        <div class="mt-1" style="font-size:.75rem;">{{ cats.security.measures }}</div>
       </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -264,7 +311,7 @@
           {% elif http.status_code %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}HTTP status{% else %}HTTP-status{% endif %}</span><br>
+            <span class="text-light small fw-semibold">HTTP {% if obj.language == 'en' %}status{% else %}status{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if http.status_code %}
                 {{ http.status_code }}
@@ -273,7 +320,27 @@
                   {{ http.redirect_count }} {% if obj.language == 'en' %}redirect{% if http.redirect_count != 1 %}s{% endif %}{% else %}omdirigering{% if http.redirect_count != 1 %}ar{% endif %}{% endif %}
                 {% endif %}
               {% elif http.error %}
-                {{ http.error|truncatechars:160 }}
+                {{ http.error }}
+              {% else %}–{% endif %}
+            </span>
+          </div>
+        </li>
+
+        {# Response time #}
+        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
+          {% if http.response_time_ms %}
+            {% if http.response_time_ms < 800 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+            {% elif http.response_time_ms < 2000 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
+            {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
+          {% else %}<i class="fas fa-minus-circle text-secondary mt-1 flex-shrink-0"></i>{% endif %}
+          <div>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Response time{% else %}Svarstid{% endif %}</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% if http.response_time_ms %}
+                {{ http.response_time_ms }} ms
+                {% if http.response_time_ms < 800 %} – {% if obj.language == 'en' %}fast{% else %}snabb{% endif %}
+                {% elif http.response_time_ms < 2000 %} – {% if obj.language == 'en' %}acceptable{% else %}godkänd{% endif %}
+                {% else %} – {% if obj.language == 'en' %}slow, consider server optimisation{% else %}långsam, överväg serveroptimering{% endif %}{% endif %}
               {% else %}–{% endif %}
             </span>
           </div>
@@ -297,7 +364,7 @@
                   </span>
                 {% endif %}
               {% elif ssl.error %}
-                {{ ssl.error|truncatechars:160 }}
+                {{ ssl.error }}
               {% else %}
                 {% if obj.language == 'en' %}Certificate not valid{% else %}Certifikatet är ogiltigt{% endif %}
               {% endif %}
@@ -308,7 +375,6 @@
       </ul>
     </div>
     {% endwith %}
-
 
 
     {# ════════════════════════════════════════════════════════════════════ #}
@@ -324,7 +390,7 @@
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <span class="text-light fw-bold">SEO</span>
-        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_seo|default_if_none:"–" }}/100</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_seo|default:"–" }}/100</span>
       </div>
       {% if obj.score_seo != None %}
       <div class="cat-summary">
@@ -487,9 +553,9 @@
 
 
     {# ════════════════════════════════════════════════════════════════════ #}
-    {# PRESTANDA (PageSpeed) eller SIDVIKT OCH SVARSTID                     #}
+    {# PRESTANDA / PERFORMANCE                                              #}
     {# ════════════════════════════════════════════════════════════════════ #}
-    {% with perf=r.performance res=r.resources http=r.http psp=r.pagespeed basic=r.performance.basic.parts src=obj.scoring.performance_source %}
+    {% with perf=r.performance psp_d=r.pagespeed.desktop %}
     <div class="rounded-4 mb-4 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
 
       <div class="px-4 py-3 d-flex align-items-center gap-3"
@@ -498,153 +564,103 @@
              fill="none" stroke="#0d6efd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
         </svg>
-        <span class="text-light fw-bold">{{ cats.performance.label }}</span>
-        <span class="ms-auto text-secondary small fw-semibold">{% if cats.performance.measured %}{{ obj.score_performance }}/100{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}</span>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}Performance{% else %}Prestanda{% endif %}</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_performance|default:"–" }}/100</span>
       </div>
+      {% if obj.score_performance != None %}
       <div class="cat-summary">
-        {% if cats.performance.measured %}
-          {% if src == 'pagespeed' %}
-            {% if obj.score_performance >= 85 %}{% if obj.language == 'en' %}Fast according to PageSpeed.{% else %}Snabb enligt PageSpeed.{% endif %}
-            {% elif obj.score_performance >= 50 %}{% if obj.language == 'en' %}Acceptable according to PageSpeed, but could be improved.{% else %}Godkänd enligt PageSpeed men kan förbättras.{% endif %}
-            {% else %}{% if obj.language == 'en' %}Slow according to PageSpeed.{% else %}Långsam enligt PageSpeed.{% endif %}{% endif %}
-          {% else %}
-            {% if obj.score_performance >= 85 %}{% if obj.language == 'en' %}Small page and fast server response.{% else %}Liten sida och snabbt serversvar.{% endif %}
-            {% elif obj.score_performance >= 50 %}{% if obj.language == 'en' %}Page weight or server response can be improved.{% else %}Sidvikt eller serversvar kan förbättras.{% endif %}
-            {% else %}{% if obj.language == 'en' %}Heavy page or slow server response.{% else %}Tung sida eller långsamt serversvar.{% endif %}{% endif %}
-          {% endif %}
+        {% if obj.score_performance >= 85 %}{% if obj.language == 'en' %}Page loads quickly — great experience for visitors.{% else %}Sidan laddar snabbt — bra upplevelse för besökarna.{% endif %}
+        {% elif obj.score_performance >= 50 %}{% if obj.language == 'en' %}Load time is acceptable but could be improved.{% else %}Laddningstiden är godkänd men kan förbättras.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Page loads too slowly — visitors will leave before it finishes.{% else %}Sidan laddar för långsamt — besökare lämnar innan den hinner laddas.{% endif %}
         {% endif %}
-        <div class="mt-1" style="font-size:.75rem;">{{ cats.performance.measures }}</div>
       </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
-        {# PageSpeed – mobil och dator #}
-        {% for strategy, d in psp.items %}{% if d.score != None and strategy != 'status' %}
+        {# PageSpeed Desktop #}
+        {% if psp_d and not psp_d.error %}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if d.score >= 90 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif d.score >= 50 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
+          {% if psp_d.score >= 90 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% elif psp_d.score >= 50 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div>
             <div class="d-flex align-items-center gap-2 mb-1">
-              <span class="text-light small fw-semibold">PageSpeed Insights ({% if strategy == 'mobile' %}{% if obj.language == 'en' %}Mobile{% else %}Mobil{% endif %}{% else %}{% if obj.language == 'en' %}Desktop{% else %}Dator{% endif %}{% endif %})</span>
-              <span class="badge {% if d.score >= 90 %}bg-success{% elif d.score >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %}" style="font-size:.72rem;">{{ d.score }}/100</span>
+              <span class="text-light small fw-semibold">PageSpeed Insights ({% if obj.language == 'en' %}Desktop{% else %}Dator{% endif %})</span>
+              <span class="badge {% if psp_d.score >= 90 %}bg-success{% elif psp_d.score >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %}" style="font-size:.72rem;">
+                {{ psp_d.score }}/100
+              </span>
             </div>
-            <div class="text-secondary tech-only" style="font-size:.8rem;">
-              {% if d.lcp_ms %}<span class="me-3">LCP&nbsp;<strong class="text-light">{{ d.lcp_ms }}&thinsp;ms</strong></span>{% endif %}
-              {% if d.fcp_ms %}<span class="me-3">FCP&nbsp;<strong class="text-light">{{ d.fcp_ms }}&thinsp;ms</strong></span>{% endif %}
-              {% if d.tbt_ms != None %}<span class="me-3">TBT&nbsp;<strong class="text-light">{{ d.tbt_ms }}&thinsp;ms</strong></span>{% endif %}
-              {% if d.cls != None %}<span class="me-3">CLS&nbsp;<strong class="text-light">{{ d.cls }}</strong></span>{% endif %}
+            <div class="text-secondary" style="font-size:.8rem;">
+              <span class="simple-only">
+                {% if psp_d.score >= 90 %}{% if obj.language == 'en' %}Fast — great experience for visitors on desktop{% else %}Snabb — bra upplevelse för besökare på dator{% endif %}
+                {% elif psp_d.score >= 50 %}{% if obj.language == 'en' %}Average speed — room for improvement{% else %}Genomsnittlig hastighet — kan förbättras{% endif %}
+                {% else %}{% if obj.language == 'en' %}Slow — visitors may leave before the page loads{% else %}Långsam — besökare kan lämna innan sidan hinner ladda{% endif %}
+                {% endif %}
+              </span>
+              <span class="tech-only">
+                {% if psp_d.lcp_ms %}<span class="me-3">LCP&nbsp;<strong class="text-light">{{ psp_d.lcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_d.fcp_ms %}<span class="me-3">FCP&nbsp;<strong class="text-light">{{ psp_d.fcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_d.tbt_ms %}<span class="me-3">TBT&nbsp;<strong class="text-light">{{ psp_d.tbt_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_d.cls %}<span class="me-3">CLS&nbsp;<strong class="text-light">{{ psp_d.cls }}</strong></span>{% endif %}
+                {% if psp_d.inp_ms %}<span class="me-3">INP&nbsp;<strong class="text-light">{{ psp_d.inp_ms }}&thinsp;ms</strong></span>{% endif %}
+              </span>
             </div>
           </div>
         </li>
-        {% endif %}{% endfor %}
-
-        {# Varför PageSpeed saknas #}
-        {% if psp_status_text %}
+        {% elif r.http.response_time_ms %}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
           <i class="fas fa-info-circle text-secondary mt-1 flex-shrink-0"></i>
           <div>
-            <span class="text-light small fw-semibold">PageSpeed Insights</span><br>
-            <span class="text-secondary" style="font-size:.8rem;">{{ psp_status_text }}</span>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Page speed{% else %}Sidhastighet{% endif %}</span><br>
+            <span class="text-secondary" style="font-size:.8rem;">
+              {% if obj.language == 'en' %}PageSpeed API not configured · response time:{% else %}PageSpeed API ej konfigurerat · svarstid:{% endif %}
+              <strong class="text-light">{{ r.http.response_time_ms }}&thinsp;ms</strong>
+            </span>
           </div>
         </li>
         {% endif %}
 
-        {% if r.seo %}
-        {# Svarstid för HTML #}
+        {# External resources #}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if http.response_time_ms < 500 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif http.response_time_ms < 2000 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
+          {% if perf.total_external_resources <= 5 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% elif perf.total_external_resources <= 12 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Server response time (HTML){% else %}Svarstid för HTML{% endif %}</span>
-            {% if src == 'basic' %}<span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ basic.response_time.points }}/{{ basic.response_time.max }} p</span>{% endif %}<br>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}External resources{% else %}Externa resurser{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
-              <strong class="text-light">{{ http.response_time_ms }}&thinsp;ms</strong>
-              <span class="tech-only">{% if http.ttfb_ms != None %}&nbsp;·&nbsp;{% if obj.language == 'en' %}first byte{% else %}första byte{% endif %} {{ http.ttfb_ms }}&thinsp;ms{% endif %}</span>
-              &nbsp;·&nbsp;{% if obj.language == 'en' %}time for our server to download the HTML document, not the browser's load time{% else %}tid för vår server att hämta HTML-dokumentet, inte webbläsarens laddningstid{% endif %}
-            </span>
-          </div>
-        </li>
-
-        {# HTML-storlek #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if http.html_bytes < 102400 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif http.html_bytes < 307200 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
-          <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}HTML size{% else %}HTML-storlek{% endif %}</span>
-            {% if src == 'basic' %}<span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ basic.html_size.points }}/{{ basic.html_size.max }} p</span>{% endif %}<br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              <strong class="text-light">{{ http.html_bytes|filesizeformat }}</strong>
-              &nbsp;·&nbsp;{% if obj.language == 'en' %}the HTML document only (excluding images, CSS and JS){% else %}bara HTML-dokumentet (utan bilder, CSS och JS){% endif %}
-            </span>
-          </div>
-        </li>
-
-        {# CSS- och JS-filer #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if res.total_files <= 10 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif res.total_files <= 20 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
-          <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}CSS and JS files{% else %}CSS- och JS-filer{% endif %}</span>
-            {% if src == 'basic' %}<span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ basic.file_count.points }}/{{ basic.file_count.max }} p</span>{% endif %}<br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {{ res.css_files }} CSS &nbsp;·&nbsp; {{ res.js_files }} JS
-              &nbsp;·&nbsp; <strong class="text-light">{{ res.total_files }}</strong> {% if obj.language == 'en' %}files to download{% else %}filer att hämta{% endif %}
-              <span class="tech-only">
-                <br>{% if obj.language == 'en' %}Own domain{% else %}Egen domän{% endif %}: {{ res.css_same_site }} CSS, {{ res.js_same_site }} JS
-                &nbsp;·&nbsp;{% if obj.language == 'en' %}third party{% else %}tredjepart{% endif %}: {{ res.css_third_party }} CSS, {{ res.js_third_party }} JS{% if res.third_party_hosts %} ({{ res.third_party_hosts|join:", " }}){% endif %}
-                {% if res.inline_data_scripts %}<br>+ {{ res.inline_data_scripts }} {% if obj.language == 'en' %}scripts embedded as data: URLs (no extra request){% else %}skript inbäddade som data:-URL (inget extra anrop){% endif %}{% endif %}
-              </span>
-            </span>
-          </div>
-        </li>
-
-        {# Renderblockerande skript #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if res.render_blocking_scripts == 0 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif res.render_blocking_scripts <= 2 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
-          <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Render-blocking scripts{% else %}Skript som blockerar visningen{% endif %}</span>
-            {% if src == 'basic' %}<span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ basic.render_blocking.points }}/{{ basic.render_blocking.max }} p</span>{% endif %}<br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {% if res.render_blocking_scripts == 0 %}
-                {% if obj.language == 'en' %}No scripts in &lt;head&gt; without async/defer{% else %}Inga skript i &lt;head&gt; utan async/defer{% endif %}
-              {% else %}
-                {{ res.render_blocking_scripts }} {% if obj.language == 'en' %}script(s) in &lt;head&gt; without async/defer — the browser waits for them before showing the page{% else %}skript i &lt;head&gt; utan async/defer — webbläsaren väntar på dem innan sidan visas{% endif %}
-                <span class="tech-only">{% for u in res.render_blocking_examples %}<br><code class="text-light" style="font-size:.72rem;word-break:break-all;">{{ u|truncatechars:90 }}</code>{% endfor %}</span>
+              {{ perf.external_css }} CSS &nbsp;·&nbsp; {{ perf.external_js }} JS
+              &nbsp;·&nbsp; <strong class="text-light">{{ perf.total_external_resources }}</strong> {% if obj.language == 'en' %}total{% else %}totalt{% endif %}
+              {% if perf.total_external_resources > 5 %}
+                &nbsp;·&nbsp; <span class="text-warning">{% if obj.language == 'en' %}each extra request adds latency{% else %}varje extra anrop ökar laddningstiden{% endif %}</span>
               {% endif %}
             </span>
           </div>
         </li>
 
-        {# Bildstorlekar #}
+        {# Images #}
         <li class="px-4 py-3 d-flex align-items-start gap-3">
-          {% if perf.images_large %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
-          {% elif perf.images_checked_for_size %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-minus-circle text-secondary mt-1 flex-shrink-0"></i>{% endif %}
+          {% if perf.images_without_alt == 0 and perf.images_large == 0 %}
+            <i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}
+            <i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
+          {% endif %}
           <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Image file sizes{% else %}Bildernas filstorlek{% endif %}</span>
-            <span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {% if obj.language == 'en' %}not included in the score{% else %}ingår inte i poängen{% endif %}</span><br>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Images{% else %}Bilder{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
-              {% if perf.images_checked_for_size %}
-                {{ perf.images_checked_for_size }} {% if obj.language == 'en' %}checked{% else %}kontrollerade{% endif %}
-                &nbsp;·&nbsp;
-                {% if perf.images_large %}<span class="text-warning">{{ perf.images_large }} {% if obj.language == 'en' %}over{% else %}över{% endif %} {{ perf.images_size_limit_kb }} KB</span>
-                {% else %}{% if obj.language == 'en' %}none over{% else %}ingen över{% endif %} {{ perf.images_size_limit_kb }} KB{% endif %}
-              {% elif r.images.total %}
-                {% if obj.language == 'en' %}Not measured — the server did not report image sizes{% else %}Ej mätt — servern angav inte bildernas storlek{% endif %}
-              {% else %}
-                {% if obj.language == 'en' %}No images on the page{% else %}Inga bilder på sidan{% endif %}
+              {{ perf.images_total }} {% if obj.language == 'en' %}total{% else %}totalt{% endif %}
+              {% if perf.images_without_alt > 0 %}
+                &nbsp;·&nbsp; <span class="text-warning">{{ perf.images_without_alt }} {% if obj.language == 'en' %}missing alt text{% else %}saknar alt-text{% endif %}</span>
               {% endif %}
-              {% if perf.images_size_unknown %}&nbsp;·&nbsp;{{ perf.images_size_unknown }} {% if obj.language == 'en' %}with unknown size{% else %}med okänd storlek{% endif %}{% endif %}
+              {% if perf.images_large > 0 %}
+                &nbsp;·&nbsp; <span class="text-danger">{{ perf.images_large }} {% if obj.language == 'en' %}over 500 KB{% else %}över 500 KB{% endif %}</span>
+              {% endif %}
+              {% if perf.images_checked_for_size and perf.images_checked_for_size < perf.images_total %}
+                &nbsp;·&nbsp; <span class="text-secondary">({% if obj.language == 'en' %}{{ perf.images_checked_for_size }} checked for size{% else %}{{ perf.images_checked_for_size }} kontrollerade för storlek{% endif %})</span>
+              {% endif %}
             </span>
           </div>
         </li>
-        {% endif %}
 
       </ul>
     </div>
@@ -652,9 +668,9 @@
 
 
     {# ════════════════════════════════════════════════════════════════════ #}
-    {# MOBILANPASSNING (grundkontroll)                                      #}
+    {# MOBILANPASSNING / MOBILE                                             #}
     {# ════════════════════════════════════════════════════════════════════ #}
-    {% with mob=r.mobile.checks %}
+    {% with psp_m=r.pagespeed.mobile seo=r.seo %}
     <div class="rounded-4 mb-5 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
 
       <div class="px-4 py-3 d-flex align-items-center gap-3"
@@ -664,119 +680,69 @@
           <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
           <line x1="12" y1="18" x2="12.01" y2="18"/>
         </svg>
-        <span class="text-light fw-bold">{{ cats.mobile.label }}</span>
-        <span class="ms-auto text-secondary small fw-semibold">{% if cats.mobile.measured %}{{ obj.score_mobile }}/100{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}</span>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}Mobile{% else %}Mobilanpassning{% endif %}</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_mobile|default:"–" }}/100</span>
       </div>
+      {% if obj.score_mobile != None %}
       <div class="cat-summary">
-        {% if cats.mobile.measured %}
-          {% if r.mobile.basic_passed %}<strong class="text-light">{% if obj.language == 'en' %}Basic check passed.{% else %}Grundkontroll godkänd.{% endif %}</strong>
-          {% elif obj.score_mobile >= 85 %}{% if obj.language == 'en' %}Most basic mobile checks pass.{% else %}De flesta grundkontroller för mobil är uppfyllda.{% endif %}
-          {% elif obj.score_mobile >= 50 %}{% if obj.language == 'en' %}Some basic mobile checks fail.{% else %}Några grundkontroller för mobil är inte uppfyllda.{% endif %}
-          {% else %}{% if obj.language == 'en' %}Several basic mobile checks fail.{% else %}Flera grundkontroller för mobil är inte uppfyllda.{% endif %}{% endif %}
+        {% if obj.score_mobile >= 85 %}{% if obj.language == 'en' %}The page works well on mobile devices.{% else %}Sidan fungerar bra på mobila enheter.{% endif %}
+        {% elif obj.score_mobile >= 50 %}{% if obj.language == 'en' %}Mobile experience can be improved.{% else %}Mobilupplevelsen kan förbättras.{% endif %}
+        {% else %}{% if obj.language == 'en' %}Poor mobile experience — you're losing more than half your visitors.{% else %}Dålig mobilupplevelse — du förlorar mer än hälften av dina besökare.{% endif %}
         {% endif %}
-        <div class="mt-1" style="font-size:.75rem;">{{ cats.mobile.measures }}</div>
       </div>
+      {% endif %}
 
-      {% if mob %}
       <ul class="list-unstyled mb-0">
 
-        {# Viewport #}
+        {# PageSpeed Mobile #}
+        {% if psp_m and not psp_m.error %}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if mob.viewport.status == 'pass' %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% if psp_m.score >= 90 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% elif psp_m.score >= 50 %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">Viewport</span>
-            <span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ mob.viewport.points }} p</span><br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {% if mob.viewport.status == 'pass' %}
-                {% if obj.language == 'en' %}Page adapts to the screen width (width=device-width){% else %}Sidan anpassas efter skärmens bredd (width=device-width){% endif %}
-              {% elif mob.viewport.found %}
-                {% if obj.language == 'en' %}Viewport tag exists but lacks width=device-width{% else %}Viewport-tagg finns men saknar width=device-width{% endif %}
-              {% else %}
-                {% if obj.language == 'en' %}Viewport tag missing — mobile browsers show the page as a shrunk desktop page{% else %}Viewport-tagg saknas — mobilen visar sidan som en förminskad datorsida{% endif %}
-              {% endif %}
-              {% if mob.viewport.value %}<span class="tech-only"><br><code class="text-light" style="font-size:.72rem;">{{ mob.viewport.value }}</code></span>{% endif %}
-            </span>
-          </div>
-        </li>
-
-        {# Zoom #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if mob.zoom.status == 'pass' %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
-          <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Zoom{% else %}Zoomning{% endif %}</span>
-            <span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ mob.zoom.points }} p</span><br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {% if mob.zoom.status == 'pass' %}
-                {% if obj.language == 'en' %}Visitors can zoom the page{% else %}Besökare kan zooma sidan{% endif %}
-              {% else %}
-                {% if obj.language == 'en' %}Zoom is blocked{% else %}Zoomning är blockerad{% endif %} ({{ mob.zoom.blocked_by|join:", " }}) — {% if obj.language == 'en' %}hard for people with low vision{% else %}svårt för personer med nedsatt syn{% endif %}
-              {% endif %}
-            </span>
-          </div>
-        </li>
-
-        {# Media queries #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if mob.media_queries.status == 'pass' %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif mob.media_queries.status == 'fail' %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-minus-circle text-secondary mt-1 flex-shrink-0"></i>{% endif %}
-          <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Responsive CSS (media queries){% else %}Responsiv CSS (media queries){% endif %}</span>
-            <span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ mob.media_queries.points }} p</span><br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {% if mob.media_queries.status == 'pass' %}
-                {% if obj.language == 'en' %}The CSS adapts the layout to screen width{% else %}CSS:en anpassar layouten efter skärmbredd{% endif %}
-              {% elif mob.media_queries.status == 'fail' %}
-                {% if obj.language == 'en' %}No media queries for screen width found in the page's CSS{% else %}Inga media queries för skärmbredd i sidans CSS{% endif %}
-              {% else %}
-                {% if obj.language == 'en' %}Not measured — not all stylesheets could be read{% else %}Ej mätt — alla stilmallar gick inte att läsa{% endif %}
-              {% endif %}
-              <span class="tech-only">&nbsp;·&nbsp;{{ mob.media_queries.stylesheets_read }} {% if obj.language == 'en' %}of{% else %}av{% endif %} {{ mob.media_queries.stylesheets_total }} {% if obj.language == 'en' %}stylesheets read{% else %}stilmallar lästa{% endif %}</span>
-            </span>
-          </div>
-        </li>
-
-        {# Bilder som skalar #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if mob.images_scale.status == 'pass' %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif mob.images_scale.status == 'fail' %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-minus-circle text-secondary mt-1 flex-shrink-0"></i>{% endif %}
-          <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Scalable images{% else %}Bilder som skalar{% endif %}</span>
-            <span class="tech-only text-secondary" style="font-size:.75rem;">&nbsp;· {{ mob.images_scale.points }} p</span><br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {% if mob.images_scale.status == 'pass' %}
-                {% if mob.images_scale.css_max_width_rule %}
-                  {% if obj.language == 'en' %}The CSS limits image width (img { max-width }){% else %}CSS:en begränsar bildernas bredd (img { max-width }){% endif %}
-                {% else %}
-                  {% if obj.language == 'en' %}All images have width/height or srcset{% else %}Alla bilder har width/height eller srcset{% endif %}
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="text-light small fw-semibold">PageSpeed Insights ({% if obj.language == 'en' %}Mobile{% else %}Mobil{% endif %})</span>
+              <span class="badge {% if psp_m.score >= 90 %}bg-success{% elif psp_m.score >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %}" style="font-size:.72rem;">
+                {{ psp_m.score }}/100
+              </span>
+            </div>
+            <div class="text-secondary" style="font-size:.8rem;">
+              <span class="simple-only">
+                {% if psp_m.score >= 90 %}{% if obj.language == 'en' %}Fast on mobile — great experience{% else %}Snabb på mobil — bra upplevelse{% endif %}
+                {% elif psp_m.score >= 50 %}{% if obj.language == 'en' %}Average mobile speed — room for improvement{% else %}Genomsnittlig mobilhastighet — kan förbättras{% endif %}
+                {% else %}{% if obj.language == 'en' %}Slow on mobile — visitors are likely to leave{% else %}Långsam på mobil — besökare lämnar troligtvis sidan{% endif %}
                 {% endif %}
-              {% elif mob.images_scale.status == 'fail' %}
-                {{ mob.images_scale.without_size_or_rule }} {% if obj.language == 'en' %}of{% else %}av{% endif %} {{ mob.images_scale.total }} {% if obj.language == 'en' %}images lack width/height and srcset, and no img { max-width } rule was found{% else %}bilder saknar width/height och srcset, och ingen img { max-width }-regel hittades{% endif %}
-              {% elif mob.images_scale.status == 'not_applicable' %}
-                {% if obj.language == 'en' %}No images on the page — not included in the score{% else %}Inga bilder på sidan — ingår inte i poängen{% endif %}
-              {% else %}
-                {% if obj.language == 'en' %}Not measured — not all stylesheets could be read{% else %}Ej mätt — alla stilmallar gick inte att läsa{% endif %}
-              {% endif %}
-            </span>
+              </span>
+              <span class="tech-only">
+                {% if psp_m.lcp_ms %}<span class="me-3">LCP&nbsp;<strong class="text-light">{{ psp_m.lcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_m.fcp_ms %}<span class="me-3">FCP&nbsp;<strong class="text-light">{{ psp_m.fcp_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_m.tbt_ms %}<span class="me-3">TBT&nbsp;<strong class="text-light">{{ psp_m.tbt_ms }}&thinsp;ms</strong></span>{% endif %}
+                {% if psp_m.cls %}<span class="me-3">CLS&nbsp;<strong class="text-light">{{ psp_m.cls }}</strong></span>{% endif %}
+                {% if psp_m.inp_ms %}<span class="me-3">INP&nbsp;<strong class="text-light">{{ psp_m.inp_ms }}&thinsp;ms</strong></span>{% endif %}
+              </span>
+            </div>
           </div>
         </li>
+        {% endif %}
 
-        {# Ej mätt #}
+        {# Viewport #}
         <li class="px-4 py-3 d-flex align-items-start gap-3">
-          <i class="fas fa-minus-circle text-secondary mt-1 flex-shrink-0"></i>
+          {% if seo.viewport.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Not measured{% else %}Ej mätt{% endif %}</span><br>
+            <span class="text-light small fw-semibold">Viewport meta</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
-              {% if obj.language == 'en' %}Tap target size and actual text size on a phone — requires rendering the page in a browser. Not included in the score.{% else %}Klickytornas storlek och faktisk textstorlek på mobil — kräver att sidan renderas i en webbläsare. Ingår inte i poängen.{% endif %}
+              {% if seo.viewport.found %}
+                {% if obj.language == 'en' %}Responsive viewport configured{% else %}Responsiv viewport konfigurerad{% endif %}
+              {% else %}
+                {% if obj.language == 'en' %}Missing — page will not scale correctly on mobile devices{% else %}Saknas — sidan skalas fel på mobila enheter{% endif %}
+              {% endif %}
             </span>
           </div>
         </li>
 
       </ul>
-      {% endif %}
     </div>
     {% endwith %}
 
@@ -795,12 +761,11 @@
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
-        <span class="text-light fw-bold">{{ cats.headers.label }}</span>
-        <span class="ms-auto text-secondary small fw-semibold">{% if cats.headers.measured %}{{ obj.score_headers }}/100{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}</span>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}Security Headers{% else %}Säkerhetsheaders{% endif %}</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_headers|default:"–" }}/100</span>
       </div>
-      {% if cats.headers.measured %}
+      {% if obj.score_headers != None %}
       <div class="cat-summary">
-        {{ hdr.found_count }} {% if obj.language == 'en' %}of{% else %}av{% endif %} {{ hdr.headers|length }} {% if obj.language == 'en' %}checked headers are sent.{% else %}kontrollerade headers skickas.{% endif %}
         {% if obj.score_headers >= 85 %}{% if obj.language == 'en' %}Security headers are well configured.{% else %}Säkerhetsheaders är välkonfigurerade.{% endif %}
         {% elif obj.score_headers >= 50 %}{% if obj.language == 'en' %}Some security headers are missing — worth fixing.{% else %}Några säkerhetsheaders saknas — värt att åtgärda.{% endif %}
         {% else %}{% if obj.language == 'en' %}Many security headers missing — the site is more vulnerable to attacks.{% else %}Många säkerhetsheaders saknas — sidan är mer sårbar för attacker.{% endif %}
@@ -848,7 +813,6 @@
     {# ════════════════════════════════════════════════════════════════════ #}
     {% with a11y=r.accessibility %}
     {% if a11y %}
-    {% with lm=a11y.landmarks hd=a11y.headings img=a11y.images %}
     <div class="rounded-4 mb-5 overflow-hidden" style="border:1px solid rgba(255,255,255,.1);">
 
       <div class="px-4 py-3 d-flex align-items-center gap-3"
@@ -858,17 +822,17 @@
           <circle cx="12" cy="12" r="10"/>
           <path d="M12 8v4l3 3"/>
         </svg>
-        <span class="text-light fw-bold">{{ cats.accessibility.label }}</span>
-        <span class="ms-auto text-secondary small fw-semibold">{% if cats.accessibility.measured %}{{ obj.score_accessibility }}/100{% else %}{% if obj.language == 'en' %}not measured{% else %}ej mätt{% endif %}{% endif %}</span>
+        <span class="text-light fw-bold">{% if obj.language == 'en' %}Accessibility{% else %}Tillgänglighet{% endif %}</span>
+        <span class="ms-auto text-secondary small fw-semibold">{{ obj.score_accessibility|default:"–" }}/100</span>
       </div>
+      {% if obj.score_accessibility != None %}
       <div class="cat-summary">
-        {% if cats.accessibility.measured %}
-          {% if obj.score_accessibility >= 85 %}{% if obj.language == 'en' %}The basic accessibility checks pass.{% else %}Grundkontrollerna för tillgänglighet är uppfyllda.{% endif %}
-          {% elif obj.score_accessibility >= 50 %}{% if obj.language == 'en' %}Accessibility can be improved.{% else %}Tillgängligheten kan förbättras.{% endif %}
-          {% else %}{% if obj.language == 'en' %}Several basic accessibility checks fail.{% else %}Flera grundkontroller för tillgänglighet är inte uppfyllda.{% endif %}{% endif %}
+        {% if obj.score_accessibility >= 85 %}{% if obj.language == 'en' %}The page is accessible to all users.{% else %}Sidan är tillgänglig för alla användare.{% endif %}
+        {% elif obj.score_accessibility >= 50 %}{% if obj.language == 'en' %}Accessibility can be improved.{% else %}Tillgängligheten kan förbättras.{% endif %}
+        {% else %}{% if obj.language == 'en' %}The page is difficult to use for people with disabilities.{% else %}Sidan är svår att använda för personer med funktionsnedsättning.{% endif %}
         {% endif %}
-        <div class="mt-1" style="font-size:.75rem;">{{ cats.accessibility.measures }}</div>
       </div>
+      {% endif %}
 
       <ul class="list-unstyled mb-0">
 
@@ -891,78 +855,50 @@
 
         {# landmarks #}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if lm.has_main and lm.count > 1 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif lm.count %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>
+          {% if a11y.landmarks.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Page regions (landmarks){% else %}Sidans regioner (landmärken){% endif %}</span><br>
+            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Page structure{% else %}Sidstruktur{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
-              {% if lm.count %}
-                {% if obj.language == 'en' %}Found{% else %}Hittade{% endif %}:
-                {% for name, how in lm.via.items %}<code class="text-light">{{ how }}</code>{% if not forloop.last %}, {% endif %}{% endfor %}
-                {% if not lm.has_main %}<br><span class="text-warning">{% if obj.language == 'en' %}The main content is not marked with &lt;main&gt; or role="main"{% else %}Huvudinnehållet är inte markerat med &lt;main&gt; eller role="main"{% endif %}</span>{% endif %}
+              {% if a11y.landmarks.found %}
+                <span class="simple-only">{% if obj.language == 'en' %}Correct page structure found{% else %}Korrekt sidstruktur hittad{% endif %}</span>
+                <span class="tech-only">{{ a11y.landmarks.count }} {% if obj.language == 'en' %}found{% else %}hittade{% endif %}:
+                {% for tag in a11y.landmarks.tags %}<code class="text-light">&lt;{{ tag }}&gt;</code>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
               {% else %}
-                {% if obj.language == 'en' %}None found — neither &lt;main&gt;, &lt;nav&gt;, &lt;header&gt;, &lt;footer&gt; nor matching role attributes. Screen reader users cannot jump between page regions.{% else %}Inga hittades — varken &lt;main&gt;, &lt;nav&gt;, &lt;header&gt;, &lt;footer&gt; eller motsvarande role-attribut. Skärmläsaranvändare kan inte hoppa mellan sidans delar.{% endif %}
+                {% if obj.language == 'en' %}Missing — screen readers have trouble navigating the page{% else %}Saknas — skärmläsare har svårt att navigera sidan{% endif %}
               {% endif %}
             </span>
           </div>
         </li>
 
-        {# rubriker #}
-        <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if hd.h1_count >= 1 and not hd.skipped_levels and hd.empty_count == 0 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
-          {% elif hd.h1_count == 0 %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
-          <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Heading structure{% else %}Rubrikstruktur{% endif %}</span><br>
-            <span class="text-secondary" style="font-size:.8rem;">
-              {{ hd.count }} {% if obj.language == 'en' %}headings{% else %}rubriker{% endif %}
-              &nbsp;·&nbsp;
-              {% if hd.h1_count == 0 %}<span class="text-danger">{% if obj.language == 'en' %}no H1{% else %}ingen H1{% endif %}</span>
-              {% else %}{{ hd.h1_count }} H1{% endif %}
-              {% if hd.skipped_levels %}&nbsp;·&nbsp;<span class="text-warning">{% if obj.language == 'en' %}skipped levels{% else %}hoppar över nivåer{% endif %}: {{ hd.skipped_levels|join:", " }}</span>{% endif %}
-              {% if hd.empty_count %}&nbsp;·&nbsp;<span class="text-warning">{{ hd.empty_count }} {% if obj.language == 'en' %}empty{% else %}tomma{% endif %}</span>{% endif %}
-              {% if hd.outline %}<span class="tech-only"><br>{% if obj.language == 'en' %}Order{% else %}Ordning{% endif %}: {{ hd.outline|join:" " }}{% if hd.count > 30 %} …{% endif %}</span>{% endif %}
-            </span>
-          </div>
-        </li>
-
-        {# skip nav #}
+        {# skip nav — tech-only, confusing for non-technical users #}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark tech-only">
           {% if a11y.skip_nav.found %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
           {% else %}<i class="fas fa-exclamation-triangle text-warning mt-1 flex-shrink-0"></i>{% endif %}
           <div>
-            <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Skip link{% else %}Skip-länk{% endif %}</span><br>
+            <span class="text-light small fw-semibold">Skip navigation</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
               {% if a11y.skip_nav.found %}
-                "{{ a11y.skip_nav.text }}" → <code class="text-light">{{ a11y.skip_nav.href }}</code> — {% if obj.language == 'en' %}keyboard users can jump directly to the content{% else %}tangentbordsanvändare kan hoppa direkt till innehållet{% endif %}
+                {% if obj.language == 'en' %}Skip link found — keyboard users can jump directly to content{% else %}Skip-länk hittad — tangentbordsanvändare kan hoppa direkt till innehållet{% endif %}
               {% else %}
-                {% if obj.language == 'en' %}Not found among the first links (a link to an existing #id with text like "Skip to content"){% else %}Saknas bland de första länkarna (en länk till ett befintligt #id med text som "Hoppa till innehåll"){% endif %}
+                {% if obj.language == 'en' %}Not found — keyboard users must tab through all navigation on every page{% else %}Saknas — tangentbordsanvändare måste tabba igenom all navigation på varje sida{% endif %}
               {% endif %}
             </span>
           </div>
         </li>
 
-        {# alt-texter – samma siffror som i hela rapporten #}
+        {# images alt #}
         <li class="px-4 py-3 d-flex align-items-start gap-3 border-bottom border-dark">
-          {% if img.missing_alt %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>
-          {% elif img.decorative %}<i class="fas fa-info-circle text-info mt-1 flex-shrink-0"></i>
-          {% else %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>{% endif %}
+          {% if a11y.images_without_alt.count == 0 %}<i class="fas fa-check-circle text-success mt-1 flex-shrink-0"></i>
+          {% else %}<i class="fas fa-times-circle text-danger mt-1 flex-shrink-0"></i>{% endif %}
           <div>
             <span class="text-light small fw-semibold">{% if obj.language == 'en' %}Image alt texts{% else %}Alt-texter på bilder{% endif %}</span><br>
             <span class="text-secondary" style="font-size:.8rem;">
-              {% if img.total %}
-                {{ img.total }} {% if obj.language == 'en' %}images{% else %}bilder{% endif %}:
-                {{ img.with_alt }} {% if obj.language == 'en' %}with alt text{% else %}med alt-text{% endif %}
-                &nbsp;·&nbsp; {{ img.decorative }} {% if obj.language == 'en' %}marked as decorative{% else %}markerade som dekorativa{% endif %}
-                &nbsp;·&nbsp; {% if img.missing_alt %}<span class="text-danger">{{ img.missing_alt }} {% if obj.language == 'en' %}missing the alt attribute{% else %}saknar alt-attribut{% endif %}</span>{% else %}0 {% if obj.language == 'en' %}missing the alt attribute{% else %}saknar alt-attribut{% endif %}{% endif %}
-                {% if img.decorative %}
-                <br>{% if obj.language == 'en' %}Decorative (alt="") images are skipped by screen readers. That is correct for pure decoration but not for images that carry content — check them manually.{% else %}Dekorativa bilder (alt="") hoppas över av skärmläsare. Det är rätt för ren dekoration men inte för bilder med innehåll — kontrollera dem manuellt.{% endif %}
-                <span class="tech-only">{% for u in img.decorative_examples %}<br><code class="text-light" style="font-size:.72rem;word-break:break-all;">{{ u|truncatechars:90 }}</code>{% endfor %}</span>
-                {% endif %}
-                {% if img.missing_alt %}<span class="tech-only">{% for u in img.missing_alt_examples %}<br><code class="text-danger" style="font-size:.72rem;word-break:break-all;">{{ u|truncatechars:90 }}</code>{% endfor %}</span>{% endif %}
+              {{ a11y.images_without_alt.total }} {% if obj.language == 'en' %}images total{% else %}bilder totalt{% endif %}
+              {% if a11y.images_without_alt.count > 0 %}
+                &nbsp;·&nbsp; <span class="text-danger">{{ a11y.images_without_alt.count }} {% if obj.language == 'en' %}missing alt attribute{% else %}saknar alt-attribut{% endif %}</span>
               {% else %}
-                {% if obj.language == 'en' %}No images on the page{% else %}Inga bilder på sidan{% endif %}
+                &nbsp;·&nbsp; {% if obj.language == 'en' %}all have alt text ✓{% else %}alla har alt-text ✓{% endif %}
               {% endif %}
             </span>
           </div>
@@ -986,7 +922,6 @@
 
       </ul>
     </div>
-    {% endwith %}
     {% endif %}
     {% endwith %}
 
@@ -1073,20 +1008,65 @@
         <div>
           <div class="text-warning fw-bold">{% if obj.language == 'en' %}Your road to grade A{% else %}Din väg till betyg A{% endif %}</div>
           <div class="text-secondary" style="font-size:.8rem;">
-            {% if obj.language == 'en' %}{{ obj.score_overall|default_if_none:"–" }}/100 today — grade A requires 85+{% else %}{{ obj.score_overall|default_if_none:"–" }}/100 idag — betyg A kräver 85+{% endif %}
+            {% if obj.language == 'en' %}{{ obj.score_overall }}/100 today — grade A requires 85+{% else %}{{ obj.score_overall }}/100 idag — betyg A kräver 85+{% endif %}
           </div>
         </div>
       </div>
       <div class="d-flex flex-column gap-2">
-        {% for c in categories %}{% if c.measured and c.score < 85 %}
+        {% if obj.score_security != None and obj.score_security < 85 %}
         <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
-          <span class="text-secondary" style="min-width:130px;">{{ c.label }}</span>
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Security{% else %}Säkerhet{% endif %}</span>
           <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
-            <div class="progress-bar rounded-pill" style="width:{{ c.score }}%;background:{{ c.color }};"></div>
+            <div class="progress-bar bg-warning rounded-pill" style="width:{{ obj.score_security|default:0 }}%;"></div>
           </div>
-          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ c.score }} / 85</span>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_security }} / 85</span>
         </div>
-        {% endif %}{% endfor %}
+        {% endif %}
+        {% if obj.score_seo != None and obj.score_seo < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">SEO</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar rounded-pill" style="width:{{ obj.score_seo|default:0 }}%;background:#6f42c1;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_seo }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_performance != None and obj.score_performance < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Performance{% else %}Prestanda{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar bg-primary rounded-pill" style="width:{{ obj.score_performance|default:0 }}%;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_performance }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_mobile != None and obj.score_mobile < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Mobile{% else %}Mobilanpassning{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar bg-success rounded-pill" style="width:{{ obj.score_mobile|default:0 }}%;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_mobile }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_headers != None and obj.score_headers < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Security headers{% else %}Säkerhetsheaders{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar rounded-pill" style="width:{{ obj.score_headers|default:0 }}%;background:#fd7e14;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_headers }} / 85</span>
+        </div>
+        {% endif %}
+        {% if obj.score_accessibility != None and obj.score_accessibility < 85 %}
+        <div class="d-flex align-items-center gap-2" style="font-size:.82rem;">
+          <span class="text-secondary" style="min-width:130px;">{% if obj.language == 'en' %}Accessibility{% else %}Tillgänglighet{% endif %}</span>
+          <div class="progress flex-grow-1 rounded-pill" style="height:5px;background:rgba(255,255,255,.1);">
+            <div class="progress-bar rounded-pill" style="width:{{ obj.score_accessibility|default:0 }}%;background:#0dcaf0;"></div>
+          </div>
+          <span class="text-secondary" style="min-width:55px;text-align:right;">{{ obj.score_accessibility }} / 85</span>
+        </div>
+        {% endif %}
       </div>
     </div>
     {% endif %}
@@ -1164,12 +1144,10 @@
                   {% endif %}
                 </td>
                 <td class="text-center" style="border-color:rgba(255,255,255,.07);">
-                  {% if page.accessibility.images.missing_alt %}
-                    <span class="text-danger" title="{% if obj.language == 'en' %}missing alt attribute{% else %}saknar alt-attribut{% endif %}">{{ page.accessibility.images.missing_alt }} ✗</span>
-                  {% elif page.accessibility.images.decorative %}
-                    <span class="text-info" title="{% if obj.language == 'en' %}alt=&quot;&quot; (decorative){% else %}alt=&quot;&quot; (dekorativa){% endif %}">{{ page.accessibility.images.decorative }} ○</span>
-                  {% else %}
+                  {% if page.accessibility.images_without_alt.count == 0 %}
                     <span class="text-success">✓</span>
+                  {% else %}
+                    <span class="text-danger">{{ page.accessibility.images_without_alt.count }} ✗</span>
                   {% endif %}
                 </td>
                 <td class="text-center" style="border-color:rgba(255,255,255,.07);">
@@ -1186,7 +1164,7 @@
           </table>
         </div>
         <p class="text-secondary mt-2 mb-0" style="font-size:.75rem;">
-          ✓ = OK &nbsp;·&nbsp; ~ = {% if obj.language == 'en' %}exists but needs improvement{% else %}finns men behöver förbättras{% endif %} &nbsp;·&nbsp; ✗ = {% if obj.language == 'en' %}missing{% else %}saknas{% endif %} &nbsp;·&nbsp; ○ = {% if obj.language == 'en' %}images with alt="" (decorative){% else %}bilder med alt="" (dekorativa){% endif %}
+          ✓ = OK &nbsp;·&nbsp; ~ = {% if obj.language == 'en' %}exists but needs improvement{% else %}finns men behöver förbättras{% endif %} &nbsp;·&nbsp; ✗ = {% if obj.language == 'en' %}missing{% else %}saknas{% endif %}
         </p>
       </div>
     </div>

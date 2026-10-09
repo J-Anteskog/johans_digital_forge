@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!-- Landmärken via role-attribut (inga HTML5-element), skip-länk med engelsk text,
+     korrekt rubrikhierarki. -->
+<html lang="en">
+<head><meta charset="utf-8"><title>Roles</title></head>
+<body>
+<a href="#main-content" class="visually-hidden-focusable">Skip to main content</a>
+<div role="banner"><a href="/">Logo</a></div>
+<div role="navigation"><a href="/a">A</a><a href="/b">B</a></div>
+<div role="main" id="main-content">
+  <h1>Title</h1>
+  <h2>Section</h2>
+  <h3>Sub</h3>
+  <h2>Other <img src="/i.png" alt="with image"></h2>
+</div>
+<div role="contentinfo">Footer</div>
+</body>
+</html>

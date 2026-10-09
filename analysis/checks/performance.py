@@ -1,78 +1,50 @@
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin
 
-from ..net import safe_request
+from ..net import BlockedAddressError, safe_request
+from .page_facts import image_src
 
 _TIMEOUT = 8
 _IMAGE_LIMIT_BYTES = 500 * 1024   # 500 KB
 _MAX_IMG_TO_CHECK = 20            # cap HEAD-anrop för att hålla nere analystiden
 
 
-def check_performance(base_url: str, soup) -> dict:
-    """Externa resurser och grundläggande bildoptimering."""
-    parsed = urlparse(base_url)
-    base_netloc = parsed.netloc
-
-    ext_css = _count_external(soup, 'link', 'href', rel='stylesheet',
-                               base_netloc=base_netloc)
-    ext_js  = _count_external(soup, 'script', 'src', rel=None,
-                               base_netloc=base_netloc)
-    imgs    = _check_images(soup, base_url)
-
-    return {
-        'external_css': ext_css,
-        'external_js':  ext_js,
-        'total_external_resources': ext_css + ext_js,
-        'images_total':          imgs['total'],
-        'images_without_alt':    imgs['without_alt'],
-        'images_large':          imgs['large'],
-        'images_checked_for_size': imgs['checked'],
-    }
-
-
-# ── helpers ────────────────────────────────────────────────────────────────
-
-def _is_external(href: str, base_netloc: str) -> bool:
-    if not href or href.startswith('data:') or href.startswith('#'):
-        return False
-    if href.startswith('//'):
-        return True
-    if href.startswith('http'):
-        return base_netloc not in urlparse(href).netloc
-    return False
-
-
-def _count_external(soup, tag, attr, rel, base_netloc):
-    count = 0
-    find_kwargs = {}
-    if rel:
-        find_kwargs['rel'] = rel
-    for el in soup.find_all(tag, **find_kwargs):
-        href = el.get(attr, '')
-        if _is_external(href, base_netloc):
-            count += 1
-    return count
-
-
-def _check_images(soup, base_url):
-    imgs = soup.find_all('img')
-    total = len(imgs)
-    without_alt = sum(1 for img in imgs if not img.get('alt', '').strip())
-
-    large = 0
-    checked = 0
-    for img in imgs[:_MAX_IMG_TO_CHECK]:
-        src = img.get('src', '') or img.get('data-src', '')
+def check_performance(base_url: str, soup, session=None) -> dict:
+    """
+    Bildstorlekar via HEAD (Content-Length). Antal CSS/JS-filer, svarstid och
+    HTML-storlek finns i results['resources'] resp. results['http'].
+    Bilder vars storlek servern inte anger räknas som "okänd", inte som små.
+    """
+    large, checked, unknown, blocked = [], 0, 0, 0
+    seen = set()
+    for img in soup.find_all('img'):
+        if len(seen) >= _MAX_IMG_TO_CHECK:
+            break
+        src = image_src(img)
         if not src or src.startswith('data:'):
             continue
         img_url = urljoin(base_url, src)
+        if img_url in seen:
+            continue
+        seen.add(img_url)
         try:
-            # Bild-URL:er kommer från den analyserade sidan – valideras (SSRF)
-            head = safe_request('HEAD', img_url, timeout=_TIMEOUT)
-            cl = int(head.headers.get('Content-Length', 0))
-            if cl > _IMAGE_LIMIT_BYTES:
-                large += 1
+            head = safe_request('HEAD', img_url, timeout=_TIMEOUT, session=session)
+            cl = head.headers.get('Content-Length')
+            if head.status_code >= 400 or cl is None or not cl.isdigit():
+                unknown += 1
+                continue
             checked += 1
+            if int(cl) > _IMAGE_LIMIT_BYTES:
+                large.append({'url': img_url, 'kb': int(cl) // 1024})
+        except BlockedAddressError:
+            blocked += 1
         except Exception:
-            pass
+            unknown += 1
 
-    return {'total': total, 'without_alt': without_alt, 'large': large, 'checked': checked}
+    return {
+        'images_large': len(large),
+        'images_large_examples': large[:10],
+        'images_checked_for_size': checked,
+        'images_size_unknown': unknown,
+        'images_blocked': blocked,
+        'images_size_limit_kb': _IMAGE_LIMIT_BYTES // 1024,
+    }

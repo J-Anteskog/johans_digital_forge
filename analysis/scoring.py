@@ -1,49 +1,80 @@
 """
-Poängsystem  (0–100 per kategori, viktat overall):
-  Säkerhet        20 %  – HTTPS, SSL-giltighet, certifikat ej snart-utgånget
-  SEO             22 %  – title, meta desc, H1, viewport, OG, robots, sitemap
-  Prestanda       20 %  – PageSpeed desktop (om tillgänglig) + svarstid + resurser
-  Mobilanpassning 15 %  – PageSpeed mobile (om tillgänglig) + viewport
-  Säkerhetsheaders 13 % – HSTS, CSP, X-Frame-Options, X-Content-Type, m.fl.
-  Tillgänglighet  10 %  – lang, landmarks, skip-nav, alt-texter, onclick
+Poängsystem v2  (0–100 per kategori, eller None = ej mätt):
+  HTTPS och certifikat  20 %  – HTTPS, giltigt certifikat, >30 dagar kvar
+  SEO                   22 %  – title, meta desc, H1, viewport, OG, robots, sitemap
+  Prestanda             20 %  – PageSpeed (mobil + dator) om tillgängligt,
+                                annars "Sidvikt och svarstid" (svarstid, HTML-storlek,
+                                antal CSS/JS-filer, renderblockerande skript)
+  Mobilanpassning       15 %  – viewport, zoom, media queries, skalbara bilder
+  Säkerhetsheaders      13 %  – HSTS, CSP, X-Frame-Options, X-Content-Type, m.fl.
+  Tillgänglighet        10 %  – lang, landmärken, skip-länk, rubriker, alt-texter, onclick
+
+En kategori som inte kunde mätas (None) räknas INTE in i totalbetyget – vikterna
+för de mätta kategorierna skalas om så att de summerar till 100 %.
 
 Betyg: A ≥85 · B ≥70 · C ≥50 · D <50
 """
 
+ANALYZER_VERSION = 2
+
+WEIGHTS = {
+    'security':      0.20,
+    'seo':           0.22,
+    'performance':   0.20,
+    'mobile':        0.15,
+    'headers':       0.13,
+    'accessibility': 0.10,
+}
+
 
 def calculate_scores(results: dict) -> dict:
-    sec   = _score_security(results)
-    seo   = _score_seo(results)
-    perf  = _score_performance(results)
-    mob   = _score_mobile(results)
-    hdr   = _score_headers(results)
-    a11y  = _score_accessibility(results)
-    overall = int(round(
-        sec  * 0.20 +
-        seo  * 0.22 +
-        perf * 0.20 +
-        mob  * 0.15 +
-        hdr  * 0.13 +
-        a11y * 0.10
-    ))
+    scores = {
+        'security':      _score_security(results),
+        'seo':           _score_seo(results),
+        'performance':   _score_performance(results),
+        'mobile':        _score_mobile(results),
+        'headers':       _score_headers(results),
+        'accessibility': _score_accessibility(results),
+    }
+    scores['overall'] = overall_score(scores)
+    return scores
+
+
+def overall_score(scores: dict):
+    measured = {k: v for k, v in scores.items() if k in WEIGHTS and v is not None}
+    total_weight = sum(WEIGHTS[k] for k in measured)
+    if not measured or total_weight == 0:
+        return None
+    value = sum(v * WEIGHTS[k] for k, v in measured.items()) / total_weight
+    return min(100, max(0, int(round(value))))
+
+
+def scoring_summary(scores: dict, results: dict) -> dict:
+    """Metadata som sparas i results['scoring'] och visas i rapporten."""
+    measured = [k for k in WEIGHTS if scores.get(k) is not None]
     return {
-        'security':      sec,
-        'seo':           seo,
-        'performance':   perf,
-        'mobile':        mob,
-        'headers':       hdr,
-        'accessibility': a11y,
-        'overall':       min(100, max(0, overall)),
+        'version': ANALYZER_VERSION,
+        'measured': measured,
+        'not_measured': [k for k in WEIGHTS if k not in measured],
+        'measured_count': len(measured),
+        'category_count': len(WEIGHTS),
+        'performance_source': performance_source(results),
     }
 
 
-# ── Säkerhet (max 100) ────────────────────────────────────────────────────
+def _has_html(results):
+    return bool(results.get('seo'))
+
+
+# ── HTTPS och certifikat (max 100) ─────────────────────────────────────────
 
 def _score_security(results):
-    pts = 0
     http = results.get('http', {})
     ssl  = results.get('ssl', {})
+    if http.get('status_code') is None:
+        return None   # inget svar alls – inget att bedöma
 
+    pts = 0
     if http.get('is_https'):
         pts += 50
     if ssl.get('valid'):
@@ -56,6 +87,8 @@ def _score_security(results):
 # ── SEO (max 100) ─────────────────────────────────────────────────────────
 
 def _score_seo(results):
+    if not _has_html(results):
+        return None
     pts = 0
     seo = results.get('seo', {})
 
@@ -88,60 +121,93 @@ def _score_seo(results):
 
 # ── Prestanda (max 100) ───────────────────────────────────────────────────
 
+def performance_source(results):
+    """'pagespeed' om minst en PageSpeed-strategi gav poäng, 'basic' om vi har HTML, annars None."""
+    if _psp_scores(results):
+        return 'pagespeed'
+    if _has_html(results) and results.get('http', {}).get('response_time_ms') is not None:
+        return 'basic'
+    return None
+
+
 def _score_performance(results):
-    psp = _get_psp(results, 'desktop')
+    source = performance_source(results)
+    if source == 'pagespeed':
+        vals = _psp_scores(results)
+        return int(round(sum(vals) / len(vals)))
+    if source == 'basic':
+        return basic_performance_breakdown(results)['score']
+    return None
 
-    if psp is not None:
-        base = psp   # PageSpeed score är redan 0–100
-    else:
-        # Fallback: svarstid
-        rt = results.get('http', {}).get('response_time_ms') or 9999
-        if rt < 500:    base = 80
-        elif rt < 1000: base = 60
-        elif rt < 2000: base = 40
-        else:           base = 20
 
-    # Penalisera för många externa resurser (>5 = 2p per extra)
-    ext = results.get('performance', {}).get('total_external_resources', 0)
-    penalty = max(0, (ext - 5) * 2)
+def basic_performance_breakdown(results) -> dict:
+    """
+    "Sidvikt och svarstid" – bara sådant vi faktiskt mäter från vår server.
+    Säger ingenting om hur snabbt sidan ritas upp i en webbläsare.
+    """
+    http = results.get('http', {})
+    res  = results.get('resources', {})
 
-    return max(0, min(100, base - penalty))
+    rt = http.get('response_time_ms') or 0
+    if rt < 500:    rt_pts = 40
+    elif rt < 1000: rt_pts = 30
+    elif rt < 2000: rt_pts = 15
+    else:           rt_pts = 0
+
+    kb = (http.get('html_bytes') or 0) / 1024
+    if kb < 100:   size_pts = 20
+    elif kb < 300: size_pts = 10
+    else:          size_pts = 0
+
+    files = res.get('total_files', 0)
+    if files <= 10:   files_pts = 20
+    elif files <= 20: files_pts = 10
+    else:             files_pts = 0
+
+    blocking = res.get('render_blocking_scripts', 0)
+    if blocking == 0:   block_pts = 20
+    elif blocking <= 2: block_pts = 10
+    else:               block_pts = 0
+
+    parts = {
+        'response_time': {'points': rt_pts, 'max': 40},
+        'html_size':     {'points': size_pts, 'max': 20},
+        'file_count':    {'points': files_pts, 'max': 20},
+        'render_blocking': {'points': block_pts, 'max': 20},
+    }
+    return {'parts': parts, 'score': sum(p['points'] for p in parts.values())}
 
 
 # ── Mobilanpassning (max 100) ─────────────────────────────────────────────
 
 def _score_mobile(results):
-    psp = _get_psp(results, 'mobile')
-
-    if psp is not None:
-        return min(100, psp)
-
-    # Fallback: viewport meta
-    viewport = results.get('seo', {}).get('viewport', {})
-    return 60 if viewport.get('found') else 20
+    return (results.get('mobile') or {}).get('score')
 
 
 # ── Säkerhetsheaders (max 100) ────────────────────────────────────────────
 
 def _score_headers(results):
-    hdr = results.get('headers', {})
+    hdr = results.get('headers') or {}
     if hdr.get('error') or not hdr.get('headers'):
-        return 0
-    return hdr.get('score', 0)
+        return None
+    return hdr.get('score')
 
 
 # ── Tillgänglighet (max 100) ──────────────────────────────────────────────
 
 def _score_accessibility(results):
-    a11y = results.get('accessibility', {})
-    return a11y.get('score', 0)
+    if not _has_html(results):
+        return None
+    return (results.get('accessibility') or {}).get('score')
 
 
 # ── Hjälp ────────────────────────────────────────────────────────────────
 
-def _get_psp(results, strategy):
-    """Hämta PageSpeed-score för en strategi, returnerar None om ej tillgänglig."""
-    psp = (results.get('pagespeed') or {}).get(strategy, {})
-    if psp and not psp.get('error') and psp.get('score') is not None:
-        return psp['score']
-    return None
+def _psp_scores(results):
+    psp = results.get('pagespeed') or {}
+    out = []
+    for strategy in ('mobile', 'desktop'):
+        s = (psp.get(strategy) or {}).get('score')
+        if s is not None:
+            out.append(s)
+    return out

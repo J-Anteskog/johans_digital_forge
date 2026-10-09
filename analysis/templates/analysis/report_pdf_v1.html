@@ -165,7 +165,7 @@
   <div style="text-align:center;margin:10mm 0 6mm;">
     <div class="grade-circle bg-{{ obj.grade_color }}">{{ obj.grade }}</div>
     <div style="font-size:24pt;font-weight:800;color:#1a1a2e;line-height:1.1;">
-      {{ obj.score_overall|default_if_none:"–" }}<span style="font-size:12pt;color:#888;">/100</span>
+      {{ obj.score_overall }}<span style="font-size:12pt;color:#888;">/100</span>
     </div>
     <div style="font-size:8.5pt;color:#888;margin-top:1.5mm;">Sammanlagt betyg</div>
   </div>
@@ -173,6 +173,18 @@
   <div class="cover-title">Webbplatsanalys</div>
   <div class="cover-url">{{ obj.url }}</div>
   <div class="cover-date">Analyserades: {{ obj.completed_at|date:"Y-m-d H:i" }}</div>
+
+  <div style="margin:0 0 5mm;padding:3.5mm 5mm;background:#fff8e1;border:1.5px solid #e6a817;border-radius:4pt;">
+    <div style="font-size:9.5pt;font-weight:700;color:#1a1a2e;margin-bottom:1mm;">
+      Rapporten skapades med en äldre version av analysverktyget
+    </div>
+    <div style="font-size:8.5pt;color:#444;">
+      Vissa resultat räknades på ett sätt som vi sedan har rättat: Prestanda och Mobilanpassning var delvis
+      uppskattade, CSS/JS-filer på sidans egen domän räknades inte och poängen 0 kunde visas som "–".
+      Kör en ny analys på <strong>johans-digital-forge.se{% url 'analysis' %}?site={{ obj.url|urlencode }}</strong>
+      för en uppdaterad rapport.
+    </div>
+  </div>
 
   {# Score overview #}
   <table class="score-table">
@@ -184,23 +196,43 @@
       </tr>
     </thead>
     <tbody>
-      {% for c in categories %}
+      {% with cats=obj %}
       <tr>
-        <td>{{ c.label }}</td>
-        <td><div class="bar-wrap">{% if c.measured %}<div class="bar-fill" style="width:{{ c.score }}%;background:{{ c.color }};"></div>{% endif %}</div></td>
-        <td>{% if c.measured %}{{ c.score }}{% else %}<span style="font-weight:400;color:#888;">ej mätt</span>{% endif %}</td>
+        <td>Säkerhet</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_security|default:0 }}%;background:#ffc107;"></div></div></td>
+        <td>{{ obj.score_security|default:"–" }}</td>
       </tr>
-      {% endfor %}
+      <tr>
+        <td>SEO</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_seo|default:0 }}%;background:#6f42c1;"></div></div></td>
+        <td>{{ obj.score_seo|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Prestanda</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_performance|default:0 }}%;background:#0d6efd;"></div></div></td>
+        <td>{{ obj.score_performance|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Mobilanpassning</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_mobile|default:0 }}%;background:#20c997;"></div></div></td>
+        <td>{{ obj.score_mobile|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Säkerhetsheaders</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_headers|default:0 }}%;background:#fd7e14;"></div></div></td>
+        <td>{{ obj.score_headers|default:"–" }}</td>
+      </tr>
+      <tr>
+        <td>Tillgänglighet</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ obj.score_accessibility|default:0 }}%;background:#0dcaf0;"></div></div></td>
+        <td>{{ obj.score_accessibility|default:"–" }}</td>
+      </tr>
+      {% endwith %}
     </tbody>
   </table>
-  {% if obj.scoring.category_count %}
-  <div style="font-size:7.5pt;color:#888;margin-top:1.5mm;">
-    Totalbetyget bygger på {{ obj.scoring.measured_count }} av {{ obj.scoring.category_count }} kategorier{% if obj.scoring.not_measured %} — kategorier som inte kunde mätas räknas inte in{% endif %}.
-  </div>
-  {% endif %}
 
   {# ── Åtgärdslista på framsidan ──────────────────────────────────── #}
-  {% if obj.score_overall == None or obj.score_overall < 85 %}
+  {% if obj.score_overall < 85 %}
   <div style="margin-top:5mm;padding:3.5mm 5mm;background:#fffbf0;border:1px solid #f0d080;border-radius:4pt;">
     <div style="font-size:9pt;font-weight:700;color:#1a1a2e;margin-bottom:2.5mm;">Viktigast att åtgärda</div>
     <table style="width:100%;border-collapse:collapse;">
@@ -216,17 +248,14 @@
       {% if r.seo and r.seo.meta_description and not r.seo.meta_description.found %}
       <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Meta-beskrivning saknas — Google saknar text att visa i sökresultaten</td></tr>
       {% endif %}
-      {% if cats.performance.measured and obj.score_performance < 50 %}
-      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">{% if obj.scoring.performance_source == 'pagespeed' %}PageSpeed bedömer sidan som långsam — besökare tappar tålamodet och lämnar{% else %}Tung sida eller långsamt serversvar — se "Sidvikt och svarstid"{% endif %}</td></tr>
+      {% if obj.score_performance < 50 %}
+      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Sidan laddar för långsamt — besökare lämnar innan den hinner ladda</td></tr>
       {% endif %}
-      {% if cats.mobile.measured and obj.score_mobile < 50 %}
-      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Grundläggande mobilanpassning saknas (t.ex. viewport eller media queries)</td></tr>
+      {% if obj.score_mobile < 50 %}
+      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#e6a817;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">HÖG</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Dålig mobilupplevelse — mer än hälften av besökarna surfar på mobil</td></tr>
       {% endif %}
-      {% if cats.headers.measured and obj.score_headers < 50 %}
+      {% if obj.score_headers < 50 %}
       <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#fd7e14;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">MEDEL</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">Flera säkerhetsheaders saknas — relativt enkelt att åtgärda</td></tr>
-      {% endif %}
-      {% if r.accessibility.images.missing_alt %}
-      <tr><td style="padding:1.2mm 0;vertical-align:top;"><span style="background:#fd7e14;color:#fff;font-size:6.5pt;font-weight:700;padding:.2em .45em;border-radius:2pt;">MEDEL</span></td><td style="font-size:8.5pt;padding:1.2mm 0;color:#333;">{{ r.accessibility.images.missing_alt }} bild{{ r.accessibility.images.missing_alt|pluralize:"er" }} saknar alt-attribut — osynliga för skärmläsare</td></tr>
       {% endif %}
     </table>
   </div>
@@ -240,14 +269,16 @@
 
 {# ── PAGE 2: DETALJER ─────────────────────────────────────────────────────── #}
 
-{# HTTPS OCH CERTIFIKAT #}
+{# SÄKERHET #}
 {% with http=r.http ssl=r.ssl %}
 <div class="section">
   <div class="section-header">
-    <span class="title">{{ cats.security.label }}</span>
-    <span class="score">{% if cats.security.measured %}{{ obj.score_security }}/100{% else %}ej mätt{% endif %}</span>
+    <span class="title">Säkerhet</span>
+    <span class="score">{{ obj.score_security|default:"–" }}/100</span>
   </div>
-  <div class="section-summary">{% if cats.security.measured %}{% if obj.score_security >= 85 %}HTTPS och certifikatet är i ordning.{% elif obj.score_security >= 50 %}Det finns brister i HTTPS eller certifikatet.{% else %}Allvarliga brister — HTTPS saknas eller certifikatet är ogiltigt.{% endif %} {% endif %}{{ cats.security.measures }}</div>
+  {% if obj.score_security != None %}
+  <div class="section-summary">{% if obj.score_security >= 85 %}Din sida är välskyddad.{% elif obj.score_security >= 50 %}Det finns säkerhetsbrister som bör åtgärdas.{% else %}Allvarliga säkerhetsbrister — åtgärda snarast.{% endif %}</div>
+  {% endif %}
   <div class="section-body">
     <div class="section-row">
       {% if http.is_https %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
@@ -257,22 +288,23 @@
       </div>
     </div>
     <div class="section-row">
-      {% if http.ok %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
-      <div>
-        <div class="row-label">HTTP-status</div>
-        <div class="row-detail">{% if http.status_code %}{{ http.status_code }}{% if http.redirect_count %} · {{ http.redirect_count }} omdirigering{% if http.redirect_count != 1 %}ar{% endif %}{% endif %}{% else %}{{ http.error|default_if_none:"–"|truncatechars:160 }}{% endif %}</div>
-      </div>
-    </div>
-    <div class="section-row">
       {% if ssl.valid %}{% if ssl.expires_soon %}<span class="icon-warn">!</span>{% else %}<span class="icon-ok">✓</span>{% endif %}
       {% else %}<span class="icon-fail">✗</span>{% endif %}
       <div>
         <div class="row-label">SSL-certifikat</div>
         <div class="row-detail">
           {% if ssl.valid %}Giltigt · utgår {{ ssl.expiry_date }} ({{ ssl.days_remaining }} dagar kvar){% if ssl.expires_soon %} — förnya snart!{% endif %}
-          {% elif ssl.error %}{{ ssl.error|truncatechars:160 }}
+          {% elif ssl.error %}{{ ssl.error }}
           {% else %}Certifikatet är ogiltigt.{% endif %}
         </div>
+      </div>
+    </div>
+    <div class="section-row">
+      {% if http.response_time_ms and http.response_time_ms < 800 %}<span class="icon-ok">✓</span>
+      {% elif http.response_time_ms %}<span class="icon-warn">!</span>{% else %}<span class="icon-ok">✓</span>{% endif %}
+      <div>
+        <div class="row-label">Svarstid</div>
+        <div class="row-detail">{% if http.response_time_ms %}{{ http.response_time_ms }} ms{% else %}–{% endif %}</div>
       </div>
     </div>
   </div>
@@ -284,7 +316,7 @@
 <div class="section">
   <div class="section-header">
     <span class="title">SEO</span>
-    <span class="score">{{ obj.score_seo|default_if_none:"–" }}/100</span>
+    <span class="score">{{ obj.score_seo|default:"–" }}/100</span>
   </div>
   {% if obj.score_seo != None %}
   <div class="section-summary">{% if obj.score_seo >= 85 %}Sidan är väl optimerad för sökmotorer.{% elif obj.score_seo >= 50 %}SEO kan förbättras för bättre synlighet i Google.{% else %}Dålig synlighet i Google — du missar potentiella kunder.{% endif %}</div>
@@ -329,133 +361,98 @@
 </div>
 {% endwith %}
 
-{# PRESTANDA / SIDVIKT OCH SVARSTID #}
-{% with perf=r.performance res=r.resources http=r.http psp=r.pagespeed src=obj.scoring.performance_source %}
+{# PRESTANDA #}
+{% with perf=r.performance psp_d=r.pagespeed.desktop %}
 <div class="section">
   <div class="section-header">
-    <span class="title">{{ cats.performance.label }}</span>
-    <span class="score">{% if cats.performance.measured %}{{ obj.score_performance }}/100{% else %}ej mätt{% endif %}</span>
+    <span class="title">Prestanda</span>
+    <span class="score">{{ obj.score_performance|default:"–" }}/100</span>
   </div>
-  <div class="section-summary">{{ cats.performance.measures }}</div>
+  {% if obj.score_performance != None %}
+  <div class="section-summary">{% if obj.score_performance >= 85 %}Sidan laddar snabbt — bra upplevelse för besökarna.{% elif obj.score_performance >= 50 %}Laddningstiden är godkänd men kan förbättras.{% else %}Sidan laddar för långsamt — besökare lämnar innan den hinner ladda.{% endif %}</div>
+  {% endif %}
   <div class="section-body">
-    {% for strategy, d in psp.items %}{% if d.score != None and strategy != 'status' %}
+    {% if psp_d and not psp_d.error %}
     <div class="section-row">
-      {% if d.score >= 90 %}<span class="icon-ok">✓</span>{% elif d.score >= 50 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      {% if psp_d.score >= 90 %}<span class="icon-ok">✓</span>{% elif psp_d.score >= 50 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
       <div>
-        <div class="row-label">PageSpeed ({% if strategy == 'mobile' %}mobil{% else %}dator{% endif %}): {{ d.score }}/100</div>
-        <div class="row-detail">{% if d.lcp_ms %}LCP {{ d.lcp_ms }} ms · {% endif %}{% if d.fcp_ms %}FCP {{ d.fcp_ms }} ms · {% endif %}{% if d.tbt_ms != None %}TBT {{ d.tbt_ms }} ms · {% endif %}{% if d.cls != None %}CLS {{ d.cls }}{% endif %}</div>
-      </div>
-    </div>
-    {% endif %}{% endfor %}
-    {% if psp_status_text %}
-    <div class="section-row">
-      <span class="icon-warn">i</span>
-      <div>
-        <div class="row-label">PageSpeed Insights</div>
-        <div class="row-detail">{{ psp_status_text }}</div>
+        <div class="row-label">Sidhastighet på dator: {{ psp_d.score }}/100</div>
+        <div class="row-detail">
+          {% if psp_d.score >= 90 %}Snabb — besökare ser sidan nästan direkt.
+          {% elif psp_d.score >= 50 %}Godkänd hastighet — men kan förbättras.
+          {% else %}Långsam — besökare kan lämna innan sidan laddats klart.{% endif %}
+        </div>
       </div>
     </div>
     {% endif %}
-    {% if r.seo %}
     <div class="section-row">
-      {% if http.response_time_ms < 500 %}<span class="icon-ok">✓</span>{% elif http.response_time_ms < 2000 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      {% if perf.total_external_resources <= 5 %}<span class="icon-ok">✓</span>{% elif perf.total_external_resources <= 12 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
       <div>
-        <div class="row-label">Svarstid för HTML: {{ http.response_time_ms }} ms</div>
-        <div class="row-detail">Tid för vår server att hämta HTML-dokumentet, inte webbläsarens laddningstid.</div>
+        <div class="row-label">Externa resurser: {{ perf.total_external_resources }} totalt</div>
+        <div class="row-detail">{{ perf.external_css }} CSS · {{ perf.external_js }} JS</div>
       </div>
     </div>
     <div class="section-row">
-      {% if http.html_bytes < 102400 %}<span class="icon-ok">✓</span>{% elif http.html_bytes < 307200 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      {% if perf.images_without_alt == 0 and perf.images_large == 0 %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
       <div>
-        <div class="row-label">HTML-storlek: {{ http.html_bytes|filesizeformat }}</div>
-        <div class="row-detail">Bara HTML-dokumentet (utan bilder, CSS och JS).</div>
+        <div class="row-label">Bilder: {{ perf.images_total }} totalt</div>
+        <div class="row-detail">
+          {% if perf.images_without_alt > 0 %}{{ perf.images_without_alt }} saknar alt-text · {% endif %}
+          {% if perf.images_large > 0 %}{{ perf.images_large }} över 500 KB{% endif %}
+          {% if perf.images_without_alt == 0 and perf.images_large == 0 %}Alla bilder godkända.{% endif %}
+        </div>
       </div>
     </div>
-    <div class="section-row">
-      {% if res.total_files <= 10 %}<span class="icon-ok">✓</span>{% elif res.total_files <= 20 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
-      <div>
-        <div class="row-label">CSS- och JS-filer: {{ res.total_files }} totalt</div>
-        <div class="row-detail">{{ res.css_files }} CSS · {{ res.js_files }} JS · egen domän {{ res.css_same_site }} CSS / {{ res.js_same_site }} JS · tredjepart {{ res.css_third_party }} CSS / {{ res.js_third_party }} JS{% if res.third_party_hosts %} ({{ res.third_party_hosts|join:", " }}){% endif %}</div>
-      </div>
-    </div>
-    <div class="section-row">
-      {% if res.render_blocking_scripts == 0 %}<span class="icon-ok">✓</span>{% elif res.render_blocking_scripts <= 2 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
-      <div>
-        <div class="row-label">Skript som blockerar visningen: {{ res.render_blocking_scripts }}</div>
-        <div class="row-detail">Skript i &lt;head&gt; utan async/defer.</div>
-      </div>
-    </div>
-    <div class="section-row">
-      {% if perf.images_large %}<span class="icon-warn">!</span>{% elif perf.images_checked_for_size %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">–</span>{% endif %}
-      <div>
-        <div class="row-label">Bildernas filstorlek (ingår inte i poängen)</div>
-        <div class="row-detail">{% if perf.images_checked_for_size %}{{ perf.images_checked_for_size }} kontrollerade · {% if perf.images_large %}{{ perf.images_large }} över {{ perf.images_size_limit_kb }} KB{% else %}ingen över {{ perf.images_size_limit_kb }} KB{% endif %}{% elif r.images.total %}Ej mätt — servern angav inte bildernas storlek{% else %}Inga bilder på sidan{% endif %}{% if perf.images_size_unknown %} · {{ perf.images_size_unknown }} med okänd storlek{% endif %}</div>
-      </div>
-    </div>
-    {% endif %}
   </div>
 </div>
 {% endwith %}
 
-{# MOBILANPASSNING (grundkontroll) #}
-{% with mob=r.mobile.checks %}
+{# MOBILANPASSNING #}
+{% with psp_m=r.pagespeed.mobile seo=r.seo %}
 <div class="section">
   <div class="section-header">
-    <span class="title">{{ cats.mobile.label }}</span>
-    <span class="score">{% if cats.mobile.measured %}{{ obj.score_mobile }}/100{% else %}ej mätt{% endif %}</span>
+    <span class="title">Mobilanpassning</span>
+    <span class="score">{{ obj.score_mobile|default:"–" }}/100</span>
   </div>
-  <div class="section-summary">{% if r.mobile.basic_passed %}<strong>Grundkontroll godkänd.</strong> {% endif %}{{ cats.mobile.measures }}</div>
-  {% if mob %}
-  <div class="section-body">
-    <div class="section-row">
-      {% if mob.viewport.status == 'pass' %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
-      <div>
-        <div class="row-label">Viewport</div>
-        <div class="row-detail">{% if mob.viewport.status == 'pass' %}Sidan anpassas efter skärmens bredd (width=device-width).{% elif mob.viewport.found %}Viewport-tagg finns men saknar width=device-width.{% else %}Viewport-tagg saknas.{% endif %}</div>
-      </div>
-    </div>
-    <div class="section-row">
-      {% if mob.zoom.status == 'pass' %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
-      <div>
-        <div class="row-label">Zoomning</div>
-        <div class="row-detail">{% if mob.zoom.status == 'pass' %}Besökare kan zooma sidan.{% else %}Zoomning är blockerad ({{ mob.zoom.blocked_by|join:", " }}).{% endif %}</div>
-      </div>
-    </div>
-    <div class="section-row">
-      {% if mob.media_queries.status == 'pass' %}<span class="icon-ok">✓</span>{% elif mob.media_queries.status == 'fail' %}<span class="icon-fail">✗</span>{% else %}<span class="icon-warn">–</span>{% endif %}
-      <div>
-        <div class="row-label">Responsiv CSS (media queries)</div>
-        <div class="row-detail">{% if mob.media_queries.status == 'pass' %}CSS:en anpassar layouten efter skärmbredd.{% elif mob.media_queries.status == 'fail' %}Inga media queries för skärmbredd i sidans CSS.{% else %}Ej mätt — alla stilmallar gick inte att läsa.{% endif %} ({{ mob.media_queries.stylesheets_read }} av {{ mob.media_queries.stylesheets_total }} stilmallar lästa)</div>
-      </div>
-    </div>
-    <div class="section-row">
-      {% if mob.images_scale.status == 'pass' %}<span class="icon-ok">✓</span>{% elif mob.images_scale.status == 'fail' %}<span class="icon-fail">✗</span>{% else %}<span class="icon-warn">–</span>{% endif %}
-      <div>
-        <div class="row-label">Bilder som skalar</div>
-        <div class="row-detail">{% if mob.images_scale.status == 'pass' %}{% if mob.images_scale.css_max_width_rule %}CSS:en begränsar bildernas bredd (img { max-width }).{% else %}Alla bilder har width/height eller srcset.{% endif %}{% elif mob.images_scale.status == 'fail' %}{{ mob.images_scale.without_size_or_rule }} av {{ mob.images_scale.total }} bilder saknar width/height och srcset, och ingen img { max-width }-regel hittades.{% elif mob.images_scale.status == 'not_applicable' %}Inga bilder på sidan — ingår inte i poängen.{% else %}Ej mätt — alla stilmallar gick inte att läsa.{% endif %}</div>
-      </div>
-    </div>
-    <div class="section-row">
-      <span class="icon-warn">–</span>
-      <div>
-        <div class="row-label">Ej mätt</div>
-        <div class="row-detail">Klickytornas storlek och faktisk textstorlek på mobil — kräver att sidan renderas i en webbläsare. Ingår inte i poängen.</div>
-      </div>
-    </div>
-  </div>
+  {% if obj.score_mobile != None %}
+  <div class="section-summary">{% if obj.score_mobile >= 85 %}Sidan fungerar bra på mobila enheter.{% elif obj.score_mobile >= 50 %}Mobilupplevelsen kan förbättras.{% else %}Dålig mobilupplevelse — du förlorar mer än hälften av dina besökare.{% endif %}</div>
   {% endif %}
+  <div class="section-body">
+    {% if psp_m and not psp_m.error %}
+    <div class="section-row">
+      {% if psp_m.score >= 90 %}<span class="icon-ok">✓</span>{% elif psp_m.score >= 50 %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Sidhastighet på mobil: {{ psp_m.score }}/100</div>
+        <div class="row-detail">
+          {% if psp_m.score >= 90 %}Snabb på mobil — bra upplevelse för besökarna.
+          {% elif psp_m.score >= 50 %}Godkänd mobilhastighet — men kan förbättras.
+          {% else %}Långsam på mobil — besökare lämnar troligtvis sidan.{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="section-row">
+      {% if seo.viewport.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      <div>
+        <div class="row-label">Viewport meta</div>
+        <div class="row-detail">{% if seo.viewport.found %}Responsiv viewport konfigurerad.{% else %}Saknas — sidan skalas fel på mobila enheter.{% endif %}</div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endwith %}
 
 {# SÄKERHETSHEADERS #}
 {% with hdr=r.headers %}
+{% if hdr and hdr.headers %}
 <div class="section">
   <div class="section-header">
-    <span class="title">{{ cats.headers.label }}</span>
-    <span class="score">{% if cats.headers.measured %}{{ obj.score_headers }}/100{% else %}ej mätt{% endif %}</span>
+    <span class="title">Säkerhetsheaders</span>
+    <span class="score">{{ obj.score_headers|default:"–" }}/100</span>
   </div>
-  <div class="section-summary">{% if cats.headers.measured %}{{ hdr.found_count }} av {{ hdr.headers|length }} kontrollerade headers skickas. {% endif %}{{ cats.headers.measures }}</div>
-  {% if hdr.headers %}
+  {% if obj.score_headers != None %}
+  <div class="section-summary">{% if obj.score_headers >= 85 %}Säkerhetsheaders är välkonfigurerade.{% elif obj.score_headers >= 50 %}Några säkerhetsheaders saknas — värt att åtgärda.{% else %}Många säkerhetsheaders saknas — sidan är mer sårbar för attacker.{% endif %}</div>
+  {% endif %}
   <div class="section-body">
     {% for h in hdr.headers %}
     <div class="section-row">
@@ -467,20 +464,21 @@
     </div>
     {% endfor %}
   </div>
-  {% endif %}
 </div>
+{% endif %}
 {% endwith %}
 
 {# TILLGÄNGLIGHET #}
 {% with a11y=r.accessibility %}
 {% if a11y %}
-{% with lm=a11y.landmarks hd=a11y.headings img=a11y.images %}
 <div class="section">
   <div class="section-header">
-    <span class="title">{{ cats.accessibility.label }}</span>
-    <span class="score">{% if cats.accessibility.measured %}{{ obj.score_accessibility }}/100{% else %}ej mätt{% endif %}</span>
+    <span class="title">Tillgänglighet</span>
+    <span class="score">{{ obj.score_accessibility|default:"–" }}/100</span>
   </div>
-  <div class="section-summary">{{ cats.accessibility.measures }}</div>
+  {% if obj.score_accessibility != None %}
+  <div class="section-summary">{% if obj.score_accessibility >= 85 %}Sidan är tillgänglig för alla användare.{% elif obj.score_accessibility >= 50 %}Tillgängligheten kan förbättras.{% else %}Sidan är svår att använda för personer med funktionsnedsättning.{% endif %}</div>
+  {% endif %}
   <div class="section-body">
     <div class="section-row">
       {% if a11y.lang.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
@@ -490,31 +488,17 @@
       </div>
     </div>
     <div class="section-row">
-      {% if lm.has_main and lm.count > 1 %}<span class="icon-ok">✓</span>{% elif lm.count %}<span class="icon-warn">!</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
+      {% if a11y.landmarks.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
       <div>
-        <div class="row-label">Sidans regioner (landmärken)</div>
-        <div class="row-detail">{% if lm.count %}Hittade: {% for name, how in lm.via.items %}{{ how }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if not lm.has_main %} · huvudinnehållet saknar &lt;main&gt;/role="main"{% endif %}{% else %}Inga hittades — varken &lt;main&gt;, &lt;nav&gt;, &lt;header&gt;, &lt;footer&gt; eller motsvarande role-attribut.{% endif %}</div>
+        <div class="row-label">Landmärken</div>
+        <div class="row-detail">{% if a11y.landmarks.found %}{{ a11y.landmarks.count }} hittade: {% for t in a11y.landmarks.tags %}&lt;{{ t }}&gt;{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Inga semantiska landmärkeselement hittades.{% endif %}</div>
       </div>
     </div>
     <div class="section-row">
-      {% if hd.h1_count >= 1 and not hd.skipped_levels and hd.empty_count == 0 %}<span class="icon-ok">✓</span>{% elif hd.h1_count == 0 %}<span class="icon-fail">✗</span>{% else %}<span class="icon-warn">!</span>{% endif %}
-      <div>
-        <div class="row-label">Rubrikstruktur</div>
-        <div class="row-detail">{{ hd.count }} rubriker · {% if hd.h1_count == 0 %}ingen H1{% else %}{{ hd.h1_count }} H1{% endif %}{% if hd.skipped_levels %} · hoppar över nivåer: {{ hd.skipped_levels|join:", " }}{% endif %}{% if hd.empty_count %} · {{ hd.empty_count }} tomma{% endif %}</div>
-      </div>
-    </div>
-    <div class="section-row">
-      {% if a11y.skip_nav.found %}<span class="icon-ok">✓</span>{% else %}<span class="icon-warn">!</span>{% endif %}
-      <div>
-        <div class="row-label">Skip-länk</div>
-        <div class="row-detail">{% if a11y.skip_nav.found %}"{{ a11y.skip_nav.text }}" → {{ a11y.skip_nav.href }}{% else %}Saknas bland de första länkarna.{% endif %}</div>
-      </div>
-    </div>
-    <div class="section-row">
-      {% if img.missing_alt %}<span class="icon-fail">✗</span>{% elif img.decorative %}<span class="icon-warn">i</span>{% else %}<span class="icon-ok">✓</span>{% endif %}
+      {% if a11y.images_without_alt.count == 0 %}<span class="icon-ok">✓</span>{% else %}<span class="icon-fail">✗</span>{% endif %}
       <div>
         <div class="row-label">Alt-texter på bilder</div>
-        <div class="row-detail">{% if img.total %}{{ img.total }} bilder: {{ img.with_alt }} med alt-text · {{ img.decorative }} markerade som dekorativa (alt="") · {{ img.missing_alt }} saknar alt-attribut.{% if img.decorative %} Kontrollera att de dekorativa bilderna verkligen saknar innehåll.{% endif %}{% else %}Inga bilder på sidan.{% endif %}</div>
+        <div class="row-detail">{{ a11y.images_without_alt.total }} bilder totalt · {% if a11y.images_without_alt.count > 0 %}{{ a11y.images_without_alt.count }} saknar alt-attribut.{% else %}alla har alt-text.{% endif %}</div>
       </div>
     </div>
     <div class="section-row">
@@ -526,7 +510,6 @@
     </div>
   </div>
 </div>
-{% endwith %}
 {% endif %}
 {% endwith %}
 
@@ -536,7 +519,7 @@
 <div class="grade-a-section">
   <div class="grade-a-header">
     <span class="title">Vägen till betyg A</span>
-    <span class="grade-a-header score">Ditt mål: 85+/100 &nbsp;·&nbsp; Nu: {{ obj.score_overall|default_if_none:"–" }}/100</span>
+    <span class="grade-a-header score">Ditt mål: 85+/100 &nbsp;·&nbsp; Nu: {{ obj.score_overall }}/100</span>
   </div>
   <div class="grade-a-body">
 
@@ -551,19 +534,84 @@
           <th style="font-size:7.5pt;text-transform:uppercase;color:#aaa;font-weight:600;padding:1.5mm 0;text-align:right;width:12mm;">Nu</th>
           <th style="font-size:7.5pt;text-transform:uppercase;color:#aaa;font-weight:600;padding:1.5mm 0;text-align:right;width:12mm;">Mål</th>
         </tr>
-        {% for c in categories %}{% if c.measured %}
+        {% if obj.score_security != None %}
         <tr style="border-top:1px solid #f0f0f0;">
-          <td style="font-size:8.5pt;padding:2mm 0;">{{ c.label }}</td>
+          <td style="font-size:8.5pt;padding:2mm 0;">Säkerhet</td>
           <td style="padding:2mm 0;">
             <div style="background:#f0f0f0;border-radius:3pt;height:6pt;position:relative;">
-              <div style="width:{{ c.score }}%;background:{{ c.color }};height:6pt;border-radius:3pt;"></div>
+              <div style="width:{{ obj.score_security|default:0 }}%;background:#ffc107;height:6pt;border-radius:3pt;"></div>
               <div style="position:absolute;top:0;left:85%;width:1px;height:6pt;background:#aaa;"></div>
             </div>
           </td>
-          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;font-weight:700;{% if c.score >= 85 %}color:#198754;{% elif c.score >= 50 %}color:#e6a817;{% else %}color:#dc3545;{% endif %}">{{ c.score }}</td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;font-weight:700;{% if obj.score_security >= 85 %}color:#198754;{% elif obj.score_security >= 50 %}color:#e6a817;{% else %}color:#dc3545;{% endif %}">{{ obj.score_security|default:"–" }}</td>
           <td style="font-size:8.5pt;padding:2mm 0;text-align:right;color:#aaa;">85</td>
         </tr>
-        {% endif %}{% endfor %}
+        {% endif %}
+        {% if obj.score_seo != None %}
+        <tr style="border-top:1px solid #f0f0f0;">
+          <td style="font-size:8.5pt;padding:2mm 0;">SEO</td>
+          <td style="padding:2mm 0;">
+            <div style="background:#f0f0f0;border-radius:3pt;height:6pt;position:relative;">
+              <div style="width:{{ obj.score_seo|default:0 }}%;background:#6f42c1;height:6pt;border-radius:3pt;"></div>
+              <div style="position:absolute;top:0;left:85%;width:1px;height:6pt;background:#aaa;"></div>
+            </div>
+          </td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;font-weight:700;{% if obj.score_seo >= 85 %}color:#198754;{% elif obj.score_seo >= 50 %}color:#e6a817;{% else %}color:#dc3545;{% endif %}">{{ obj.score_seo|default:"–" }}</td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;color:#aaa;">85</td>
+        </tr>
+        {% endif %}
+        {% if obj.score_performance != None %}
+        <tr style="border-top:1px solid #f0f0f0;">
+          <td style="font-size:8.5pt;padding:2mm 0;">Prestanda</td>
+          <td style="padding:2mm 0;">
+            <div style="background:#f0f0f0;border-radius:3pt;height:6pt;position:relative;">
+              <div style="width:{{ obj.score_performance|default:0 }}%;background:#0d6efd;height:6pt;border-radius:3pt;"></div>
+              <div style="position:absolute;top:0;left:85%;width:1px;height:6pt;background:#aaa;"></div>
+            </div>
+          </td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;font-weight:700;{% if obj.score_performance >= 85 %}color:#198754;{% elif obj.score_performance >= 50 %}color:#e6a817;{% else %}color:#dc3545;{% endif %}">{{ obj.score_performance|default:"–" }}</td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;color:#aaa;">85</td>
+        </tr>
+        {% endif %}
+        {% if obj.score_mobile != None %}
+        <tr style="border-top:1px solid #f0f0f0;">
+          <td style="font-size:8.5pt;padding:2mm 0;">Mobilanpassning</td>
+          <td style="padding:2mm 0;">
+            <div style="background:#f0f0f0;border-radius:3pt;height:6pt;position:relative;">
+              <div style="width:{{ obj.score_mobile|default:0 }}%;background:#20c997;height:6pt;border-radius:3pt;"></div>
+              <div style="position:absolute;top:0;left:85%;width:1px;height:6pt;background:#aaa;"></div>
+            </div>
+          </td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;font-weight:700;{% if obj.score_mobile >= 85 %}color:#198754;{% elif obj.score_mobile >= 50 %}color:#e6a817;{% else %}color:#dc3545;{% endif %}">{{ obj.score_mobile|default:"–" }}</td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;color:#aaa;">85</td>
+        </tr>
+        {% endif %}
+        {% if obj.score_headers != None %}
+        <tr style="border-top:1px solid #f0f0f0;">
+          <td style="font-size:8.5pt;padding:2mm 0;">Säkerhetsheaders</td>
+          <td style="padding:2mm 0;">
+            <div style="background:#f0f0f0;border-radius:3pt;height:6pt;position:relative;">
+              <div style="width:{{ obj.score_headers|default:0 }}%;background:#fd7e14;height:6pt;border-radius:3pt;"></div>
+              <div style="position:absolute;top:0;left:85%;width:1px;height:6pt;background:#aaa;"></div>
+            </div>
+          </td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;font-weight:700;{% if obj.score_headers >= 85 %}color:#198754;{% elif obj.score_headers >= 50 %}color:#e6a817;{% else %}color:#dc3545;{% endif %}">{{ obj.score_headers|default:"–" }}</td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;color:#aaa;">85</td>
+        </tr>
+        {% endif %}
+        {% if obj.score_accessibility != None %}
+        <tr style="border-top:1px solid #f0f0f0;">
+          <td style="font-size:8.5pt;padding:2mm 0;">Tillgänglighet</td>
+          <td style="padding:2mm 0;">
+            <div style="background:#f0f0f0;border-radius:3pt;height:6pt;position:relative;">
+              <div style="width:{{ obj.score_accessibility|default:0 }}%;background:#0dcaf0;height:6pt;border-radius:3pt;"></div>
+              <div style="position:absolute;top:0;left:85%;width:1px;height:6pt;background:#aaa;"></div>
+            </div>
+          </td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;font-weight:700;{% if obj.score_accessibility >= 85 %}color:#198754;{% elif obj.score_accessibility >= 50 %}color:#e6a817;{% else %}color:#dc3545;{% endif %}">{{ obj.score_accessibility|default:"–" }}</td>
+          <td style="font-size:8.5pt;padding:2mm 0;text-align:right;color:#aaa;">85</td>
+        </tr>
+        {% endif %}
       </table>
     </div>
 

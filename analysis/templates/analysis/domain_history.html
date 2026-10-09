@@ -66,7 +66,7 @@
               <th class="px-4 py-3 fw-semibold">Datum</th>
               <th class="px-4 py-3 fw-semibold text-center">Betyg</th>
               <th class="px-4 py-3 fw-semibold text-end">Totalt</th>
-              <th class="px-4 py-3 fw-semibold text-end">Säkerhet</th>
+              <th class="px-4 py-3 fw-semibold text-end">HTTPS</th>
               <th class="px-4 py-3 fw-semibold text-end">SEO</th>
               <th class="px-4 py-3 fw-semibold text-end">Prestanda</th>
               <th class="px-4 py-3 fw-semibold text-end">Mobil</th>
@@ -78,17 +78,20 @@
           <tbody>
             {% for a in analyses reversed %}
             <tr class="history-row" style="border-bottom:1px solid rgba(255,255,255,.05);">
-              <td class="px-4 py-3 text-secondary">{{ a.completed_at|date:"Y-m-d H:i" }}</td>
+              <td class="px-4 py-3 text-secondary">
+                {{ a.completed_at|date:"Y-m-d H:i" }}
+                {% if a.is_legacy %}<br><span class="badge bg-secondary" style="font-size:.65rem;" title="Poängen räknades på ett annat sätt och är inte direkt jämförbar med nyare analyser">äldre version</span>{% endif %}
+              </td>
               <td class="px-4 py-3 text-center">
                 <span class="grade-badge bg-{{ a.grade_color }} text-dark">{{ a.grade }}</span>
               </td>
-              <td class="px-4 py-3 text-end text-light fw-bold">{{ a.score_overall|default:"–" }}</td>
-              <td class="px-4 py-3 text-end text-secondary">{{ a.score_security|default:"–" }}</td>
-              <td class="px-4 py-3 text-end text-secondary">{{ a.score_seo|default:"–" }}</td>
-              <td class="px-4 py-3 text-end text-secondary">{{ a.score_performance|default:"–" }}</td>
-              <td class="px-4 py-3 text-end text-secondary">{{ a.score_mobile|default:"–" }}</td>
-              <td class="px-4 py-3 text-end text-secondary">{{ a.score_headers|default:"–" }}</td>
-              <td class="px-4 py-3 text-end text-secondary">{{ a.score_accessibility|default:"–" }}</td>
+              <td class="px-4 py-3 text-end text-light fw-bold">{{ a.score_overall|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ a.score_security|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ a.score_seo|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ a.score_performance|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ a.score_mobile|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ a.score_headers|default_if_none:"–" }}</td>
+              <td class="px-4 py-3 text-end text-secondary">{{ a.score_accessibility|default_if_none:"–" }}</td>
               <td class="px-4 py-3">
                 <a href="{% url 'analysis_result' a.id %}" class="text-secondary text-decoration-none small">
                   <i class="fas fa-external-link-alt"></i>
@@ -100,6 +103,10 @@
         </table>
       </div>
     </div>
+
+    <p class="text-secondary mt-2 mb-0" style="font-size:.75rem;">
+      – = ej mätt. Analyser märkta <em>äldre version</em> räknades med en tidigare version av analysverktyget och är inte direkt jämförbara med nyare.
+    </p>
 
     {% endif %}
 
@@ -118,7 +125,7 @@
 
   const datasets = [
     { label: 'Totalt',      data: {{ chart_overall|safe }},       borderColor: '#D4A356', backgroundColor: 'rgba(212,163,86,.1)',  tension: .3, pointRadius: 4 },
-    { label: 'Säkerhet',   data: {{ chart_security|safe }},      borderColor: '#ffc107', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
+    { label: 'HTTPS',      data: {{ chart_security|safe }},      borderColor: '#ffc107', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
     { label: 'SEO',         data: {{ chart_seo|safe }},           borderColor: '#6f42c1', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
     { label: 'Prestanda',  data: {{ chart_performance|safe }},   borderColor: '#0d6efd', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },
     { label: 'Mobil',       data: {{ chart_mobile|safe }},        borderColor: '#20c997', backgroundColor: 'transparent', tension: .3, pointRadius: 3 },

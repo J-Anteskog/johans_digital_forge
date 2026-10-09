@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import timedelta
 
@@ -5,17 +6,29 @@ from django.core import signing
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.views.decorators.http import require_POST
 
 from .email import send_report_email
 from .forms import AnalysisForm
 from .models import SiteAnalysis
+from .report import build_categories, pagespeed_status_text
+from .scoring import ANALYZER_VERSION
 from .tasks import start_analysis
 
 # A/B-testbar copy för opt-in-formuläret
 _OPT_IN_HEADING = 'Få en handlingsplan i din inkorg'
 _OPT_IN_SUBTEXT = 'Vi skickar rapporten som PDF plus konkreta förslag på vad du bör fixa först, andra och tredje.'
 _OPT_IN_BUTTON  = 'Skicka rapporten'
+
+# Steg på väntesidan – nycklarna motsvarar tasks.PHASES
+_PENDING_STEPS = [
+    ('fetch', 'Hämtar sidan, HTTPS och certifikat', 'Fetching the page, HTTPS and certificate'),
+    ('checks', 'SEO, mobil och tillgänglighet', 'SEO, mobile and accessibility'),
+    ('crawl', 'Undersidor', 'Subpages'),
+    ('pagespeed', 'Google PageSpeed (upp till 60 s)', 'Google PageSpeed (up to 60 s)'),
+    ('scoring', 'Poäng och rapport', 'Scores and report'),
+]
 
 _RATE_LIMIT = 30      # analyser per IP per timme
 _CACHE_HOURS = 24     # återanvänd resultat om nyare än så
@@ -79,6 +92,7 @@ def _analysis_view(request, language):
                 url=url,
                 created_at__gte=cutoff,
                 status='complete',
+                analyzer_version=ANALYZER_VERSION,   # återanvänd aldrig rapporter från äldre version
             ).order_by('-created_at').first()
             if cached:
                 return redirect('analysis_result', token=cached.id)
@@ -87,6 +101,7 @@ def _analysis_view(request, language):
                 url=url,
                 requester_ip=ip,
                 language=language,
+                analyzer_version=ANALYZER_VERSION,
             )
             start_analysis(str(obj.id))
             return redirect('analysis_result', token=obj.id)
@@ -119,16 +134,32 @@ def analysis_form_en(request):
 def analysis_result(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token)
     if obj.status in ('pending', 'running'):
-        return render(request, 'analysis/pending.html', {'obj': obj})
+        return render(request, 'analysis/pending.html', {'obj': obj, 'steps': _PENDING_STEPS})
+    if obj.status == 'error' and set(obj.results or {}) == {'progress'}:
+        obj.results = None   # avbruten mitt i (t.ex. omstart) – visa felsidan, inte en tom rapport
     if obj.status == 'complete' and not obj.email_submitted and not obj.email_form_shown:
         SiteAnalysis.objects.filter(pk=obj.pk).update(email_form_shown=True)
         obj.email_form_shown = True
-    return render(request, 'analysis/result.html', {
+    template = 'analysis/result_v1.html' if obj.is_legacy else 'analysis/result.html'
+    return render(request, template, {
         'obj': obj,
         'opt_in_heading': _OPT_IN_HEADING,
         'opt_in_subtext': _OPT_IN_SUBTEXT,
         'opt_in_button': _OPT_IN_BUTTON,
+        **_report_context(obj),
     })
+
+
+def _report_context(obj):
+    """Gemensam kontext för v2-mallarna (webb + PDF). Tom för äldre rapporter."""
+    if obj.is_legacy:
+        return {}
+    categories = build_categories(obj)
+    return {
+        'categories': categories,
+        'cats': {c['key']: c for c in categories},
+        'psp_status_text': pagespeed_status_text(obj.results, obj.language),
+    }
 
 
 @require_POST
@@ -158,6 +189,13 @@ def send_report(request, token):
 def analysis_status_json(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token)
     payload = {'status': obj.status, 'done': obj.is_done}
+    if obj.status == 'running':
+        progress = (obj.results or {}).get('progress') or {}
+        if progress.get('phase'):
+            payload['phase'] = progress['phase']
+            started = parse_datetime(progress.get('started') or '')
+            if started:
+                payload['phase_seconds'] = max(0, int((timezone.now() - started).total_seconds()))
     if obj.status == 'error' and obj.error_message:
         payload['error_message'] = obj.error_message
     return JsonResponse(payload)
@@ -178,34 +216,37 @@ def domain_history(request, domain):
     chart_headers = []
     chart_accessibility = []
 
+    # None (ej mätt) blir null i JSON → glapp i grafen i stället för en påhittad nolla
     for a in analyses:
         label = a.completed_at.strftime('%Y-%m-%d') if a.completed_at else str(a.created_at.date())
         chart_labels.append(label)
-        chart_overall.append(a.score_overall or 0)
-        chart_security.append(a.score_security or 0)
-        chart_seo.append(a.score_seo or 0)
-        chart_performance.append(a.score_performance or 0)
-        chart_mobile.append(a.score_mobile or 0)
-        chart_headers.append(a.score_headers or 0)
-        chart_accessibility.append(a.score_accessibility or 0)
+        chart_overall.append(a.score_overall)
+        chart_security.append(a.score_security)
+        chart_seo.append(a.score_seo)
+        chart_performance.append(a.score_performance)
+        chart_mobile.append(a.score_mobile)
+        chart_headers.append(a.score_headers)
+        chart_accessibility.append(a.score_accessibility)
 
     return render(request, 'analysis/domain_history.html', {
         'domain': domain,
         'analyses': analyses,
-        'chart_labels': chart_labels,
-        'chart_overall': chart_overall,
-        'chart_security': chart_security,
-        'chart_seo': chart_seo,
-        'chart_performance': chart_performance,
-        'chart_mobile': chart_mobile,
-        'chart_headers': chart_headers,
-        'chart_accessibility': chart_accessibility,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_overall': json.dumps(chart_overall),
+        'chart_security': json.dumps(chart_security),
+        'chart_seo': json.dumps(chart_seo),
+        'chart_performance': json.dumps(chart_performance),
+        'chart_mobile': json.dumps(chart_mobile),
+        'chart_headers': json.dumps(chart_headers),
+        'chart_accessibility': json.dumps(chart_accessibility),
     })
 
 
 def analysis_pdf(request, token):
     obj = get_object_or_404(SiteAnalysis, pk=token, status='complete')
-    return render(request, 'analysis/report_pdf.html', {
+    template = 'analysis/report_pdf_v1.html' if obj.is_legacy else 'analysis/report_pdf.html'
+    return render(request, template, {
         'obj': obj,
         'r': obj.results or {},
+        **_report_context(obj),
     })

@@ -40,30 +40,12 @@
           <td style="padding:10px 16px;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;font-weight:600;">Kategori</td>
           <td style="padding:10px 16px;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;font-weight:600;text-align:right;">Poäng</td>
         </tr>
-        <tr style="border-bottom:1px solid #eee;">
-          <td style="padding:8px 16px;font-size:13px;color:#333;">🔒 Säkerhet</td>
-          <td style="padding:8px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_security|default:"–" }}</td>
+        {% for c in categories %}
+        <tr{% if not forloop.last %} style="border-bottom:1px solid #eee;"{% endif %}>
+          <td style="padding:8px 16px;font-size:13px;color:#333;">{{ c.label }}</td>
+          <td style="padding:8px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;">{% if c.measured %}{{ c.score }}{% else %}<span style="font-weight:400;color:#888;">ej mätt</span>{% endif %}</td>
         </tr>
-        <tr style="border-bottom:1px solid #eee;">
-          <td style="padding:8px 16px;font-size:13px;color:#333;">🔍 SEO</td>
-          <td style="padding:8px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_seo|default:"–" }}</td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee;">
-          <td style="padding:8px 16px;font-size:13px;color:#333;">⚡ Prestanda</td>
-          <td style="padding:8px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_performance|default:"–" }}</td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee;">
-          <td style="padding:8px 16px;font-size:13px;color:#333;">📱 Mobilanpassning</td>
-          <td style="padding:8px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_mobile|default:"–" }}</td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee;">
-          <td style="padding:8px 16px;font-size:13px;color:#333;">🔐 Säkerhetsheaders</td>
-          <td style="padding:8px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_headers|default:"–" }}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 16px;font-size:13px;color:#333;">♿ Tillgänglighet</td>
-          <td style="padding:8px 16px;font-size:13px;font-weight:700;color:#1a1a2e;text-align:right;">{{ obj.score_accessibility|default:"–" }}</td>
-        </tr>
+        {% endfor %}
       </table>
     </td>
   </tr>

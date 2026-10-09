@@ -1,5 +1,7 @@
 from django.urls import reverse
 
+from .report import build_categories
+
 
 def build_brief_initial_from_analysis(analysis) -> dict:
     """
@@ -29,12 +31,11 @@ def build_brief_initial_from_analysis(analysis) -> dict:
     lines = [
         f'Kommer från webbplatsanalys av {analysis.url}.',
         f'Övergripande betyg: {analysis.grade} ({analysis.score_overall}/100).',
-        (
-            f'Säkerhet: {analysis.score_security}/100, '
-            f'SEO: {analysis.score_seo}/100, '
-            f'Prestanda: {analysis.score_performance}/100, '
-            f'Mobil: {analysis.score_mobile}/100.'
-        ),
+        ', '.join(
+            f"{c['label']}: {c['score']}/100" if c['measured'] else f"{c['label']}: ej mätt"
+            for c in build_categories(analysis)
+            if c['key'] in ('security', 'seo', 'performance', 'mobile')
+        ) + '.',
         report_line,
     ]
     analysis_summary = '\n'.join(line for line in lines if line)

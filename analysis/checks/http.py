@@ -1,56 +1,50 @@
 import ssl
 import socket
-import time
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
-import requests
 from django.core.exceptions import ValidationError
 
-from ..net import BlockedAddressError, safe_request
+from ..net import fetch_limited
 from ..validators import resolve_public_ips
 
-_UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
-_TIMEOUT = 15
+_TIMEOUT = (5, 15)
+MAX_HTML_BYTES = 2_000_000  # 2 MB
 
 
-def check_http(url: str) -> dict:
-    """HTTP-status, redirect-kedja och svarstid."""
+def fetch_page(url: str, session=None):
+    """
+    Hämtar sidan EN gång (med SSRF-skydd och storleksgräns).
+    Returnerar FetchResult; check_http(), säkerhetsheaders och HTML-parsningen
+    använder alla samma svar.
+    """
+    return fetch_limited(url, max_bytes=MAX_HTML_BYTES, timeout=_TIMEOUT,
+                         session=session, fail_on_too_large=True)
+
+
+def check_http(page) -> dict:
+    """HTTP-status, redirect-kedja och svarstid utifrån ett FetchResult."""
     result = {
         'ok': False,
-        'status_code': None,
-        'final_url': url,
-        'redirect_chain': [],
-        'redirect_count': 0,
+        'status_code': page.status_code,
+        'final_url': page.final_url or page.url,
+        'redirect_chain': page.redirect_chain,
+        'redirect_count': max(0, len(page.redirect_chain) - 1),
+        # Tid tills hela HTML-dokumentet hämtats från vår server (ej webbläsarens laddningstid)
         'response_time_ms': None,
-        'is_https': False,
+        'ttfb_ms': page.ttfb_ms,
+        'html_bytes': len(page.content) if page.content else None,
+        'is_https': (page.final_url or page.url).startswith('https://'),
         'error': None,
     }
-    try:
-        start = time.monotonic()
-        # safe_request följer omdirigeringar själv och validerar varje steg + IP
-        resp = safe_request('GET', url, timeout=_TIMEOUT)
-        elapsed = int((time.monotonic() - start) * 1000)
-        chain = [r.url for r in resp.history] + [resp.url]
-        result.update({
-            'ok': resp.status_code < 400,
-            'status_code': resp.status_code,
-            'final_url': resp.url,
-            'redirect_chain': chain,
-            'redirect_count': len(resp.history),
-            'response_time_ms': elapsed,
-            'is_https': resp.url.startswith('https://'),
-        })
-    except BlockedAddressError as e:
-        result['error'] = str(e)
-    except requests.exceptions.SSLError as e:
-        result['error'] = f'SSL-fel: {e}'
-    except requests.exceptions.ConnectionError as e:
-        result['error'] = f'Anslutningsfel: {e}'
-    except requests.exceptions.Timeout:
-        result['error'] = f'Timeout efter {_TIMEOUT}s'
-    except Exception as e:
-        result['error'] = str(e)
+    if page.status_code is not None:
+        result['ok'] = page.status_code < 400
+        result['response_time_ms'] = page.total_ms
+    if page.error:
+        result['error'] = page.error
+        result['error_kind'] = page.error_kind
+        if page.error_kind != 'too_large':
+            result['response_time_ms'] = None
     return result
 
 

@@ -34,6 +34,10 @@ class SiteAnalysis(models.Model):
 
     error_message = models.TextField(blank=True)
 
+    # Version av analysverktyget som skapade rapporten. Rapporter från före
+    # v2 (2026-10) har 1 och visas med de gamla mallarna + en tydlig banner.
+    analyzer_version = models.PositiveSmallIntegerField(default=1)
+
     # E-post (fylls antingen i formuläret eller via post-resultat opt-in)
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=30, blank=True)
@@ -87,6 +91,16 @@ class SiteAnalysis(models.Model):
     def grade_color(self):
         """Bootstrap-färgklass för betyget."""
         return {'A': 'success', 'B': 'info', 'C': 'warning', 'D': 'danger'}.get(self.grade, 'secondary')
+
+    @property
+    def is_legacy(self):
+        """True för rapporter skapade med en äldre version av analysverktyget."""
+        from .scoring import ANALYZER_VERSION
+        return self.analyzer_version < ANALYZER_VERSION
+
+    @property
+    def scoring(self):
+        return (self.results or {}).get('scoring') or {}
 
     @property
     def is_done(self):

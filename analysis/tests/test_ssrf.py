@@ -13,6 +13,8 @@ from django.test import SimpleTestCase
 
 from analysis import net
 from analysis.checks.http import check_ssl
+from analysis.checks.mobile import _read_css
+from analysis.checks.page_facts import analyze_resources
 from analysis.checks.performance import check_performance
 from analysis.net import BlockedAddressError, fetch_limited, safe_request
 from analysis.validators import check_ip_allowed, resolve_public_ips
@@ -73,7 +75,17 @@ class ConnectTimeCheckTests(NoNetworkMixin, SimpleTestCase):
         soup.body.append(soup.new_tag('img', src='http://169.254.169.254/latest/meta-data/'))
         with patch('analysis.validators.socket.getaddrinfo', return_value=addrinfo('10.0.0.5')):
             perf = check_performance('https://example.com/', soup)
-        self.assertEqual(perf['images_checked_for_size'], 0)   # alla bild-URL:er pekar på intern IP
+        self.assertEqual(perf['images_blocked'], 9)       # alla 9 bild-URL:er pekar på intern IP
+        self.assertEqual(perf['images_checked_for_size'], 0)
+        self.assertNoNetwork()
+
+    def test_css_urls_are_validated(self):
+        soup = soup_from('resources_mixed.html')
+        resources = analyze_resources(soup, 'https://intranet.example/')
+        with patch('analysis.validators.socket.getaddrinfo', return_value=addrinfo('192.168.1.10')):
+            css, read, total = _read_css(soup, resources, None)
+        self.assertEqual(read, 0)
+        self.assertGreater(total, 0)
         self.assertNoNetwork()
 
     def test_ssl_check_validates_ip(self):

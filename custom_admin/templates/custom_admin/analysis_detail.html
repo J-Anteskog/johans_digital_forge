@@ -32,6 +32,7 @@
             <div class="col-md-6"><strong>Prestanda:</strong> {% if analysis.score_performance is not None %}{{ analysis.score_performance }}/100{% else %}-{% endif %}</div>
             <div class="col-md-6"><strong>Mobil:</strong> {% if analysis.score_mobile is not None %}{{ analysis.score_mobile }}/100{% else %}-{% endif %}</div>
             <div class="col-md-6"><strong>SEO:</strong> {% if analysis.score_seo is not None %}{{ analysis.score_seo }}/100{% else %}-{% endif %}</div>
+            <div class="col-md-6"><strong>Analysversion:</strong> v{{ analysis.analyzer_version }}{% if analysis.is_legacy %} (äldre){% endif %}</div>
             <div class="col-md-6"><strong>Sakerhet:</strong> {% if analysis.score_security is not None %}{{ analysis.score_security }}/100{% else %}-{% endif %}</div>
           </div>
         </div>

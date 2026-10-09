@@ -1,56 +1,90 @@
+from concurrent.futures import ThreadPoolExecutor
+
 import requests
 from django.conf import settings
 
 _API_URL = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
-_TIMEOUT = 30
+_TIMEOUT = 60
+_STRATEGIES = ('mobile', 'desktop')
 
 
-def check_pagespeed(url: str) -> dict | None:
+def check_pagespeed(url: str) -> dict:
     """
-    Anropar PageSpeed Insights API för desktop + mobile.
-    Returnerar None om PAGESPEED_API_KEY inte är konfigurerad.
+    Anropar PageSpeed Insights API för mobil + dator (parallellt).
+    Körs i bakgrundsjobbet (tasks.run_analysis), aldrig i en webbförfrågan.
+
+    Returnerar alltid ett dict med 'status':
+      'not_configured' – PAGESPEED_API_KEY saknas
+      'ok'             – båda strategierna gav poäng
+      'partial'        – en av två gav poäng
+      'failed'         – ingen gav poäng (se error_kind/http_status per strategi)
     Gratis-tier: 25 000 anrop/dag (2 per analys → 12 500 analyser/dag).
     """
     api_key = getattr(settings, 'PAGESPEED_API_KEY', '')
     if not api_key:
-        return None
+        return {'status': 'not_configured'}
 
-    results = {}
-    for strategy in ('desktop', 'mobile'):
+    with ThreadPoolExecutor(max_workers=len(_STRATEGIES)) as ex:
+        futures = {s: ex.submit(_run_strategy, url, s, api_key) for s in _STRATEGIES}
+        results = {s: f.result() for s, f in futures.items()}
+
+    ok = [s for s in _STRATEGIES if results[s].get('score') is not None]
+    if len(ok) == len(_STRATEGIES):
+        status = 'ok'
+    elif ok:
+        status = 'partial'
+    else:
+        status = 'failed'
+    return {'status': status, **results}
+
+
+def _run_strategy(url: str, strategy: str, api_key: str) -> dict:
+    try:
+        resp = requests.get(
+            _API_URL,
+            params={'url': url, 'strategy': strategy, 'key': api_key, 'category': 'performance'},
+            timeout=_TIMEOUT,
+        )
+    except requests.exceptions.Timeout:
+        return {'error_kind': 'timeout', 'timeout_s': _TIMEOUT}
+    except requests.exceptions.RequestException as e:
+        # Felmeddelandet kan innehålla anrops-URL:en med API-nyckeln – spara bara typen
+        return {'error_kind': 'error', 'error': type(e).__name__}
+
+    if resp.status_code != 200:
+        reason = ''
         try:
-            resp = requests.get(
-                _API_URL,
-                params={'url': url, 'strategy': strategy, 'key': api_key},
-                timeout=_TIMEOUT,
-            )
-            if resp.status_code != 200:
-                results[strategy] = {'error': f'HTTP {resp.status_code}'}
-                continue
+            # Googles 'status' (t.ex. PERMISSION_DENIED) – inte 'message', som kan
+            # innehålla serverns IP-adress
+            reason = resp.json().get('error', {}).get('status', '')
+        except ValueError:
+            pass
+        return {'error_kind': 'http', 'http_status': resp.status_code, 'reason': reason[:60]}
 
-            data = resp.json()
-            cats   = data.get('lighthouseResult', {}).get('categories', {})
-            audits = data.get('lighthouseResult', {}).get('audits', {})
+    try:
+        data = resp.json()
+    except ValueError:
+        return {'error_kind': 'error', 'error': 'Ogiltigt svar från PageSpeed'}
+    cats = data.get('lighthouseResult', {}).get('categories', {})
+    audits = data.get('lighthouseResult', {}).get('audits', {})
 
-            raw_score = cats.get('performance', {}).get('score')
-            perf_score = int(raw_score * 100) if raw_score is not None else None
+    raw_score = cats.get('performance', {}).get('score')
+    if raw_score is None:
+        return {'error_kind': 'error', 'error': 'PageSpeed returnerade ingen poäng'}
 
-            def _ms(key):
-                v = audits.get(key, {}).get('numericValue')
-                return round(v) if v is not None else None
+    def _ms(key):
+        v = audits.get(key, {}).get('numericValue')
+        return round(v) if v is not None else None
 
-            def _float(key, decimals=3):
-                v = audits.get(key, {}).get('numericValue')
-                return round(v, decimals) if v is not None else None
+    def _float(key, decimals=3):
+        v = audits.get(key, {}).get('numericValue')
+        return round(v, decimals) if v is not None else None
 
-            results[strategy] = {
-                'score':  perf_score,
-                'lcp_ms': _ms('largest-contentful-paint'),
-                'cls':    _float('cumulative-layout-shift'),
-                'inp_ms': _ms('interaction-to-next-paint'),
-                'fcp_ms': _ms('first-contentful-paint'),
-                'tbt_ms': _ms('total-blocking-time'),
-            }
-        except Exception as e:
-            results[strategy] = {'error': str(e)}
-
-    return results or None
+    return {
+        'score':  int(round(raw_score * 100)),
+        'lcp_ms': _ms('largest-contentful-paint'),
+        'cls':    _float('cumulative-layout-shift'),
+        'inp_ms': _ms('interaction-to-next-paint'),
+        'fcp_ms': _ms('first-contentful-paint'),
+        'tbt_ms': _ms('total-blocking-time'),
+    }

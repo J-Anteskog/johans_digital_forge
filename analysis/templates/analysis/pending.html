@@ -25,12 +25,32 @@
       {{ obj.url }}
     </p>
 
-    <p id="status-msg" class="small mb-4" style="min-height: 1.4em; color: var(--accent-light);">
-      {% if obj.language == 'en' %}Checking HTTP…{% else %}Kontrollerar HTTP…{% endif %}
+    <p id="status-msg" class="small mb-3" style="min-height: 1.4em; color: var(--accent-light);" aria-live="polite">
+      {% if obj.language == 'en' %}Starting the analysis…{% else %}Startar analysen…{% endif %}
     </p>
 
+    <!-- Steg – styrs av den fas bakgrundsjobbet faktiskt är i (status.json → phase) -->
+    <ol id="steps" class="list-unstyled d-inline-block text-start mb-3" style="font-size:.85rem;">
+      {% for key, sv, en in steps %}
+      <li data-phase="{{ key }}" class="step d-flex align-items-center gap-2 mb-1" style="color: var(--text-muted); opacity:.55;">
+        <i class="step-icon far fa-circle fa-fw" aria-hidden="true"></i>
+        <span>{% if obj.language == 'en' %}{{ en }}{% else %}{{ sv }}{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ol>
+
+    <!-- PageSpeed kan ta upp till 60 s – visa att vi väntar, inte att sidan hängt sig -->
+    <div id="psp-wait" class="d-none mx-auto mb-3" style="max-width:360px;">
+      <div class="progress rounded-pill" style="height:6px;background:rgba(255,255,255,.1);"
+           role="progressbar" aria-label="PageSpeed" aria-valuemin="0" aria-valuemax="60" aria-valuenow="0">
+        <div id="psp-bar" class="progress-bar progress-bar-striped progress-bar-animated rounded-pill"
+             style="width:0%;background:var(--accent);"></div>
+      </div>
+      <p id="psp-text" class="mt-1 mb-0" style="font-size:.75rem; color: var(--text-muted);"></p>
+    </div>
+
     <!-- Progress dots -->
-    <div class="d-flex justify-content-center gap-2 mb-5" id="dots">
+    <div class="d-flex justify-content-center gap-2 mb-4" id="dots">
       <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.9;display:inline-block;"></span>
       <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.4;display:inline-block;"></span>
       <span class="dot rounded-circle" style="width:10px;height:10px;background:var(--accent);opacity:.4;display:inline-block;"></span>
@@ -51,6 +71,8 @@
       {% if obj.language == 'en' %}Elapsed:{% else %}Förfluten tid:{% endif %}
       <span id="elapsed" style="color: var(--text-primary);">0s</span>
     </p>
+
+    <p id="slow-note" class="d-none mt-2" style="font-size:.8rem; color: var(--accent-light);" aria-live="polite"></p>
 
     <!-- Visas bara om analysen avbryts medan man väntar -->
     <div id="error-state" class="d-none mt-4">
@@ -81,76 +103,135 @@
 (function () {
   var statusUrl = "{% url 'analysis_status_json' obj.id %}";
   var isEnglish = "{{ obj.language }}" === "en";
+  var PSP_MAX = 60;   // PageSpeed-timeout i sekunder (analysis/checks/pagespeed.py)
 
-  var messages = isEnglish
-    ? [
-        "Checking HTTP redirects…",
-        "Verifying SSL certificate…",
-        "Fetching page HTML…",
-        "Analysing SEO signals…",
-        "Measuring performance…",
-        "Checking all pages on your site…",
-        "Waiting for PageSpeed Insights…",
-        "Calculating scores…",
-      ]
-    : [
-        "Kontrollerar HTTP-omdirigering…",
-        "Verifierar SSL-certifikat…",
-        "Hämtar sidans HTML…",
-        "Analyserar SEO-signaler…",
-        "Mäter prestanda…",
-        "Kontrollerar alla sidor på webbplatsen…",
-        "Väntar på PageSpeed Insights…",
-        "Beräknar poäng…",
-      ];
+  var phaseText = isEnglish ? {
+    fetch:     "Fetching the page and checking HTTPS…",
+    checks:    "Analysing SEO, mobile and accessibility…",
+    crawl:     "Checking the site's subpages…",
+    pagespeed: "Waiting for Google PageSpeed Insights…",
+    scoring:   "Calculating scores…"
+  } : {
+    fetch:     "Hämtar sidan och kontrollerar HTTPS…",
+    checks:    "Analyserar SEO, mobil och tillgänglighet…",
+    crawl:     "Kontrollerar webbplatsens undersidor…",
+    pagespeed: "Väntar på Google PageSpeed Insights…",
+    scoring:   "Beräknar poäng…"
+  };
+  var order = ["fetch", "checks", "crawl", "pagespeed", "scoring"];
 
-  var msgEl    = document.getElementById("status-msg");
+  var msgEl     = document.getElementById("status-msg");
   var elapsedEl = document.getElementById("elapsed");
-  var dots     = document.querySelectorAll(".dot");
-  var elapsed  = 0;
-  var msgIndex = 0;
-  var dotIndex = 0;
+  var slowEl    = document.getElementById("slow-note");
+  var pspWrap   = document.getElementById("psp-wait");
+  var pspBar    = document.getElementById("psp-bar");
+  var pspText   = document.getElementById("psp-text");
+  var dots      = document.querySelectorAll(".dot");
+  var steps     = document.querySelectorAll(".step");
+  var elapsed = 0, dotIndex = 0, phase = null, phaseSeconds = 0, failures = 0, polling = false;
 
   function updateDots() {
-    dots.forEach(function (d, i) {
-      d.style.opacity = i === dotIndex ? "0.9" : "0.2";
-    });
+    dots.forEach(function (d, i) { d.style.opacity = i === dotIndex ? "0.9" : "0.2"; });
     dotIndex = (dotIndex + 1) % dots.length;
   }
 
-  function tick() {
-    elapsed += 3;
-    elapsedEl.textContent = elapsed + "s";
-
-    msgIndex = Math.min(msgIndex + 1, messages.length - 1);
-    msgEl.textContent = messages[msgIndex];
-    updateDots();
-
-    fetch(statusUrl)
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (data.status === 'error') {
-          clearInterval(timer);
-          document.getElementById('spinner-wrap').classList.add('d-none');
-          document.getElementById('dots').classList.add('d-none');
-          document.getElementById('status-msg').classList.add('d-none');
-          if (data.error_message) {
-            document.getElementById('error-detail').textContent = data.error_message;
-          }
-          document.getElementById('error-state').classList.remove('d-none');
-        } else if (data.done) {
-          clearInterval(timer);
-          window.location.reload();
-        }
-      })
-      .catch(function () { /* ignore, keep polling */ });
+  function renderSteps() {
+    var current = order.indexOf(phase);
+    steps.forEach(function (li) {
+      var idx = order.indexOf(li.dataset.phase);
+      var icon = li.querySelector(".step-icon");
+      if (current >= 0 && idx < current) {
+        icon.className = "step-icon fas fa-check-circle fa-fw text-success";
+        li.style.opacity = "0.85";
+      } else if (idx === current) {
+        icon.className = "step-icon fas fa-circle-notch fa-spin fa-fw";
+        li.style.opacity = "1";
+        li.style.color = "var(--text-primary)";
+      } else {
+        icon.className = "step-icon far fa-circle fa-fw";
+        li.style.opacity = "0.55";
+      }
+    });
   }
 
-  // First poll after 5s (give backend a head start), then every 3s
-  var timer = setInterval(tick, 3000);
-  setTimeout(function () {
-    updateDots();
-  }, 500);
+  function renderPageSpeed() {
+    if (phase !== "pagespeed") { pspWrap.classList.add("d-none"); return; }
+    pspWrap.classList.remove("d-none");
+    var s = Math.min(phaseSeconds, PSP_MAX);
+    pspBar.style.width = Math.round(100 * s / PSP_MAX) + "%";
+    pspBar.parentNode.setAttribute("aria-valuenow", s);
+    if (phaseSeconds <= PSP_MAX) {
+      pspText.textContent = isEnglish
+        ? s + " s of max " + PSP_MAX + " s – Google tests the page in a real browser, which can take up to a minute."
+        : s + " s av högst " + PSP_MAX + " s – Google testar sidan i en riktig webbläsare, det kan ta upp till en minut.";
+    } else {
+      pspText.textContent = isEnglish
+        ? "PageSpeed is slow to respond – we will continue without it shortly."
+        : "PageSpeed svarar långsamt – vi går snart vidare utan det.";
+    }
+  }
+
+  // Varje sekund: räkna tid lokalt så att sidan aldrig står still mellan anropen
+  function everySecond() {
+    elapsed += 1;
+    elapsedEl.textContent = elapsed + "s";
+    if (phase === "pagespeed") { phaseSeconds += 1; renderPageSpeed(); }
+    if (elapsed % 3 === 0) { updateDots(); poll(); }
+    if (elapsed >= 180 && failures < 3) {
+      slowEl.classList.remove("d-none");
+      slowEl.textContent = isEnglish
+        ? "This is taking longer than usual. Keep the page open – it updates automatically."
+        : "Det tar längre tid än vanligt. Låt sidan vara öppen – den uppdateras automatiskt.";
+    }
+  }
+
+  function poll() {
+    if (polling) return;
+    polling = true;
+    fetch(statusUrl, {cache: "no-store"})
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        failures = 0;
+        if (data.status === "error") {
+          clearInterval(timer);
+          ["spinner-wrap", "dots", "status-msg", "steps", "psp-wait", "slow-note"].forEach(function (id) {
+            document.getElementById(id).classList.add("d-none");
+          });
+          if (data.error_message) {
+            document.getElementById("error-detail").textContent = data.error_message;
+          }
+          document.getElementById("error-state").classList.remove("d-none");
+          return;
+        }
+        if (data.done) {
+          clearInterval(timer);
+          window.location.reload();
+          return;
+        }
+        if (data.phase && phaseText[data.phase]) {
+          phase = data.phase;
+          if (typeof data.phase_seconds === "number") { phaseSeconds = data.phase_seconds; }
+          msgEl.textContent = phaseText[phase];
+          renderSteps();
+          renderPageSpeed();
+        }
+        if (elapsed < 180) { slowEl.classList.add("d-none"); }
+      })
+      .catch(function () {
+        failures += 1;
+        if (failures >= 3) {
+          slowEl.classList.remove("d-none");
+          slowEl.textContent = isEnglish
+            ? "Lost contact with the server – retrying…"
+            : "Tappade kontakten med servern – försöker igen…";
+        }
+      })
+      .then(function () { polling = false; });
+  }
+
+  var timer = setInterval(everySecond, 1000);
+  updateDots();
+  poll();
 })();
 </script>
 
