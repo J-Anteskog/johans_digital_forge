@@ -1,6 +1,5 @@
-import requests
+from ..net import safe_request
 
-_UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
 _TIMEOUT = 10
 
 _HEADERS_CONFIG = [
@@ -58,12 +57,7 @@ def check_headers(url: str) -> dict:
     }
 
     try:
-        resp = requests.head(
-            url,
-            timeout=_TIMEOUT,
-            headers={'User-Agent': _UA},
-            allow_redirects=True,
-        )
+        resp = safe_request('HEAD', url, timeout=_TIMEOUT)
         response_headers = {k.lower(): v for k, v in resp.headers.items()}
 
         total_points = 0

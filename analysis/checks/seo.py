@@ -1,11 +1,12 @@
 from urllib.parse import urlparse
-import requests
 
-_UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
+from ..net import fetch_limited
+
 _TIMEOUT = 10
+_MAX_BYTES = 500_000
 
 
-def check_seo(base_url: str, soup) -> dict:
+def check_seo(base_url: str, soup, session=None) -> dict:
     """Kör alla SEO-kontroller på en färdigparsad BeautifulSoup-instans."""
     return {
         'viewport':         _check_viewport(soup),
@@ -14,8 +15,8 @@ def check_seo(base_url: str, soup) -> dict:
         'h1':               _check_h1(soup),
         'og_title':         _check_og(soup, 'og:title'),
         'og_image':         _check_og(soup, 'og:image'),
-        'robots_txt':       _check_robots_txt(base_url),
-        'sitemap':          _check_sitemap(base_url),
+        'robots_txt':       _check_robots_txt(base_url, session),
+        'sitemap':          _check_sitemap(base_url, session),
     }
 
 
@@ -85,24 +86,16 @@ def _check_og(soup, property_name):
     }
 
 
-def _check_robots_txt(base_url):
+def _check_robots_txt(base_url, session=None):
     parsed = urlparse(base_url)
     robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
-    try:
-        resp = requests.get(
-            robots_url,
-            timeout=_TIMEOUT,
-            headers={'User-Agent': _UA},
-            allow_redirects=True,
-        )
-        found = resp.status_code == 200
-        sitemap_ref = 'sitemap' in resp.text.lower() if found else False
-        return {'found': found, 'url': robots_url, 'sitemap_referenced': sitemap_ref}
-    except Exception:
-        return {'found': False, 'url': robots_url, 'sitemap_referenced': False}
+    res = fetch_limited(robots_url, max_bytes=_MAX_BYTES, timeout=_TIMEOUT, session=session)
+    found = res.status_code == 200
+    text = res.content.decode('utf-8', errors='replace').lower() if found else ''
+    return {'found': found, 'url': robots_url, 'sitemap_referenced': 'sitemap' in text}
 
 
-def _check_sitemap(base_url):
+def _check_sitemap(base_url, session=None):
     parsed = urlparse(base_url)
     base = f"{parsed.scheme}://{parsed.netloc}"
     candidates = [
@@ -111,15 +104,7 @@ def _check_sitemap(base_url):
         f"{base}/sitemap/",
     ]
     for sitemap_url in candidates:
-        try:
-            resp = requests.get(
-                sitemap_url,
-                timeout=_TIMEOUT,
-                headers={'User-Agent': _UA},
-                allow_redirects=True,
-            )
-            if resp.status_code == 200:
-                return {'found': True, 'url': sitemap_url}
-        except Exception:
-            pass
+        res = fetch_limited(sitemap_url, max_bytes=_MAX_BYTES, timeout=_TIMEOUT, session=session)
+        if res.status_code == 200:
+            return {'found': True, 'url': sitemap_url}
     return {'found': False, 'url': candidates[0]}

@@ -1,7 +1,7 @@
 from urllib.parse import urlparse, urljoin
-import requests
 
-_UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
+from ..net import safe_request
+
 _TIMEOUT = 8
 _IMAGE_LIMIT_BYTES = 500 * 1024   # 500 KB
 _MAX_IMG_TO_CHECK = 20            # cap HEAD-anrop för att hålla nere analystiden
@@ -66,12 +66,8 @@ def _check_images(soup, base_url):
             continue
         img_url = urljoin(base_url, src)
         try:
-            head = requests.head(
-                img_url,
-                timeout=_TIMEOUT,
-                headers={'User-Agent': _UA},
-                allow_redirects=True,
-            )
+            # Bild-URL:er kommer från den analyserade sidan – valideras (SSRF)
+            head = safe_request('HEAD', img_url, timeout=_TIMEOUT)
             cl = int(head.headers.get('Content-Length', 0))
             if cl > _IMAGE_LIMIT_BYTES:
                 large += 1

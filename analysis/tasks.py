@@ -10,13 +10,13 @@ import threading
 import traceback
 from urllib.parse import urlparse
 
-import requests
-from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from .models import SiteAnalysis
+from .net import fetch_limited
 from .validators import validate_target_url
+from .checks.page_facts import parse_html
 from .checks.http import check_http, check_ssl
 from .checks.seo import check_seo, check_seo_page
 from .checks.performance import check_performance
@@ -25,30 +25,26 @@ from .checks.headers import check_headers
 from .checks.accessibility import check_accessibility
 from .scoring import calculate_scores
 
-_UA = 'Mozilla/5.0 (compatible; JDFAnalyser/1.0; +https://johans-digital-forge.se)'
 _CONNECT_TIMEOUT = 5
 _READ_TIMEOUT = 15
 _TIMEOUT = (_CONNECT_TIMEOUT, _READ_TIMEOUT)
 _MAX_HTML_BYTES = 2_000_000  # 2 MB
 
 
-def _fetch_html(url: str) -> str:
-    """Hämtar HTML med storleksgräns (skydd mot zip bombs och jättesidor)."""
-    resp = requests.get(
-        url,
-        timeout=_TIMEOUT,
-        stream=True,
-        headers={'User-Agent': _UA},
-        allow_redirects=True,
-    )
-    resp.raise_for_status()
-
-    content = b''
-    for chunk in resp.iter_content(chunk_size=8192):
-        content += chunk
-        if len(content) > _MAX_HTML_BYTES:
-            raise ValueError('Sidan är för stor för att analyseras (>2 MB).')
-    return content.decode(resp.encoding or 'utf-8', errors='replace')
+def _fetch_soup(url: str):
+    """
+    Hämtar och parsar HTML med storleksgräns (skydd mot zip bombs och jättesidor).
+    Varje omdirigering och IP valideras (analysis.net). Teckenkodningen tas från
+    headern, annars <meta charset>, annars UTF-8/windows-1252 (parse_html).
+    """
+    res = fetch_limited(url, max_bytes=_MAX_HTML_BYTES, timeout=_TIMEOUT, fail_on_too_large=True)
+    if res.error_kind == 'too_large':
+        raise ValueError('Sidan är för stor för att analyseras (>2 MB).')
+    if res.error:
+        raise ValueError(res.error)
+    if res.status_code and res.status_code >= 400:
+        raise ValueError(f'HTTP {res.status_code}')
+    return parse_html(res.content, res.encoding)
 
 
 def run_analysis(analysis_id: str) -> None:
@@ -94,8 +90,7 @@ def run_analysis(analysis_id: str) -> None:
         # ── 3. Hämta + parsa HTML ─────────────────────────────────────────
         soup = None
         try:
-            html = _fetch_html(final_url)
-            soup = BeautifulSoup(html, 'lxml')
+            soup = _fetch_soup(final_url)
         except Exception as e:
             results['html_fetch_error'] = str(e)
 
@@ -163,8 +158,7 @@ def _crawl_internal_pages(base_url: str, root_soup, max_pages: int = 20) -> list
     pages = []
     for url in to_visit[:max_pages]:
         try:
-            html = _fetch_html(url)
-            soup = BeautifulSoup(html, 'lxml')
+            soup = _fetch_soup(url)
             pages.append({
                 'url': url,
                 'seo': check_seo_page(soup),
