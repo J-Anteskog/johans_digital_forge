@@ -42,7 +42,9 @@
     position: relative;
     overflow: hidden;
   }
-  .case-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Mockup-bilderna är breda (16:9–2.3:1) – låt bilden styra höjden så inget beskärs */
+  .case-media.has-image { aspect-ratio: auto; padding-top: 28px; background: #0B0D10; }
+  .case-media img { width: 100%; height: auto; display: block; }
   .case-media__bar { position: absolute; top: 0; left: 0; right: 0; display: flex; gap: 5px; padding: 10px 12px; }
   .case-media__bar span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); }
   .case-media__icon {
@@ -96,7 +98,7 @@
 
   {% for project in projects %}
   <div class="case-row{% if forloop.counter|divisibleby:2 %} is-reversed{% endif %}">
-    <div class="case-media">
+    <div class="case-media{% if project.image %} has-image{% endif %}">
       <div class="case-media__bar"><span></span><span></span><span></span></div>
       {% if project.image %}
         <img src="{{ project.image.url }}" alt="{% if is_english %}{{ project.title_en }}{% else %}{{ project.title_sv }}{% endif %}">
