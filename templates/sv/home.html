@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static portfolio_images %}
 
 {% block title %}Webbutvecklare i Fagersta & Västmanland | Johan's Digital Forge{% endblock %}
 
@@ -583,8 +583,9 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .case-card:hover { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(255,122,26,0.15); }
-  .case-card__img { aspect-ratio: 16 / 10; background: #0B0D10; overflow: hidden; }
-  .case-card__img img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.5s ease; }
+  /* 16:9 matchar mockup-bilderna; contain så att inget beskärs */
+  .case-card__img { aspect-ratio: 16 / 9; background: #0B0D10; overflow: hidden; }
+  .case-card__img img { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform 0.5s ease; }
   .case-card:hover .case-card__img img { transform: scale(1.04); }
   .case-card__icon { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.25rem; color: var(--accent); }
   .case-card__body { padding: 1.25rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
@@ -616,7 +617,7 @@
           <div class="featured-case__frame">
             <div class="featured-case__bar"><span></span><span></span><span></span></div>
             {% if featured.image %}
-              <img src="{{ featured.image.url }}" alt="{{ featured.title_sv }}">
+              <img src="{{ featured.image.url|cl_width:900 }}" srcset="{{ featured.image.url|cl_width:900 }} 900w, {{ featured.image.url|cl_width:1600 }} 1600w" sizes="(min-width: 992px) 50vw, 100vw" alt="{{ featured.title_sv }}">
             {% else %}
               <div class="featured-case__icon"><i class="fas fa-globe"></i></div>
             {% endif %}
@@ -719,7 +720,7 @@
       <a href="{% url 'portfolio' %}#projekt-{{ project.pk }}" class="case-card">
         <div class="case-card__img">
           {% if project.image %}
-            <img src="{{ project.image.url }}" alt="{{ project.title_sv }}" loading="lazy">
+            <img src="{{ project.image.url|cl_width:600 }}" srcset="{{ project.image.url|cl_width:600 }} 600w, {{ project.image.url|cl_width:1200 }} 1200w" sizes="(min-width: 992px) 33vw, (min-width: 576px) 50vw, 100vw" alt="{{ project.title_sv }}" loading="lazy">
           {% else %}
             <div class="case-card__icon"><i class="fas fa-globe"></i></div>
           {% endif %}
