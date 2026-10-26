@@ -32,6 +32,8 @@
     flex-wrap: wrap;
   }
   .case-row.is-reversed { flex-direction: row-reverse; }
+  /* Länkar från startsidan hoppar hit – lämna plats för sticky-headern */
+  .case-row { scroll-margin-top: 100px; }
   .case-media, .case-content { flex: 1 1 420px; }
 
   .case-media {
@@ -97,7 +99,7 @@
 <div class="container py-5">
 
   {% for project in projects %}
-  <div class="case-row{% if forloop.counter|divisibleby:2 %} is-reversed{% endif %}">
+  <div class="case-row{% if forloop.counter|divisibleby:2 %} is-reversed{% endif %}" id="projekt-{{ project.pk }}">
     <div class="case-media{% if project.image %} has-image{% endif %}">
       <div class="case-media__bar"><span></span><span></span><span></span></div>
       {% if project.image %}

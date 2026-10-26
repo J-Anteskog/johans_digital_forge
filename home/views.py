@@ -68,15 +68,18 @@ LLMs: https://www.johans-digital-forge.se/llms.txt
     return HttpResponse(content, content_type="text/plain")
 
 
-def home_sv(request):
-    projects = Project.objects.filter(is_active=True)[:3]
+def _home_context():
+    active = Project.objects.filter(is_active=True)
+    featured = active.filter(is_featured=True).first() or active.first()
+    projects = active.exclude(pk=featured.pk)[:3] if featured else active.none()
     tools = ToolCard.objects.filter(is_active=True)[:4]
-    return render(request, 'sv/home.html', {'projects': projects, 'tools': tools})
+    return {'featured': featured, 'projects': projects, 'tools': tools}
+
+def home_sv(request):
+    return render(request, 'sv/home.html', _home_context())
 
 def home_en(request):
-    projects = Project.objects.filter(is_active=True)[:3]
-    tools = ToolCard.objects.filter(is_active=True)[:4]
-    return render(request, 'en/home.html', {'projects': projects, 'tools': tools})
+    return render(request, 'en/home.html', _home_context())
 
 def set_language(request):
     lang = request.GET.get('lang', 'sv')

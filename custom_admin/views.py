@@ -183,7 +183,7 @@ class ProjectCreateView(CreateView):
         "title_sv", "title_en",
         "description_sv", "description_en",
         "technologies", "github_url", "live_url",
-        "image", "is_active", "order"
+        "image", "is_active", "is_featured", "order"
     ]
     success_url = reverse_lazy("admin_projects")
 
@@ -196,7 +196,7 @@ class ProjectUpdateView(UpdateView):
         "title_sv", "title_en",
         "description_sv", "description_en",
         "technologies", "github_url", "live_url",
-        "image", "is_active", "order"
+        "image", "is_active", "is_featured", "order"
     ]
     success_url = reverse_lazy("admin_projects")
 

@@ -28,16 +28,13 @@
   .forge-hero__logo {
     display: block;
     width: 100%;
-    max-width: 300px;
+    max-width: 240px;
     height: auto;
-    margin: 0 auto 1.5rem;
-    opacity: 0.7;
+    margin: 0 auto 2.5rem;
+    opacity: 0.9;
     pointer-events: none;
     user-select: none;
   }
-  /* Extra logg-instans som bara visas högst upp på mobil (se media query
-     nedan) — döljs på desktop där originalloggan i höger kolumn gäller. */
-  .forge-hero__logo--mobile { display: none; }
 
   .forge-hero__scrim {
     position: absolute;
@@ -48,7 +45,6 @@
   .forge-hero__content {
     position: relative;
     z-index: 2;
-    padding-top: 5rem;
   }
 
   .hero-eyebrow {
@@ -90,7 +86,7 @@
   }
 
   /* ===== Skrivbord med mockuper ===== */
-  .forge-hero__desk {
+  .workshop-desk {
     position: relative;
     min-height: 300px;
     display: flex;
@@ -259,11 +255,50 @@
   }
 
   @media (max-width: 991px) {
-    .forge-hero__logo:not(.forge-hero__logo--mobile) { display: none; }
-    .forge-hero__logo--mobile { display: block; max-width: 220px; margin: 0 auto 1.5rem; }
-    .forge-hero__content { padding-top: 3rem; text-align: center; }
+    .forge-hero__logo { max-width: 180px; margin-bottom: 2rem; }
+    .forge-hero__intro { text-align: center; }
+    .forge-hero__intro .d-flex { justify-content: center; }
     .forge-hero__lead { margin-left: auto; margin-right: auto; }
-    .forge-hero__desk { margin-top: 3rem; }
+    .featured-case { margin-top: 1rem; }
+  }
+
+
+  /* ===== Utvalt case i hero ===== */
+  .featured-case { display: block; text-decoration: none; color: inherit; }
+  .featured-case__frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+    background: #0B0D10;
+    padding-top: 28px;
+    box-shadow: 0 25px 55px rgba(0,0,0,0.55);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .featured-case:hover .featured-case__frame { transform: translateY(-6px); box-shadow: 0 30px 60px rgba(255,122,26,0.18); }
+  .featured-case__frame img { width: 100%; height: auto; display: block; }
+  .featured-case__bar { position: absolute; top: 0; left: 0; right: 0; display: flex; gap: 5px; padding: 10px 12px; }
+  .featured-case__bar span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+  .featured-case__icon {
+    aspect-ratio: 16 / 9;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.75rem;
+    color: var(--accent);
+  }
+  .featured-case__caption { margin: 1rem 0 0; font-size: 0.9rem; color: var(--text-muted); text-align: center; }
+  .featured-case__caption strong { color: var(--text-primary); }
+  .featured-case__caption span { color: var(--accent); font-weight: 600; }
+
+  /* ===== Verkstaden: bento + produktmockuper ===== */
+  .workshop-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  @media (max-width: 1199px) {
+    .workshop-layout { grid-template-columns: 1fr; }
+    .workshop-desk { width: 100%; max-width: 420px; margin: 1.5rem auto 0; }
   }
 
   /* .section-eyebrow ligger nu i base.css (delas av alla sidor) */
@@ -288,7 +323,8 @@
   /* ===== Bento-grid ===== */
   .bento-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: dense;
     gap: 1.25rem;
   }
 
@@ -528,16 +564,45 @@
   }
   .chat-bubble--in { background: var(--panel); align-self: flex-start; color: var(--text-primary); }
   .chat-bubble--out { background: var(--accent); align-self: flex-end; color: var(--btn-text-on-accent); }
+
+  /* ===== Senaste case ===== */
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .case-card {
+    background: linear-gradient(145deg, var(--panel-light) 0%, var(--panel) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .case-card:hover { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(255,122,26,0.15); }
+  .case-card__img { aspect-ratio: 16 / 10; background: #0B0D10; overflow: hidden; }
+  .case-card__img img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.5s ease; }
+  .case-card:hover .case-card__img img { transform: scale(1.04); }
+  .case-card__icon { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.25rem; color: var(--accent); }
+  .case-card__body { padding: 1.25rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
+  .case-card__title { font-family: var(--font-body); font-weight: 600; font-size: 1rem; margin: 0; }
+  .case-card__tech { color: var(--text-muted) !important; font-size: 0.82rem; margin: 0; flex-grow: 1; }
+  .case-card__link { color: var(--accent); font-weight: 600; font-size: 0.87rem; }
+  @media (max-width: 991px) { .case-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 575px) { .case-grid { grid-template-columns: 1fr; } }
 </style>
 
 <!-- Hero -->
 <section class="forge-hero">
   <div class="forge-hero__scrim"></div>
   <div class="container forge-hero__content">
-    <div class="row align-items-center">
-      <div class="col-lg-7">
+    <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="forge-hero__logo" aria-hidden="true">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 forge-hero__intro">
         <span class="hero-eyebrow">Fagersta &amp; Västmanland</span>
-        <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="forge-hero__logo forge-hero__logo--mobile" aria-hidden="true">
         <h1 class="forge-hero__title hero-heading">Vi smider webbplatser som <span class="text-accent">håller.</span></h1>
         <p class="forge-hero__lead">Hemsidor, e-handel och webbapplikationer — skräddarsydda för småföretag, privatpersoner och föreningar. Från idé till lansering, allt från en och samma smedja.</p>
         <div class="d-flex gap-3 flex-wrap">
@@ -545,43 +610,21 @@
           <a href="{% url 'contact' %}" class="btn-forge-outline">Gratis konsultation</a>
         </div>
       </div>
-      <div class="col-lg-5">
-        <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="forge-hero__logo" aria-hidden="true">
-        <div class="forge-hero__desk">
-          <div class="mockup-laptop">
-            <div class="mockup-laptop__bar"><span></span><span></span><span></span></div>
-            <div class="mockup-laptop__screen">
-              <div class="mockup-laptop__title">Fakturering</div>
-              <div class="mockup-stats">
-                <div class="mockup-stat"><span class="mockup-stat__label">Obetalt</span><span class="mockup-stat__value">8 200 kr</span></div>
-                <div class="mockup-stat"><span class="mockup-stat__label">Förfallet</span><span class="mockup-stat__value">0 kr</span></div>
-                <div class="mockup-stat"><span class="mockup-stat__label">Fakturerat i år</span><span class="mockup-stat__value">142 000 kr</span></div>
-                <div class="mockup-stat"><span class="mockup-stat__label">Kunder</span><span class="mockup-stat__value">11</span></div>
-              </div>
-              <div class="mockup-table-label">Senaste fakturor</div>
-              <div class="mockup-row"><span>#1042 — Exempel Bygg AB</span><span class="mockup-pill mockup-pill--paid">Betald</span></div>
-              <div class="mockup-row"><span>#1043 — Nordic Konsult AB</span><span class="mockup-pill mockup-pill--paid">Betald</span></div>
-              <div class="mockup-row"><span>#1044 — Demo Handel &amp; Co</span><span class="mockup-pill mockup-pill--sent">Skickad</span></div>
-            </div>
-            <div class="mockup-laptop__base"></div>
+      {% if featured %}
+      <div class="col-lg-6">
+        <a href="{% url 'portfolio' %}#projekt-{{ featured.pk }}" class="featured-case">
+          <div class="featured-case__frame">
+            <div class="featured-case__bar"><span></span><span></span><span></span></div>
+            {% if featured.image %}
+              <img src="{{ featured.image.url }}" alt="{{ featured.title_sv }}">
+            {% else %}
+              <div class="featured-case__icon"><i class="fas fa-globe"></i></div>
+            {% endif %}
           </div>
-          <div class="mockup-phone">
-            <div class="mockup-phone__screen">
-              <div class="mockup-phone__clockface">
-                <div class="mockup-phone__clockface-hole"></div>
-                <div class="mockup-phone__hand mockup-phone__hand--hour"></div>
-                <div class="mockup-phone__hand mockup-phone__hand--minute"></div>
-              </div>
-              <div class="mockup-phone__legend">
-                <span><i class="mockup-phone__dot" style="background:#FFB35C;"></i>Frukost</span>
-                <span><i class="mockup-phone__dot" style="background:#6FA8DC;"></i>Skola</span>
-                <span><i class="mockup-phone__dot" style="background:#58D68D;"></i>Lek</span>
-                <span><i class="mockup-phone__dot" style="background:#8878C3;"></i>Läggdags</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          <p class="featured-case__caption">Utvalt case: <strong>{{ featured.title_sv }}</strong> <span>→</span></p>
+        </a>
       </div>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -597,31 +640,101 @@
       <a href="{% url 'smedjan' %}">Se hela Smedjan →</a>
     </div>
 
-    <div class="bento-grid">
-      {% for tool in tools %}
-      <a href="{% url 'smedjan' %}" class="tool-card{% if forloop.counter0 == 0 or forloop.counter0 == 3 %} tool-card--wide{% endif %}">
-        <div class="tool-card__top">
-          <div class="tool-card__icon"><i class="{{ tool.icon|default:'fas fa-cog' }}"></i></div>
-          {% if tool.status == 'live' %}
-            <span class="badge-pill-forge badge-live">Live</span>
-          {% elif tool.status == 'forging' %}
-            <span class="badge-pill-forge badge-forging">I smedjan</span>
-          {% else %}
-            <span class="badge-pill-forge badge-forging">Under utveckling</span>
-          {% endif %}
+    <div class="workshop-layout">
+      <div class="bento-grid">
+        {% for tool in tools %}
+        <a href="{% url 'smedjan' %}" class="tool-card{% if forloop.first %} tool-card--wide{% endif %}">
+          <div class="tool-card__top">
+            <div class="tool-card__icon"><i class="{{ tool.icon|default:'fas fa-cog' }}"></i></div>
+            {% if tool.status == 'live' %}
+              <span class="badge-pill-forge badge-live">Live</span>
+            {% elif tool.status == 'forging' %}
+              <span class="badge-pill-forge badge-forging">I smedjan</span>
+            {% else %}
+              <span class="badge-pill-forge badge-forging">Under utveckling</span>
+            {% endif %}
+          </div>
+          <h3 class="tool-card__title">{{ tool.title_sv }}</h3>
+          <p class="tool-card__desc">{{ tool.description_sv }}</p>
+        </a>
+        {% endfor %}
+        <div class="bento-cta">
+          <h3>Har du en idé i åtanke?</h3>
+          <p>Boka ett kostnadsfritt samtal så pratar vi igenom den.</p>
+          <a href="{% url 'contact' %}">Boka ett samtal →</a>
         </div>
-        <h3 class="tool-card__title">{{ tool.title_sv }}</h3>
-        <p class="tool-card__desc">{{ tool.description_sv }}</p>
-      </a>
-      {% endfor %}
-      <div class="bento-cta">
-        <h3>Har du en idé i åtanke?</h3>
-        <p>Boka ett kostnadsfritt samtal så pratar vi igenom den.</p>
-        <a href="{% url 'contact' %}">Boka ett samtal →</a>
+      </div>
+      <div class="workshop-desk">
+        <div class="mockup-laptop">
+          <div class="mockup-laptop__bar"><span></span><span></span><span></span></div>
+          <div class="mockup-laptop__screen">
+            <div class="mockup-laptop__title">Fakturering</div>
+            <div class="mockup-stats">
+              <div class="mockup-stat"><span class="mockup-stat__label">Obetalt</span><span class="mockup-stat__value">8 200 kr</span></div>
+              <div class="mockup-stat"><span class="mockup-stat__label">Förfallet</span><span class="mockup-stat__value">0 kr</span></div>
+              <div class="mockup-stat"><span class="mockup-stat__label">Fakturerat i år</span><span class="mockup-stat__value">142 000 kr</span></div>
+              <div class="mockup-stat"><span class="mockup-stat__label">Kunder</span><span class="mockup-stat__value">11</span></div>
+            </div>
+            <div class="mockup-table-label">Senaste fakturor</div>
+            <div class="mockup-row"><span>#1042 — Exempel Bygg AB</span><span class="mockup-pill mockup-pill--paid">Betald</span></div>
+            <div class="mockup-row"><span>#1043 — Nordic Konsult AB</span><span class="mockup-pill mockup-pill--paid">Betald</span></div>
+            <div class="mockup-row"><span>#1044 — Demo Handel &amp; Co</span><span class="mockup-pill mockup-pill--sent">Skickad</span></div>
+          </div>
+          <div class="mockup-laptop__base"></div>
+        </div>
+        <div class="mockup-phone">
+          <div class="mockup-phone__screen">
+            <div class="mockup-phone__clockface">
+              <div class="mockup-phone__clockface-hole"></div>
+              <div class="mockup-phone__hand mockup-phone__hand--hour"></div>
+              <div class="mockup-phone__hand mockup-phone__hand--minute"></div>
+            </div>
+            <div class="mockup-phone__legend">
+              <span><i class="mockup-phone__dot" style="background:#FFB35C;"></i>Frukost</span>
+              <span><i class="mockup-phone__dot" style="background:#6FA8DC;"></i>Skola</span>
+              <span><i class="mockup-phone__dot" style="background:#58D68D;"></i>Lek</span>
+              <span><i class="mockup-phone__dot" style="background:#8878C3;"></i>Läggdags</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- Senaste case -->
+{% if projects %}
+<section class="py-5">
+  <div class="container">
+    <div class="section-heading-row">
+      <div>
+        <p class="section-eyebrow">Kundprojekt</p>
+        <h2 class="display-6 mb-0">Senaste case</h2>
+      </div>
+      <a href="{% url 'portfolio' %}">Se hela portföljen →</a>
+    </div>
+
+    <div class="case-grid">
+      {% for project in projects %}
+      <a href="{% url 'portfolio' %}#projekt-{{ project.pk }}" class="case-card">
+        <div class="case-card__img">
+          {% if project.image %}
+            <img src="{{ project.image.url }}" alt="{{ project.title_sv }}" loading="lazy">
+          {% else %}
+            <div class="case-card__icon"><i class="fas fa-globe"></i></div>
+          {% endif %}
+        </div>
+        <div class="case-card__body">
+          <h3 class="case-card__title">{{ project.title_sv }}</h3>
+          <p class="case-card__tech">{{ project.technologies }}</p>
+          <span class="case-card__link">Läs mer →</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <!-- Analysverktyg -->
 <section class="py-5">

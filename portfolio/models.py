@@ -10,6 +10,11 @@ class Project(models.Model):
     live_url = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to='portfolio/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    is_featured = models.BooleanField(
+        default=False,
+        verbose_name="Utvald på startsidan",
+        help_text="Visas stort i startsidans hero. Är inget projekt valt visas det första i ordningen.",
+    )
     order = models.IntegerField(default=0)  # ← LÄGG TILL DETTA FÄLT
     
     class Meta:
