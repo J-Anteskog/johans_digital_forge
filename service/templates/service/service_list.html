@@ -325,7 +325,7 @@
           {% if is_english %}
           <li class="pkg-card__all">Everything in Business, plus:</li>
           <li>Custom design &amp; branding</li>
-          <li>Up to 30 pages</li>
+          <li>Up to 20 pages</li>
           <li>Advanced SEO</li>
           <li>Integrations (booking, payments, external systems)</li>
           <li>2 months of free support</li>
@@ -333,7 +333,7 @@
           {% else %}
           <li class="pkg-card__all">Allt i Företagspaketet, plus:</li>
           <li>Skräddarsydd design &amp; branding</li>
-          <li>Upp till 30 sidor</li>
+          <li>Upp till 20 sidor</li>
           <li>Avancerad SEO</li>
           <li>Integrationer (bokning, betalning, externa system)</li>
           <li>2 månaders fri support</li>
@@ -345,24 +345,22 @@
 
       <div class="pkg-card">
         <h3 class="pkg-card__name">{% if is_english %}Webshop package{% else %}Webshop-paket{% endif %}</h3>
-        <div class="pkg-card__price">{% if is_english %}From 17,500 SEK{% else %}Från 17 500 kr{% endif %}</div>
+        <div class="pkg-card__price">{% if is_english %}From 24,500 SEK{% else %}Från 24 500 kr{% endif %}</div>
         <ul class="pkg-card__features">
           {% if is_english %}
-          <li class="pkg-card__all">Everything in Business, plus:</li>
+          <li class="pkg-card__all">Everything in Premium, plus:</li>
           <li>Complete e-commerce solution</li>
           <li>Unlimited product catalog</li>
           <li>Payment solutions (Stripe, Klarna, etc.)</li>
           <li>Inventory management</li>
           <li>SEO for e-commerce</li>
-          <li>2 months of free support</li>
           {% else %}
-          <li class="pkg-card__all">Allt i Företagspaketet, plus:</li>
+          <li class="pkg-card__all">Allt i Premium, plus:</li>
           <li>Komplett e-handelslösning</li>
           <li>Obegränsad produktkatalog</li>
           <li>Betalningslösningar (Stripe, Klarna m.fl.)</li>
           <li>Lagerhantering</li>
           <li>SEO för e-handel</li>
-          <li>2 månaders fri support</li>
           {% endif %}
         </ul>
         <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}Webshop+package{% else %}Webshop-paket{% endif %}" class="btn-forge-outline">{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}</a>
@@ -385,7 +383,7 @@
               <div class="calc-radio-row">
                 <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" data-includes="" checked> {% if is_english %}Business (9,500 kr){% else %}Företagspaket (9 500 kr){% endif %}</label>
                 <label><input type="radio" name="calc-base" class="calc-base-input" value="16500" data-includes="seo-advanced booking"> Premium (16 500 kr)</label>
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="17500" data-includes=""> {% if is_english %}Webshop package (17,500 kr){% else %}Webshop-paket (17 500 kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="24500" data-includes="seo-advanced booking"> {% if is_english %}Webshop package (24,500 kr){% else %}Webshop-paket (24 500 kr){% endif %}</label>
               </div>
             </div>
             <div class="calc-option calc-option--stepper">
