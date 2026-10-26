@@ -116,6 +116,9 @@
   .pkg-card__features { list-style: none; padding: 0; margin: 0; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
   .pkg-card__features li { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 0.5rem; }
   .pkg-card__features li::before { content: '\2713'; color: var(--success); flex-shrink: 0; }
+  /* "Allt i Företagspaketet, plus:" – paketen bygger på varandra */
+  .pkg-card__features li.pkg-card__all { color: var(--text-primary); font-weight: 600; }
+  .pkg-card__features li.pkg-card__all::before { content: '+'; color: var(--accent); }
 
   .price-note { color: var(--text-muted) !important; font-size: 0.8rem; font-style: italic; margin: 1.25rem 0 0; }
 
@@ -296,7 +299,7 @@
           {% if is_english %}
           <li>5–10 pages (homepage, services, blog, contact)</li>
           <li>Custom design &amp; layout</li>
-          <li>SEO optimization</li>
+          <li>Basic SEO</li>
           <li>Social media integration</li>
           <li>Blog functionality</li>
           <li>Client portal – follow the build in real time</li>
@@ -304,7 +307,7 @@
           {% else %}
           <li>5–10 sidor (startsida, tjänster, blogg, kontakt)</li>
           <li>Anpassad design &amp; layout</li>
-          <li>SEO-optimering</li>
+          <li>Grundläggande SEO</li>
           <li>Koppling till sociala medier</li>
           <li>Bloggfunktion</li>
           <li>Kundportal – följ bygget i realtid</li>
@@ -320,18 +323,18 @@
         <div class="pkg-card__price">{% if is_english %}From 16,500 SEK{% else %}Från 16 500 kr{% endif %}</div>
         <ul class="pkg-card__features">
           {% if is_english %}
+          <li class="pkg-card__all">Everything in Business, plus:</li>
           <li>Custom design &amp; branding</li>
-          <li>10–30 pages depending on your needs</li>
+          <li>Up to 30 pages</li>
           <li>Advanced SEO</li>
-          <li>Client portal – follow the build in real time</li>
           <li>Integrations (booking, payments, external systems)</li>
           <li>2 months of free support</li>
           <li>Training in managing the site</li>
           {% else %}
+          <li class="pkg-card__all">Allt i Företagspaketet, plus:</li>
           <li>Skräddarsydd design &amp; branding</li>
-          <li>10–30 sidor beroende på behov</li>
+          <li>Upp till 30 sidor</li>
           <li>Avancerad SEO</li>
-          <li>Kundportal – följ bygget i realtid</li>
           <li>Integrationer (bokning, betalning, externa system)</li>
           <li>2 månaders fri support</li>
           <li>Utbildning i hur du hanterar sidan</li>
@@ -345,20 +348,20 @@
         <div class="pkg-card__price">{% if is_english %}From 17,500 SEK{% else %}Från 17 500 kr{% endif %}</div>
         <ul class="pkg-card__features">
           {% if is_english %}
+          <li class="pkg-card__all">Everything in Business, plus:</li>
           <li>Complete e-commerce solution</li>
           <li>Unlimited product catalog</li>
           <li>Payment solutions (Stripe, Klarna, etc.)</li>
           <li>Inventory management</li>
           <li>SEO for e-commerce</li>
-          <li>Client portal – follow the build in real time</li>
           <li>2 months of free support</li>
           {% else %}
+          <li class="pkg-card__all">Allt i Företagspaketet, plus:</li>
           <li>Komplett e-handelslösning</li>
           <li>Obegränsad produktkatalog</li>
           <li>Betalningslösningar (Stripe, Klarna m.fl.)</li>
           <li>Lagerhantering</li>
           <li>SEO för e-handel</li>
-          <li>Kundportal – följ bygget i realtid</li>
           <li>2 månaders fri support</li>
           {% endif %}
         </ul>
@@ -380,35 +383,39 @@
             <div class="calc-option calc-option--radio-group">
               <span class="calc-option__name">{% if is_english %}Choose package{% else %}Välj paket{% endif %}</span>
               <div class="calc-radio-row">
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" checked> {% if is_english %}Base (9,500 kr){% else %}Grundpaket (9 500 kr){% endif %}</label>
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="16500"> Premium (16 500 kr)</label>
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="17500"> {% if is_english %}Webshop package (17,500 kr){% else %}Webshop-paket (17 500 kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" data-includes="" checked> {% if is_english %}Business (9,500 kr){% else %}Företagspaket (9 500 kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="16500" data-includes="seo-advanced booking"> Premium (16 500 kr)</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="17500" data-includes=""> {% if is_english %}Webshop package (17,500 kr){% else %}Webshop-paket (17 500 kr){% endif %}</label>
               </div>
             </div>
+            <div class="calc-option calc-option--stepper">
+              <span class="calc-option__name">{% if is_english %}Extra pages<small>Beyond what the package includes</small>{% else %}Extra sidor<small>Utöver det som ingår i paketet</small>{% endif %}</span>
+              <div class="calc-stepper">
+                <button type="button" class="calc-stepper__minus" aria-label="{% if is_english %}Fewer pages{% else %}Färre sidor{% endif %}">−</button>
+                <span class="calc-stepper__qty">0</span>
+                <button type="button" class="calc-stepper__plus" aria-label="{% if is_english %}More pages{% else %}Fler sidor{% endif %}">+</button>
+              </div>
+              <span class="calc-option__price" data-rate="500">500 kr/{% if is_english %}page{% else %}sida{% endif %}</span>
+            </div>
             <label class="calc-option">
-              <input type="checkbox" class="calc-input" data-price="3500">
+              <input type="checkbox" class="calc-input" data-price="3500" data-key="seo-advanced">
+              <span class="calc-option__name">{% if is_english %}Advanced SEO{% else %}Avancerad SEO{% endif %}</span>
+              <span class="calc-option__price">+ 3 500 kr</span>
+            </label>
+            <label class="calc-option">
+              <input type="checkbox" class="calc-input" data-price="3500" data-key="booking">
               <span class="calc-option__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</span>
               <span class="calc-option__price">+ 3 500 kr</span>
-            </label>
-            <label class="calc-option">
-              <input type="checkbox" class="calc-input" data-price="3500">
-              <span class="calc-option__name">{% if is_english %}SEO optimization{% else %}SEO-optimering{% endif %}</span>
-              <span class="calc-option__price">+ 3 500 kr</span>
-            </label>
-            <label class="calc-option">
-              <input type="checkbox" class="calc-input" data-price-monthly="200">
-              <span class="calc-option__name">{% if is_english %}Chat feature{% else %}Chatt-funktion{% endif %}</span>
-              <span class="calc-option__price">+ 200 kr/{% if is_english %}mo{% else %}mån{% endif %}</span>
-            </label>
-            <label class="calc-option">
-              <input type="checkbox" class="calc-input" data-price="1500">
-              <span class="calc-option__name">{% if is_english %}Social media integration{% else %}Sociala medier-koppling{% endif %}</span>
-              <span class="calc-option__price">+ 1 500 kr</span>
             </label>
             <label class="calc-option">
               <input type="checkbox" class="calc-input" data-price="3000">
               <span class="calc-option__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</span>
               <span class="calc-option__price">+ 3 000 kr</span>
+            </label>
+            <label class="calc-option">
+              <input type="checkbox" class="calc-input" data-price-monthly="200" data-key="chat">
+              <span class="calc-option__name">{% if is_english %}Chat feature{% else %}Chatt-funktion{% endif %}</span>
+              <span class="calc-option__price">+ 200 kr/{% if is_english %}mo{% else %}mån{% endif %}</span>
             </label>
             <div class="calc-option">
               <span class="calc-option__name">{% if is_english %}Hosting level{% else %}Webbhotell-nivå{% endif %}</span>
@@ -454,7 +461,7 @@
       <div class="hosting-card">
         <h3 class="hosting-card__name">{% if is_english %}Medium{% else %}Webbhotell Medium{% endif %}</h3>
         <div class="hosting-card__price">300 kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
-        <p class="hosting-card__desc">{% if is_english %}20 GB storage · Chat feature · Hourly backup · Priority support (4h){% else %}20 GB lagring · Chatt-funktion · Timvis backup · Prioriterad support (4h){% endif %}</p>
+        <p class="hosting-card__desc">{% if is_english %}20 GB storage · Hourly backup · Priority support (4h){% else %}20 GB lagring · Timvis backup · Prioriterad support (4h){% endif %}</p>
       </div>
       <div class="hosting-card">
         <h3 class="hosting-card__name">{% if is_english %}Large{% else %}Webbhotell Stor{% endif %}</h3>
@@ -496,7 +503,7 @@
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Social media integration{% else %}Sociala medier-koppling{% endif %}</div><div class="misc-card__price">1 500 kr</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</div><div class="misc-card__price">3 500 kr</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</div><div class="misc-card__price">3 000 kr</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}SEO optimization{% else %}SEO-optimering{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}3 500 kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Advanced SEO{% else %}Avancerad SEO{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}3 500 kr</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Consultation (30–60 min){% else %}Konsultation (30–60 min){% endif %}</div><div class="misc-card__price">600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Web design{% else %}Webbdesign{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
       <div class="misc-card"><div class="misc-card__name">{% if is_english %}Design & UI help{% else %}Design & UI-hjälp{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
@@ -552,6 +559,27 @@ document.addEventListener('DOMContentLoaded', function () {
   const hostingSelect = document.querySelector('.calc-hosting-select');
   const steppers = document.querySelectorAll('.calc-option--stepper');
   const baseRadios = document.querySelectorAll('.calc-base-input');
+  const includedLabel = '{% if is_english %}Included{% else %}Ingår{% endif %}';
+
+  // Tillval som redan ingår i valt paket: kryssas i, låses och räknas inte.
+  // Kundens egna val sparas så de kommer tillbaka vid byte av paket.
+  function applyIncluded() {
+    const base = document.querySelector('.calc-base-input:checked');
+    const included = ((base && base.dataset.includes) || '').split(' ').filter(Boolean);
+    checkboxes.forEach(cb => {
+      if (!cb.dataset.key) return;
+      const option = cb.closest('.calc-option');
+      const priceEl = option.querySelector('.calc-option__price');
+      if (!priceEl.dataset.label) priceEl.dataset.label = priceEl.textContent;
+      const isIncluded = included.includes(cb.dataset.key);
+      if (isIncluded && !cb.disabled) cb.dataset.userChecked = cb.checked ? '1' : '';
+      if (!isIncluded && cb.disabled) cb.checked = cb.dataset.userChecked === '1';
+      if (isIncluded) cb.checked = true;
+      cb.disabled = isIncluded;
+      option.classList.toggle('calc-option--locked', isIncluded);
+      priceEl.textContent = isIncluded ? includedLabel : priceEl.dataset.label;
+    });
+  }
 
   function formatSEK(n) {
     return n.toLocaleString('sv-SE') + ' kr';
@@ -564,7 +592,7 @@ document.addEventListener('DOMContentLoaded', function () {
     baseRadios.forEach(r => { if (r.checked) onetime += parseInt(r.value, 10); });
 
     checkboxes.forEach(cb => {
-      if (!cb.checked) return;
+      if (!cb.checked || cb.disabled) return;
       if (cb.dataset.price) onetime += parseInt(cb.dataset.price, 10);
       if (cb.dataset.priceMonthly) monthly += parseInt(cb.dataset.priceMonthly, 10);
     });
@@ -582,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
-  baseRadios.forEach(r => r.addEventListener('change', updateTotal));
+  baseRadios.forEach(r => r.addEventListener('change', function () { applyIncluded(); updateTotal(); }));
   if (hostingSelect) hostingSelect.addEventListener('change', updateTotal);
 
   steppers.forEach(stepper => {
@@ -597,6 +625,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  applyIncluded();
   updateTotal();
 });
 </script>
