@@ -101,6 +101,10 @@ class ProjectBriefForm(forms.ModelForm):
         for name in radio_fields:
             field = self.fields[name]
             field.choices = [(k, v) for k, v in field.choices if k != '']
+        # Äldre val som ersatts av 10–20 / 20+ ska inte kunna väljas längre
+        self.fields['num_pages'].choices = [
+            (k, v) for k, v in self.fields['num_pages'].choices if k != '10+'
+        ]
 
     def clean_website_url(self):
         if self.cleaned_data.get('website_url'):

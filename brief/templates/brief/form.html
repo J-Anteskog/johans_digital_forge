@@ -175,6 +175,22 @@
     </div>
     {% endif %}
 
+    <!-- Calculator prefill banner -->
+    {% if from_calculator %}
+    <div class="analysis-prefill-banner" role="status">
+      <i class="fas fa-calculator me-2"></i>
+      <strong>{% if is_english %}Pre-filled from the price calculator{% else %}Förifyllt från priskalkylatorn{% endif %}</strong>
+      <p class="mb-1 mt-1 small">{{ calculator_summary }}</p>
+      <p class="mb-0 small">
+        {% if is_english %}
+          Budget, pages and features are pre-filled from your choices — feel free to change anything.
+        {% else %}
+          Budget, antal sidor och funktioner är förifyllda utifrån dina val — ändra gärna om något inte stämmer.
+        {% endif %}
+      </p>
+    </div>
+    {% endif %}
+
     <!-- Spam error -->
     {% if spam_error %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -221,6 +237,7 @@
               {% csrf_token %}
               <input type="hidden" name="form_token" value="{{ form_token }}">
               {% if analysis_id %}<input type="hidden" name="analysis_id" value="{{ analysis_id }}">{% endif %}
+              {% if calculator_selection %}<input type="hidden" name="calculator_selection" value="{{ calculator_selection }}">{% endif %}
               {{ form.language }}
               {{ form.referrer }}
 
@@ -274,7 +291,7 @@
                 <div class="mb-4 {% if form.budget.errors %}brief-field-error{% endif %}">
                   <label class="form-label fw-semibold">
                     <i data-lucide="wallet" class="brief-icon"></i>
-                    {% if is_english %}Budget *{% else %}Budget *{% endif %}
+                    {% if is_english %}Budget (excl. VAT) *{% else %}Budget (exkl. moms) *{% endif %}
                   </label>
                   <div class="choice-card">
                     {% for choice in form.budget %}

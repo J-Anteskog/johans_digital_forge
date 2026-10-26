@@ -8,6 +8,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 
+from . import calculator
 from .forms import ProjectBriefForm
 
 _ANALYTICS_TOKEN = 'ea5a5e56-7959-4a57-b643-c98797856fa9'
@@ -119,6 +120,35 @@ def _load_analysis_prefill(request):
         return {}, {}
 
 
+def _calculator_ctx_from_post(request):
+    """Behåll kalkylatorvalen om formuläret visas igen efter valideringsfel."""
+    sel = calculator.decode_selection(request.POST.get('calculator_selection', ''))
+    if not sel:
+        return {}
+    return {
+        'from_calculator': True,
+        'calculator_summary': calculator.summary(sel),
+        'calculator_selection': calculator.encode_selection(sel),
+    }
+
+
+def _load_calculator_prefill(request):
+    """
+    Förifyll från priskalkylatorn (?ref=calculator&package=...).
+    Returnerar (initial_dict, prefill_ctx) eller ({}, {}).
+    """
+    if request.GET.get('ref') != 'calculator':
+        return {}, {}
+    sel = calculator.parse_selection(request.GET)
+    if not sel:
+        return {}, {}
+    return calculator.brief_initial(sel), {
+        'from_calculator': True,
+        'calculator_summary': calculator.summary(sel),
+        'calculator_selection': calculator.encode_selection(sel),
+    }
+
+
 def _brief_view(request, language):
     is_english = language == 'en'
     ctx_base = {'language': language, 'is_english': is_english}
@@ -140,6 +170,7 @@ def _brief_view(request, language):
                 'form_token': _generate_form_token(),
                 'initial_step': 1,
                 'turnstile_site_key': getattr(settings, 'TURNSTILE_SITE_KEY', ''),
+                **_calculator_ctx_from_post(request),
             })
 
         if form.is_valid():
@@ -155,6 +186,11 @@ def _brief_view(request, language):
                     request.GET.get('utm_source', '')
                     or request.META.get('HTTP_REFERER', '')[:255]
                 )
+            calc_sel = calculator.decode_selection(request.POST.get('calculator_selection', ''))
+            if calc_sel:
+                brief.calculator_summary = calculator.summary(calc_sel)
+                if not posted_analysis_id:
+                    brief.referrer = 'calculator'
             brief.save()
 
             threading.Thread(
@@ -202,9 +238,12 @@ def _brief_view(request, language):
             'form_token': _generate_form_token(),
             'initial_step': _first_error_step(form),
             'turnstile_site_key': getattr(settings, 'TURNSTILE_SITE_KEY', ''),
+            **_calculator_ctx_from_post(request),
         })
 
     initial, prefill_ctx = _load_analysis_prefill(request)
+    if not initial:
+        initial, prefill_ctx = _load_calculator_prefill(request)
     initial.setdefault('language', language)
     form = ProjectBriefForm(initial=initial)
     return render(request, 'brief/form.html', {

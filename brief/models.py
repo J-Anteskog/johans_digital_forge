@@ -26,7 +26,9 @@ class ProjectBrief(models.Model):
         ('1', '1 sida (one-pager)'),
         ('3-5', '3–5 sidor'),
         ('5-10', '5–10 sidor'),
-        ('10+', 'Mer än 10 sidor'),
+        ('10-20', '10–20 sidor'),
+        ('20+', 'Mer än 20 sidor'),
+        ('10+', 'Mer än 10 sidor'),  # äldre val – visas inte längre i formuläret
         ('unsure', 'Osäker'),
     ]
     FEATURE_CHOICES = [
@@ -39,6 +41,8 @@ class ProjectBrief(models.Model):
         ('galleri', 'Bildgalleri'),
         ('webbshop', 'Webbshop'),
         ('omdomen', 'Omdömen / recensioner'),
+        ('flersprak', 'Flerspråkig sida'),
+        ('chatt', 'Chatt-funktion'),
     ]
     HAS_MATERIAL_CHOICES = [
         ('all', 'Ja – texter och bilder är klara'),
@@ -98,6 +102,7 @@ class ProjectBrief(models.Model):
     style_preferences = models.JSONField(default=list)
     notes = models.TextField(blank=True)
     promo_code = models.CharField(max_length=50, blank=True)
+    calculator_summary = models.TextField(blank=True, help_text='Val och uppskattat pris från priskalkylatorn (exkl. moms)')
     contact_name = models.CharField(max_length=100)
     contact_email = models.EmailField()
     contact_phone = models.CharField(max_length=30, blank=True)

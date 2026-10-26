@@ -395,9 +395,9 @@
             <div class="calc-option calc-option--radio-group">
               <span class="calc-option__name">{% if is_english %}Choose package{% else %}Välj paket{% endif %}</span>
               <div class="calc-radio-row">
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" data-includes="" data-hosting="200" checked> {% if is_english %}Business (<span class="vat" data-ex="9500">9,500</span> kr){% else %}Företagspaket (<span class="vat" data-ex="9500">9 500</span> kr){% endif %}</label>
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="16500" data-includes="seo-advanced booking" data-hosting="300"> Premium (<span class="vat" data-ex="16500">16 500</span> kr)</label>
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="24500" data-includes="seo-advanced booking" data-hosting="300" data-hosting-min="300"> {% if is_english %}Webshop package (<span class="vat" data-ex="24500">24,500</span> kr){% else %}Webshop-paket (<span class="vat" data-ex="24500">24 500</span> kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" data-package="foretag" data-includes="" data-hosting="200" checked> {% if is_english %}Business (<span class="vat" data-ex="9500">9,500</span> kr){% else %}Företagspaket (<span class="vat" data-ex="9500">9 500</span> kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="16500" data-package="premium" data-includes="seo-advanced booking" data-hosting="300"> Premium (<span class="vat" data-ex="16500">16 500</span> kr)</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="24500" data-package="webshop" data-includes="seo-advanced booking" data-hosting="300" data-hosting-min="300"> {% if is_english %}Webshop package (<span class="vat" data-ex="24500">24,500</span> kr){% else %}Webshop-paket (<span class="vat" data-ex="24500">24 500</span> kr){% endif %}</label>
               </div>
             </div>
             <div class="calc-option calc-option--stepper">
@@ -420,7 +420,7 @@
               <span class="calc-option__price">+ <span class="vat" data-ex="3500">3 500</span> kr</span>
             </label>
             <label class="calc-option">
-              <input type="checkbox" class="calc-input" data-price="3000">
+              <input type="checkbox" class="calc-input" data-price="3000" data-key="multilang">
               <span class="calc-option__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</span>
               <span class="calc-option__price">+ <span class="vat" data-ex="3000">3 000</span> kr</span>
             </label>
@@ -680,6 +680,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     totalOnetimeEl.textContent = formatSEK(onetime);
     totalMonthlyEl.textContent = formatSEK(monthly);
+    updateBriefLink();
+  }
+
+  // "Begär offert på detta" tar med valen till offertbriefen, som förifylls
+  // (se brief/calculator.py). Bara val skickas – priserna räknas om där.
+  const calcCta = document.querySelector('.calc-cta');
+  function updateBriefLink() {
+    if (!calcCta) return;
+    if (!calcCta.dataset.base) calcCta.dataset.base = calcCta.getAttribute('href');
+    const base = document.querySelector('.calc-base-input:checked');
+    const addons = Array.from(checkboxes)
+      .filter(cb => cb.checked && !cb.disabled && cb.dataset.key)
+      .map(cb => cb.dataset.key);
+    const pages = steppers.length ? parseInt(steppers[0].querySelector('.calc-stepper__qty').textContent, 10) || 0 : 0;
+    const params = new URLSearchParams({
+      ref: 'calculator',
+      package: base ? base.dataset.package : '',
+      pages: String(pages),
+      addons: addons.join(','),
+      hosting: hostingSelect ? hostingSelect.value : '0',
+    });
+    calcCta.setAttribute('href', calcCta.dataset.base + '?' + params.toString());
   }
 
   checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));

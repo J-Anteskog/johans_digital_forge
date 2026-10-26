@@ -108,6 +108,11 @@
       <div class="notes-box">{{ brief.notes|linebreaksbr }}</div>
       {% endif %}
 
+      {% if brief.calculator_summary %}
+      <div class="section-heading">Från priskalkylatorn</div>
+      <div class="notes-box" style="background:#fff7ed;border-color:#ff7a1a;">{{ brief.calculator_summary }}</div>
+      {% endif %}
+
       {% if brief.promo_code %}
       <div class="section-heading">Rabattkod</div>
       <div class="notes-box" style="background:#f0fff4;border-color:#198754;">
