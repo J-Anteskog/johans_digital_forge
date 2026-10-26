@@ -120,6 +120,12 @@
   .pkg-card__features li.pkg-card__all { color: var(--text-primary); font-weight: 600; }
   .pkg-card__features li.pkg-card__all::before { content: '+'; color: var(--accent); }
 
+  /* ===== Moms-växlare ===== */
+  .vat-toggle { display: inline-flex; gap: 0.25rem; padding: 0.25rem; margin-top: 1rem; background: var(--panel-dark); border: 1px solid var(--panel-border); border-radius: 999px; flex-wrap: wrap; }
+  .vat-toggle button { border: 0; background: transparent; color: var(--text-muted); font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.9rem; border-radius: 999px; cursor: pointer; }
+  .vat-toggle button.active { background: var(--accent); color: var(--btn-text-on-accent); }
+  .pkg-card__price small { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
+
   .price-note { color: var(--text-muted) !important; font-size: 0.8rem; font-style: italic; margin: 1.25rem 0 0; }
 
   /* ===== Priskalkylator ===== */
@@ -280,6 +286,10 @@
       <button class="category-tab" onclick="showCategory('support')" id="nav-support">{% if is_english %}Support & Maintenance{% else %}Support & Underhåll{% endif %}</button>
       <button class="category-tab" onclick="showCategory('other')" id="nav-other">{% if is_english %}Other Services{% else %}Övriga tjänster{% endif %}</button>
     </div>
+    <div class="vat-toggle" role="group" aria-label="{% if is_english %}VAT{% else %}Moms{% endif %}">
+        <button type="button" data-vat="ex" class="active" aria-pressed="true">{% if is_english %}Business (excl. VAT){% else %}Företag (exkl. moms){% endif %}</button>
+        <button type="button" data-vat="inc" aria-pressed="false">{% if is_english %}Private (incl. VAT){% else %}Privatperson (inkl. moms){% endif %}</button>
+    </div>
     </div>
     <img src="{% static 'images/jdf-2.0.png' %}" alt="" class="service-hero__logo" aria-hidden="true">
     </div>
@@ -294,7 +304,7 @@
     <div class="pkg-grid">
       <div class="pkg-card">
         <h3 class="pkg-card__name">{% if is_english %}Business package{% else %}Företagspaket{% endif %}</h3>
-        <div class="pkg-card__price">{% if is_english %}From 9,500 SEK{% else %}Från 9 500 kr{% endif %}</div>
+        <div class="pkg-card__price">{% if is_english %}From <span class="vat" data-ex="9500">9,500</span> SEK{% else %}Från <span class="vat" data-ex="9500">9 500</span> kr{% endif %} <small class="vat-label">{% if is_english %}excl. VAT{% else %}exkl. moms{% endif %}</small></div>
         <ul class="pkg-card__features">
           {% if is_english %}
           <li>5–10 pages (homepage, services, blog, contact)</li>
@@ -320,7 +330,7 @@
       <div class="pkg-card pkg-card--featured">
         <span class="pkg-card__ribbon">{% if is_english %}Most popular{% else %}Populärast{% endif %}</span>
         <h3 class="pkg-card__name">Premium</h3>
-        <div class="pkg-card__price">{% if is_english %}From 16,500 SEK{% else %}Från 16 500 kr{% endif %}</div>
+        <div class="pkg-card__price">{% if is_english %}From <span class="vat" data-ex="16500">16,500</span> SEK{% else %}Från <span class="vat" data-ex="16500">16 500</span> kr{% endif %} <small class="vat-label">{% if is_english %}excl. VAT{% else %}exkl. moms{% endif %}</small></div>
         <ul class="pkg-card__features">
           {% if is_english %}
           <li class="pkg-card__all">Everything in Business, plus:</li>
@@ -345,7 +355,7 @@
 
       <div class="pkg-card">
         <h3 class="pkg-card__name">{% if is_english %}Webshop package{% else %}Webshop-paket{% endif %}</h3>
-        <div class="pkg-card__price">{% if is_english %}From 24,500 SEK{% else %}Från 24 500 kr{% endif %}</div>
+        <div class="pkg-card__price">{% if is_english %}From <span class="vat" data-ex="24500">24,500</span> SEK{% else %}Från <span class="vat" data-ex="24500">24 500</span> kr{% endif %} <small class="vat-label">{% if is_english %}excl. VAT{% else %}exkl. moms{% endif %}</small></div>
         <ul class="pkg-card__features">
           {% if is_english %}
           <li class="pkg-card__all">Everything in Premium, plus:</li>
@@ -366,7 +376,7 @@
         <a href="{% if is_english %}{% url 'contact_en' %}{% else %}{% url 'contact' %}{% endif %}?subject={% if is_english %}Webshop+package{% else %}Webshop-paket{% endif %}" class="btn-forge-outline">{% if is_english %}Contact me{% else %}Kontakta mig{% endif %}</a>
       </div>
     </div>
-    <p class="price-note">{% if is_english %}Prices are approximate and may vary depending on features and scope. The final price is set after a needs assessment.{% else %}Priserna är ungefärliga och kan variera beroende på funktioner och omfattning. Slutpriset fastställs efter behovsanalys.{% endif %}</p>
+    <p class="price-note">{% if is_english %}All prices on this page are shown <span class="vat-label">excl. VAT</span> (25% VAT). Prices are approximate and may vary depending on features and scope. The final price is set after a needs assessment.{% else %}Alla priser på sidan visas <span class="vat-label">exkl. moms</span> (moms 25 %). Priserna är ungefärliga och kan variera beroende på funktioner och omfattning. Slutpriset fastställs efter behovsanalys.{% endif %}</p>
 
     <!-- Priskalkylator -->
     <div class="panel-card calc-panel">
@@ -374,6 +384,10 @@
         <div class="calc-panel__intro">
           <h2 class="h4 mb-0">{% if is_english %}Build your own package{% else %}Bygg ditt eget paket{% endif %}</h2>
           <p>{% if is_english %}Check what you need — the price is calculated live.{% else %}Klicka i det du behöver — priset räknas upp live.{% endif %}</p>
+          <div class="vat-toggle" role="group" aria-label="{% if is_english %}VAT{% else %}Moms{% endif %}">
+            <button type="button" data-vat="ex" class="active" aria-pressed="true">{% if is_english %}Business (excl. VAT){% else %}Företag (exkl. moms){% endif %}</button>
+            <button type="button" data-vat="inc" aria-pressed="false">{% if is_english %}Private (incl. VAT){% else %}Privatperson (inkl. moms){% endif %}</button>
+          </div>
         </div>
         <div class="calc-options">
 
@@ -381,9 +395,9 @@
             <div class="calc-option calc-option--radio-group">
               <span class="calc-option__name">{% if is_english %}Choose package{% else %}Välj paket{% endif %}</span>
               <div class="calc-radio-row">
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" data-includes="" checked> {% if is_english %}Business (9,500 kr){% else %}Företagspaket (9 500 kr){% endif %}</label>
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="16500" data-includes="seo-advanced booking"> Premium (16 500 kr)</label>
-                <label><input type="radio" name="calc-base" class="calc-base-input" value="24500" data-includes="seo-advanced booking"> {% if is_english %}Webshop package (24,500 kr){% else %}Webshop-paket (24 500 kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="9500" data-includes="" data-hosting="200" checked> {% if is_english %}Business (<span class="vat" data-ex="9500">9,500</span> kr){% else %}Företagspaket (<span class="vat" data-ex="9500">9 500</span> kr){% endif %}</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="16500" data-includes="seo-advanced booking" data-hosting="300"> Premium (<span class="vat" data-ex="16500">16 500</span> kr)</label>
+                <label><input type="radio" name="calc-base" class="calc-base-input" value="24500" data-includes="seo-advanced booking" data-hosting="300" data-hosting-min="300"> {% if is_english %}Webshop package (<span class="vat" data-ex="24500">24,500</span> kr){% else %}Webshop-paket (<span class="vat" data-ex="24500">24 500</span> kr){% endif %}</label>
               </div>
             </div>
             <div class="calc-option calc-option--stepper">
@@ -393,27 +407,27 @@
                 <span class="calc-stepper__qty">0</span>
                 <button type="button" class="calc-stepper__plus" aria-label="{% if is_english %}More pages{% else %}Fler sidor{% endif %}">+</button>
               </div>
-              <span class="calc-option__price" data-rate="500">500 kr/{% if is_english %}page{% else %}sida{% endif %}</span>
+              <span class="calc-option__price" data-rate="500"><span class="vat" data-ex="500">500</span> kr/{% if is_english %}page{% else %}sida{% endif %}</span>
             </div>
             <label class="calc-option">
               <input type="checkbox" class="calc-input" data-price="3500" data-key="seo-advanced">
               <span class="calc-option__name">{% if is_english %}Advanced SEO{% else %}Avancerad SEO{% endif %}</span>
-              <span class="calc-option__price">+ 3 500 kr</span>
+              <span class="calc-option__price">+ <span class="vat" data-ex="3500">3 500</span> kr</span>
             </label>
             <label class="calc-option">
               <input type="checkbox" class="calc-input" data-price="3500" data-key="booking">
               <span class="calc-option__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</span>
-              <span class="calc-option__price">+ 3 500 kr</span>
+              <span class="calc-option__price">+ <span class="vat" data-ex="3500">3 500</span> kr</span>
             </label>
             <label class="calc-option">
               <input type="checkbox" class="calc-input" data-price="3000">
               <span class="calc-option__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</span>
-              <span class="calc-option__price">+ 3 000 kr</span>
+              <span class="calc-option__price">+ <span class="vat" data-ex="3000">3 000</span> kr</span>
             </label>
             <label class="calc-option">
               <input type="checkbox" class="calc-input" data-price-monthly="200" data-key="chat">
               <span class="calc-option__name">{% if is_english %}Chat feature{% else %}Chatt-funktion{% endif %}</span>
-              <span class="calc-option__price">+ 200 kr/{% if is_english %}mo{% else %}mån{% endif %}</span>
+              <span class="calc-option__price">+ <span class="vat" data-ex="200">200</span> kr/{% if is_english %}mo{% else %}mån{% endif %}</span>
             </label>
             <div class="calc-option">
               <span class="calc-option__name">{% if is_english %}Hosting level{% else %}Webbhotell-nivå{% endif %}</span>
@@ -428,11 +442,11 @@
 
           <div class="calc-totals">
             <div class="calc-total-block">
-              <span class="calc-total__label">{% if is_english %}One-time cost{% else %}Engångskostnad{% endif %}</span>
+              <span class="calc-total__label">{% if is_english %}One-time cost{% else %}Engångskostnad{% endif %} (<span class="vat-label">{% if is_english %}excl. VAT{% else %}exkl. moms{% endif %}</span>)</span>
               <span class="calc-total__amount" id="calc-total-onetime">9 500 kr</span>
             </div>
             <div class="calc-total-block">
-              <span class="calc-total__label">{% if is_english %}Ongoing cost / month{% else %}Löpande kostnad / mån{% endif %}</span>
+              <span class="calc-total__label">{% if is_english %}Ongoing cost / month{% else %}Löpande kostnad / mån{% endif %} (<span class="vat-label">{% if is_english %}excl. VAT{% else %}exkl. moms{% endif %}</span>)</span>
               <span class="calc-total__amount" id="calc-total-monthly">0 kr</span>
             </div>
           </div>
@@ -453,17 +467,17 @@
     <div class="hosting-grid">
       <div class="hosting-card">
         <h3 class="hosting-card__name">{% if is_english %}Small{% else %}Webbhotell Liten{% endif %}</h3>
-        <div class="hosting-card__price">200 kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
+        <div class="hosting-card__price"><span class="vat" data-ex="200">200</span> kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
         <p class="hosting-card__desc">{% if is_english %}5 GB storage · 1 domain included · SSL · Daily backup · Email support (24h){% else %}5 GB lagring · 1 domän ingår · SSL · Daglig backup · E-postsupport (24h){% endif %}</p>
       </div>
       <div class="hosting-card">
         <h3 class="hosting-card__name">{% if is_english %}Medium{% else %}Webbhotell Medium{% endif %}</h3>
-        <div class="hosting-card__price">300 kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
+        <div class="hosting-card__price"><span class="vat" data-ex="300">300</span> kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
         <p class="hosting-card__desc">{% if is_english %}20 GB storage · Hourly backup · Priority support (4h){% else %}20 GB lagring · Timvis backup · Prioriterad support (4h){% endif %}</p>
       </div>
       <div class="hosting-card">
         <h3 class="hosting-card__name">{% if is_english %}Large{% else %}Webbhotell Stor{% endif %}</h3>
-        <div class="hosting-card__price">500 kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
+        <div class="hosting-card__price"><span class="vat" data-ex="500">500</span> kr/{% if is_english %}mo{% else %}mån{% endif %}</div>
         <p class="hosting-card__desc">{% if is_english %}50 GB storage · Phone support · Dedicated resources · 99.9% SLA{% else %}50 GB lagring · Telefonsupport · Dedikerade resurser · SLA 99,9%{% endif %}</p>
       </div>
     </div>
@@ -475,19 +489,19 @@
     <div class="support-grid">
       <div class="support-card">
         <p class="support-card__name">{% if is_english %}Troubleshooting / Bugfix{% else %}Felsökning / Bugfix{% endif %}</p>
-        <div class="support-card__row"><span>{% if is_english %}Simple{% else %}Enkel felsökning{% endif %}</span><span>1 000 kr</span></div>
-        <div class="support-card__row"><span>{% if is_english %}Medium complexity{% else %}Medelkomplex felsökning{% endif %}</span><span>{% if is_english %}from {% else %}från {% endif %}3 000 kr</span></div>
-        <div class="support-card__row"><span>{% if is_english %}Advanced{% else %}Avancerad felsökning{% endif %}</span><span>{% if is_english %}from {% else %}från {% endif %}7 000 kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Simple{% else %}Enkel felsökning{% endif %}</span><span><span class="vat" data-ex="1000">1 000</span> kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Medium complexity{% else %}Medelkomplex felsökning{% endif %}</span><span>{% if is_english %}from {% else %}från {% endif %}<span class="vat" data-ex="3000">3 000</span> kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Advanced{% else %}Avancerad felsökning{% endif %}</span><span>{% if is_english %}from {% else %}från {% endif %}<span class="vat" data-ex="7000">7 000</span> kr</span></div>
       </div>
       <div class="support-card">
         <p class="support-card__name">{% if is_english %}Ad-hoc support{% else %}Ad-hoc supportinsats{% endif %}</p>
-        <div class="support-card__row"><span>{% if is_english %}Simple{% else %}Enkel support{% endif %}</span><span>1 000 kr</span></div>
-        <div class="support-card__row"><span>{% if is_english %}Medium{% else %}Medel support{% endif %}</span><span>3 000 kr</span></div>
-        <div class="support-card__row"><span>{% if is_english %}Advanced{% else %}Avancerad support{% endif %}</span><span>7 000 kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Simple{% else %}Enkel support{% endif %}</span><span><span class="vat" data-ex="1000">1 000</span> kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Medium{% else %}Medel support{% endif %}</span><span><span class="vat" data-ex="3000">3 000</span> kr</span></div>
+        <div class="support-card__row"><span>{% if is_english %}Advanced{% else %}Avancerad support{% endif %}</span><span><span class="vat" data-ex="7000">7 000</span> kr</span></div>
       </div>
       <div class="support-card">
         <p class="support-card__name">{% if is_english %}Ongoing agreement{% else %}Löpande avtal{% endif %}</p>
-        <div class="support-card__big-price">600 kr <small>/ {% if is_english %}h{% else %}tim{% endif %}</small></div>
+        <div class="support-card__big-price"><span class="vat" data-ex="600">600</span> kr <small>/ {% if is_english %}h{% else %}tim{% endif %}</small></div>
         <p class="support-card__desc">{% if is_english %}Security updates, backup checks and minor changes. A free period is included with new packages (1–2 months).{% else %}Säkerhetsuppdateringar, backupkontroller och mindre ändringar. Gratis period ingår vid nya paket (1–2 månader).{% endif %}</p>
       </div>
     </div>
@@ -497,14 +511,14 @@
   <div class="service-category" id="category-other">
     <h2 class="category-header"><i class="fas fa-plus-circle me-2"></i>{% if is_english %}Other Services{% else %}Övriga tjänster{% endif %}</h2>
     <div class="misc-grid">
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Chat feature{% else %}Chatt-funktion{% endif %}</div><div class="misc-card__price">200 kr/{% if is_english %}mo{% else %}mån{% endif %}</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Social media integration{% else %}Sociala medier-koppling{% endif %}</div><div class="misc-card__price">1 500 kr</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</div><div class="misc-card__price">3 500 kr</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</div><div class="misc-card__price">3 000 kr</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Advanced SEO{% else %}Avancerad SEO{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}3 500 kr</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Consultation (30–60 min){% else %}Konsultation (30–60 min){% endif %}</div><div class="misc-card__price">600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Web design{% else %}Webbdesign{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
-      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Design & UI help{% else %}Design & UI-hjälp{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}600 kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Chat feature{% else %}Chatt-funktion{% endif %}</div><div class="misc-card__price"><span class="vat" data-ex="200">200</span> kr/{% if is_english %}mo{% else %}mån{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Social media integration{% else %}Sociala medier-koppling{% endif %}</div><div class="misc-card__price"><span class="vat" data-ex="1500">1 500</span> kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Booking integration{% else %}Bokningsintegration{% endif %}</div><div class="misc-card__price"><span class="vat" data-ex="3500">3 500</span> kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Multi-language support{% else %}Flerspråkigt stöd{% endif %}</div><div class="misc-card__price"><span class="vat" data-ex="3000">3 000</span> kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Advanced SEO{% else %}Avancerad SEO{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}<span class="vat" data-ex="3500">3 500</span> kr</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Consultation (30–60 min){% else %}Konsultation (30–60 min){% endif %}</div><div class="misc-card__price"><span class="vat" data-ex="600">600</span> kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Web design{% else %}Webbdesign{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}<span class="vat" data-ex="600">600</span> kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
+      <div class="misc-card"><div class="misc-card__name">{% if is_english %}Design & UI help{% else %}Design & UI-hjälp{% endif %}</div><div class="misc-card__price">{% if is_english %}from {% else %}från {% endif %}<span class="vat" data-ex="600">600</span> kr/{% if is_english %}h{% else %}tim{% endif %}</div></div>
     </div>
   </div>
 
@@ -558,6 +572,22 @@ document.addEventListener('DOMContentLoaded', function () {
   const steppers = document.querySelectorAll('.calc-option--stepper');
   const baseRadios = document.querySelectorAll('.calc-base-input');
   const includedLabel = '{% if is_english %}Included{% else %}Ingår{% endif %}';
+  const recommendedSuffix = '{% if is_english %} – recommended{% else %} – rekommenderas{% endif %}';
+
+  // Förvälj rekommenderat webbhotell för valt paket. Kunden kan ändra,
+  // men nivåer under paketets minimum (t.ex. Webshop) går inte att välja.
+  function applyHosting() {
+    const base = document.querySelector('.calc-base-input:checked');
+    if (!hostingSelect || !base) return;
+    const recommended = base.dataset.hosting || '0';
+    const min = parseInt(base.dataset.hostingMin || '0', 10);
+    Array.from(hostingSelect.options).forEach(opt => {
+      opt.disabled = parseInt(opt.value, 10) < min;
+    });
+    hostingSelect.dataset.recommended = recommended;
+    renderHostingLabels();
+    hostingSelect.value = recommended;
+  }
 
   // Tillval som redan ingår i valt paket: kryssas i, låses och räknas inte.
   // Kundens egna val sparas så de kommer tillbaka vid byte av paket.
@@ -568,20 +598,65 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!cb.dataset.key) return;
       const option = cb.closest('.calc-option');
       const priceEl = option.querySelector('.calc-option__price');
-      if (!priceEl.dataset.label) priceEl.dataset.label = priceEl.textContent;
+      if (!priceEl.dataset.html) priceEl.dataset.html = priceEl.innerHTML;
       const isIncluded = included.includes(cb.dataset.key);
       if (isIncluded && !cb.disabled) cb.dataset.userChecked = cb.checked ? '1' : '';
       if (!isIncluded && cb.disabled) cb.checked = cb.dataset.userChecked === '1';
       if (isIncluded) cb.checked = true;
       cb.disabled = isIncluded;
       option.classList.toggle('calc-option--locked', isIncluded);
-      priceEl.textContent = isIncluded ? includedLabel : priceEl.dataset.label;
+      if (isIncluded) priceEl.textContent = includedLabel;
+      else priceEl.innerHTML = priceEl.dataset.html;
     });
   }
 
-  function formatSEK(n) {
-    return n.toLocaleString('sv-SE') + ' kr';
+  // ----- Moms: alla belopp i koden är exkl. moms, visningen räknas om -----
+  const VAT_RATE = 1.25;
+  const priceLocale = '{% if is_english %}en-US{% else %}sv-SE{% endif %}';
+  const vatLabels = {
+    ex: '{% if is_english %}excl. VAT{% else %}exkl. moms{% endif %}',
+    inc: '{% if is_english %}incl. VAT{% else %}inkl. moms{% endif %}',
+  };
+  let vatMode = 'ex';
+  try { if (localStorage.getItem('vatMode') === 'inc') vatMode = 'inc'; } catch (e) {}
+
+  function withVat(n) {
+    return Math.round(vatMode === 'inc' ? n * VAT_RATE : n);
   }
+
+  function formatSEK(n) {
+    return withVat(n).toLocaleString('sv-SE') + ' kr';
+  }
+
+  function renderHostingLabels() {
+    if (!hostingSelect) return;
+    const recommended = hostingSelect.dataset.recommended;
+    Array.from(hostingSelect.options).forEach(opt => {
+      if (!opt.dataset.label) opt.dataset.label = opt.textContent;
+      const label = opt.dataset.label.replace(/\d+/, withVat(parseInt(opt.value, 10)).toLocaleString(priceLocale));
+      opt.textContent = label + (opt.value === recommended ? recommendedSuffix : '');
+    });
+  }
+
+  function applyVat() {
+    document.querySelectorAll('.vat').forEach(el => {
+      el.textContent = withVat(parseInt(el.dataset.ex, 10)).toLocaleString(priceLocale);
+    });
+    document.querySelectorAll('.vat-label').forEach(el => { el.textContent = vatLabels[vatMode]; });
+    document.querySelectorAll('.vat-toggle button').forEach(btn => {
+      const active = btn.dataset.vat === vatMode;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    renderHostingLabels();
+  }
+
+  document.querySelectorAll('.vat-toggle button').forEach(btn => btn.addEventListener('click', function () {
+    vatMode = btn.dataset.vat;
+    try { localStorage.setItem('vatMode', vatMode); } catch (e) {}
+    applyVat();
+    updateTotal();
+  }));
 
   function updateTotal() {
     let onetime = 0;
@@ -608,7 +683,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
-  baseRadios.forEach(r => r.addEventListener('change', function () { applyIncluded(); updateTotal(); }));
+  baseRadios.forEach(r => r.addEventListener('change', function () { applyIncluded(); applyHosting(); applyVat(); updateTotal(); }));
   if (hostingSelect) hostingSelect.addEventListener('change', updateTotal);
 
   steppers.forEach(stepper => {
@@ -624,6 +699,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   applyIncluded();
+  applyHosting();
+  applyVat();
   updateTotal();
 });
 </script>

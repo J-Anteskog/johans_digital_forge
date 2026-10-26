@@ -40,9 +40,9 @@ class QuoteForm(BaseForm):
     company = forms.CharField(label="Företag / Company", required=False)
 
     PACKAGE_CHOICES = [
-        ('business-package-8k', 'Företagspaket / Business Package (från 9500 SEK)'),
-        ('premium-package-15k', 'Premium Package (från 16500 SEK)'),
-        ('webshop-package-16k', 'Webshop-paket / E-commerce (från 24500 SEK)'),
+        ('business-package-8k', 'Företagspaket / Business Package (från 9500 SEK exkl. moms)'),
+        ('premium-package-15k', 'Premium Package (från 16500 SEK exkl. moms)'),
+        ('webshop-package-16k', 'Webshop-paket / E-commerce (från 24500 SEK exkl. moms)'),
         ('unsure', 'Osäker / Not sure - vill diskutera / want to discuss'),
     ]
     package = forms.ChoiceField(
