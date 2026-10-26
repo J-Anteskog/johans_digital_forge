@@ -162,7 +162,6 @@
   .calc-option__name { flex-grow: 1; font-size: 0.9rem; font-weight: 600; }
   .calc-option__name small { display: block; color: var(--text-muted); font-weight: 400; font-size: 0.72rem; }
   .calc-option__price { color: var(--accent); font-weight: 700; font-size: 0.87rem; white-space: nowrap; }
-  .calc-hosting-select,
   .calc-hosting-select option { color: var(--accent); font-weight: 700; }
 
   .calc-stepper { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
@@ -181,11 +180,13 @@
   .calc-option select {
     background: var(--panel);
     border: 1px solid var(--panel-border);
-    color: var(--text-primary);
+    color: var(--accent);
+    font-weight: 700;
     border-radius: 6px;
     padding: 0.3rem 0.6rem;
     font-size: 0.85rem;
   }
+  .calc-option select:focus { color: var(--accent); }
 
   .calc-totals {
     width: 100%;
